@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Transformations and Combining Functions</title>
+<meta name="description" content="Calculus I Companion, Topic 0.2: shifting, stretching and reflecting graphs, and combining and composing functions.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;1,6..72,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="lesson.css">
+<script src="site.js"></script>
+<script src="course.js"></script>
+<style>
+  .machine { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 16px; margin-top: 14px; }
+  .machine .val { font-family: var(--font-mono); min-width: 48px; text-align: center; padding: 8px 10px; border-radius: 10px; background: var(--surface-2); border: 1px solid var(--line); }
+  .machine .box { padding: 8px 12px; border-radius: 10px; color: var(--bg); font-weight: 600; }
+  .machine .box.f { background: var(--curve); }
+  .machine .box.g { background: var(--secant); }
+  .machine .arrow { color: var(--ink-3); }
+</style>
+</head>
+<body data-topic="transform">
+<main class="wrap">
+
+<!-- ================= SEE IT ================= -->
+<section class="step" id="see" data-title="The transformation lab">
+  <div class="prose">
+    <p>Every graph on the right comes from a simple <b>parent</b> function (the dashed gray curve) by changing four numbers. Move one slider at a time and try to predict what it will do before you let go.</p>
+  </div>
+
+  <div class="card widget">
+    <div class="row" style="margin-bottom:12px"><span class="muted" style="font-size:14px">Parent:</span><div class="seg" id="parentBtns" role="group" aria-label="Parent function"></div></div>
+    <div class="widget-grid">
+      <svg id="labPlot" role="img" aria-label="Transformed graph and its parent"></svg>
+      <div>
+        <div class="display" id="labEq" style="font-size:19px"></div>
+        <div class="ctls">
+          <div class="ctl"><label for="sA"><b>a</b> (outside ×)</label><input id="sA" type="range" min="-6" max="6" value="2"><output id="oA"></output></div>
+          <div class="ctl"><label for="sH"><b>h</b> (inside −)</label><input id="sH" type="range" min="-4" max="4" value="0"><output id="oH"></output></div>
+          <div class="ctl"><label for="sK"><b>k</b> (outside +)</label><input id="sK" type="range" min="-4" max="4" value="0"><output id="oK"></output></div>
+          <div class="ctl"><span><b>b</b> (inside ×)</span><div class="seg" id="bBtns" role="group" aria-label="Value of b"></div><span></span></div>
+        </div>
+        <div class="row" style="margin-top:12px"><button class="btn" type="button" id="labReset">Reset to parent</button></div>
+        <ol class="observe">
+          <li>Make <b>h</b> = 2. The formula says “minus 2,” so which way did the graph go?</li>
+          <li>Make <b>a</b> negative. What happened, and what stayed put?</li>
+          <li>Try <b>b</b> = 2. Wider or narrower? Is that what “times 2” suggests?</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+  <div class="callout idea"><b>What to notice</b>
+    <p>Changes <b>outside</b> the function (<i>a</i> and <i>k</i>) act on the outputs, so they move the graph <b>vertically</b> the way you’d expect. Changes <b>inside</b> (<i>b</i> and <i>h</i>) act on the inputs, so they move it <b>horizontally</b>, and they feel backwards.</p>
+  </div>
+</section>
+
+<!-- ================= BUILD IT ================= -->
+<section class="step" id="build" data-title="Why inside changes feel backwards">
+  <div class="prose">
+    <p>Take \( y = (x-3)^2 \). The parent \( x^2 \) has its lowest point when the input is 0. The new function feeds \( x - 3 \) into the square, so it hits that same low point when \( x - 3 = 0 \), which means \( x = 3 \). Everything happens <b>3 units later</b>, so the graph moves <b>right</b>, even though the formula shows a minus.</p>
+  </div>
+  <div class="table-wrap"><table class="ref">
+    <tr><th>Formula</th><th>Effect on the graph of \( y = f(x) \)</th></tr>
+    <tr><td>\( f(x) + k \)</td><td>Up \( k \) (down if \( k \lt 0 \))</td></tr>
+    <tr><td>\( f(x - h) \)</td><td>Right \( h \) (left if \( h \lt 0 \)); \( f(x+2) \) moves <b>left</b> 2</td></tr>
+    <tr><td>\( a\,f(x) \)</td><td>Vertical stretch by \( |a| \); also reflects across the <i>x</i>-axis if \( a \lt 0 \)</td></tr>
+    <tr><td>\( f(bx) \)</td><td>Horizontal <b>squeeze</b> by a factor of \( 1/|b| \); also reflects across the <i>y</i>-axis if \( b \lt 0 \)</td></tr>
+  </table></div>
+  <div class="callout warn"><b>Common mistake</b>
+    <p>In \( y = (2x - 6)^2 \) the shift is <b>not</b> 6. First factor the inside: \( (2(x - 3))^2 \). Now you can read it: squeeze by \( \tfrac12 \), then shift right <b>3</b>. Always factor out <i>b</i> before reading <i>h</i>.</p>
+  </div>
+
+  <h3>Combining functions</h3>
+  <div class="prose">
+    <p>You can add, subtract, multiply and divide functions output by output: \( (f+g)(x) = f(x) + g(x) \), \( (fg)(x) = f(x)\,g(x) \), and so on. The new domain is where <b>both</b> \( f \) and \( g \) are defined. For \( f/g \), you also remove any <i>x</i> where \( g(x) = 0 \).</p>
+  </div>
+
+  <h3>Composition: one function inside another</h3>
+  <div class="prose"><p>\( (f \circ g)(x) = f(g(x)) \) means: <b>do <i>g</i> first</b>, then feed its output into <i>f</i>. It’s an assembly line. Try switching the order of the two machines:</p></div>
+  <div class="card widget">
+    <p class="prompt" style="margin-bottom:6px">\( g(x) = x + 3 \) (add 3), and \( f(x) = x^2 \) (square).</p>
+    <div class="ctls"><div class="ctl"><label for="mX">Input <i>x</i></label><input id="mX" type="range" min="-5" max="5" value="2"><output id="mXo"></output></div></div>
+    <div class="seg" role="group" aria-label="Order" style="margin-top:12px"><button type="button" id="ordFG" aria-pressed="true">f(g(x)): g first</button><button type="button" id="ordGF" aria-pressed="false">g(f(x)): f first</button></div>
+    <div class="machine" id="machine" aria-live="polite"></div>
+    <p class="observe" id="machineNote"></p>
+  </div>
+  <div class="callout calc"><b>Why calculus cares</b>
+    <p>The Chain Rule (Unit 3) is how you differentiate a composition. It depends on seeing the <b>inside</b> and <b>outside</b> functions. In \( \sqrt{x^2 + 5} \), the inside is \( x^2 + 5 \) and the outside is the square root. Practice spotting them now.</p>
+  </div>
+  <div id="wx1"></div>
+</section>
+
+<!-- ================= TRY IT ================= -->
+<section class="step" id="try" data-title="Your turn">
+  <div class="card widget" style="max-width:48em">
+    <div class="p-head"><span class="p-num">Challenge · Match the graph</span><span class="chip" id="matchScore">0 matched</span></div>
+    <p class="prompt">Adjust the sliders until your graph (solid) lands exactly on the target (dashed red). You’ll get feedback on what’s still off, but not the numbers.</p>
+    <div class="widget-grid">
+      <svg id="matchPlot" role="img" aria-label="Your graph and a target graph"></svg>
+      <div>
+        <div class="display" id="matchEq" style="font-size:18px"></div>
+        <div class="ctls">
+          <div class="ctl"><label for="tA"><b>a</b></label><input id="tA" type="range" min="-6" max="6" value="2"><output id="toA"></output></div>
+          <div class="ctl"><label for="tH"><b>h</b></label><input id="tH" type="range" min="-4" max="4" value="0"><output id="toH"></output></div>
+          <div class="ctl"><label for="tK"><b>k</b></label><input id="tK" type="range" min="-4" max="4" value="0"><output id="toK"></output></div>
+        </div>
+        <div class="row" style="margin-top:12px"><button class="btn primary" type="button" id="matchCheck">Check match</button><button class="btn" type="button" id="matchNew">New target</button></div>
+        <div class="feedback" id="matchFb" aria-live="polite"></div>
+      </div>
+    </div>
+  </div>
+  <div class="practice-list" id="practice" style="margin-top:18px"></div>
+</section>
+
+<!-- ================= CHECK ================= -->
+<section class="step" id="check" data-title="Before you move on">
+  <div class="prose"><p>True or false? Try each one on a quick sketch or with a number before you decide.</p></div>
+  <div class="tf" id="tf"></div>
+</section>
+
+</main>
+
+<script src="lesson.js"></script>
+<script>
+Lesson.ready(() => {
+  const { Plot, practiceList, worked, trueFalse, typeset } = Lesson;
+
+  const PARENTS = {
+    sq:   { lbl: 'x²',   f: x => x * x,  wrap: s => s === 'x' ? 'x^2' : `(${s})^2` },
+    abs:  { lbl: '|x|',  f: Math.abs,     wrap: s => `\\left|${s}\\right|` },
+    sqrt: { lbl: '√x',   f: x => x >= 0 ? Math.sqrt(x) : NaN, wrap: s => `\\sqrt{${s}}` },
+    cube: { lbl: 'x³',   f: x => x ** 3,  wrap: s => s === 'x' ? 'x^3' : `(${s})^3` },
+    sin:  { lbl: 'sin x', f: Math.sin,    wrap: s => `\\sin(${s})` }
+  };
+  const num = v => (Number.isInteger(v) ? String(v) : String(+v.toFixed(2)));
+
+  function eqTex(P, a, b, h, k) {
+    let inner = h === 0 ? 'x' : `x ${h > 0 ? '-' : '+'} ${num(Math.abs(h))}`;
+    if (b !== 1) inner = b === -1 ? (h === 0 ? '-x' : `-(${inner})`) : (h === 0 ? `${num(b)}x` : `${num(b)}(${inner})`);
+    const core = P.wrap(inner);
+    const lead = a === 1 ? '' : a === -1 ? '-' : num(a);
+    const tail = k === 0 ? '' : ` ${k > 0 ? '+' : '-'} ${num(Math.abs(k))}`;
+    return `y = ${lead}${lead && !/^[(\\]/.test(core) && lead !== '-' ? '\\,' : ''}${core}${tail}`;
+  }
+
+  // ---------------- Transformation lab ----------------
+  const lab = Plot(document.getElementById('labPlot'), { x: [-6, 6], y: [-6, 6], h: 380 });
+  const sA = document.getElementById('sA'), sH = document.getElementById('sH'), sK = document.getElementById('sK');
+  const B_VALS = [-2, -1, 0.5, 1, 2, 3];
+  let parent = 'sq', b = 1;
+  document.getElementById('parentBtns').innerHTML = Object.entries(PARENTS).map(([k, p]) => `<button type="button" data-p="${k}">${p.lbl}</button>`).join('');
+  document.getElementById('bBtns').innerHTML = B_VALS.map(v => `<button type="button" data-b="${v}">${num(v)}</button>`).join('');
+
+  function drawLab() {
+    const P = PARENTS[parent], a = sA.value / 2, h = +sH.value, k = +sK.value;
+    const g = x => a * P.f(b * (x - h)) + k;
+    const px = 1, py = P.f(1);
+    const s = lab.fn(P.f, 'ghost') + lab.fn(g, 'c1') +
+      lab.dot(0, P.f(0), 'c1', 5) + lab.dot(h, a * P.f(0) + k, 'c1 solid', 6) +
+      lab.dot(px, py, 'c2', 5) + lab.dot(px / b + h, a * py + k, 'c2 solid', 6);
+    lab.draw(s);
+    document.getElementById('oA').textContent = num(a);
+    document.getElementById('oH').textContent = h;
+    document.getElementById('oK').textContent = k;
+    document.querySelectorAll('#parentBtns button').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.p === parent)));
+    document.querySelectorAll('#bBtns button').forEach(x => x.setAttribute('aria-pressed', String(+x.dataset.b === b)));
+    const eq = document.getElementById('labEq');
+    eq.innerHTML = `\\[ ${eqTex(P, a, b, h, k)} \\]<div class="muted" style="font-size:14px">Hollow dots are on the parent and filled dots show where they moved.</div>`;
+    typeset(eq);
+  }
+  [sA, sH, sK].forEach(s => s.addEventListener('input', drawLab));
+  document.getElementById('parentBtns').addEventListener('click', e => { const x = e.target.closest('button'); if (x) { parent = x.dataset.p; drawLab(); } });
+  document.getElementById('bBtns').addEventListener('click', e => { const x = e.target.closest('button'); if (x) { b = +x.dataset.b; drawLab(); } });
+  document.getElementById('labReset').addEventListener('click', () => { sA.value = 2; sH.value = 0; sK.value = 0; b = 1; drawLab(); });
+  drawLab();
+
+  // ---------------- Composition machine ----------------
+  const mX = document.getElementById('mX');
+  let fFirst = false;
+  function drawMachine() {
+    const x = +mX.value;
+    const steps = fFirst ? [['f', 'square', v => v * v], ['g', 'add 3', v => v + 3]] : [['g', 'add 3', v => v + 3], ['f', 'square', v => v * v]];
+    const mid = steps[0][2](x), out = steps[1][2](mid);
+    document.getElementById('mXo').textContent = x;
+    document.getElementById('machine').innerHTML =
+      `<span class="val">${x}</span><span class="arrow">→</span><span class="box ${steps[0][0]}">${steps[0][0]}: ${steps[0][1]}</span><span class="arrow">→</span><span class="val">${mid}</span><span class="arrow">→</span><span class="box ${steps[1][0]}">${steps[1][0]}: ${steps[1][1]}</span><span class="arrow">→</span><span class="val">${out}</span>`;
+    const other = fFirst ? (x + 3) ** 2 : x * x + 3;
+    document.getElementById('machineNote').innerHTML = `With the machines in the other order, the same input gives <b>${other}</b>. ${other === out ? 'They happen to agree here. Try another input.' : 'The order matters.'}`;
+    document.getElementById('ordFG').setAttribute('aria-pressed', String(!fFirst));
+    document.getElementById('ordGF').setAttribute('aria-pressed', String(fFirst));
+  }
+  mX.addEventListener('input', drawMachine);
+  document.getElementById('ordFG').addEventListener('click', () => { fFirst = false; drawMachine(); });
+  document.getElementById('ordGF').addEventListener('click', () => { fFirst = true; drawMachine(); });
+  drawMachine();
+
+  worked(document.getElementById('wx1'), {
+    problem: 'Let \\( f(x) = \\sqrt{x} \\) and \\( g(x) = x - 5 \\). Find \\( f(g(x)) \\) and its domain.',
+    steps: [
+      { show: 'The inside function is \\( g \\), so start there: \\( g(x) = x - 5 \\).', why: 'In \\( f(g(x)) \\), \\( g \\) acts first.' },
+      { show: 'Feed that output into \\( f \\): \\( f(g(x)) = f(x-5) = \\sqrt{x - 5} \\).', why: 'Everywhere \\( f \\) has an x, it now gets \\( x - 5 \\).' },
+      { show: 'Domain: the root needs \\( x - 5 \\ge 0 \\), so \\( x \\ge 5 \\), giving \\( [5, \\infty) \\).', why: 'Always check the domain of the <i>final</i> formula. Here, \\( g \\) accepts everything but \\( f \\) doesn’t.' },
+      { show: 'Check it against the graph: \\( \\sqrt{x-5} \\) is \\( \\sqrt{x} \\) moved <b>right</b> 5, so it starts at \\( x = 5 \\). ✓', why: 'Two ways of reaching the same answer is a good sign.' }
+    ]
+  });
+
+  // ---------------- Match the graph ----------------
+  const mp = Plot(document.getElementById('matchPlot'), { x: [-6, 6], y: [-6, 6], h: 360 });
+  const tA = document.getElementById('tA'), tH = document.getElementById('tH'), tK = document.getElementById('tK');
+  const TARGET_PARENTS = ['sq', 'abs', 'sqrt', 'cube'];
+  let target, matched = 0;
+  function newTarget() {
+    const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+    let t;
+    do { t = { p: pick(TARGET_PARENTS), a: pick([-2, -1, -0.5, 0.5, 2]), h: pick([-3, -2, -1, 1, 2, 3]), k: pick([-3, -2, -1, 1, 2, 3]) }; }
+    while (target && t.p === target.p && t.a === target.a);
+    target = t;
+    tA.value = 2; tH.value = 0; tK.value = 0;
+    const fb = document.getElementById('matchFb'); fb.className = 'feedback'; fb.innerHTML = '';
+    drawMatch();
+  }
+  function drawMatch() {
+    const P = PARENTS[target.p], a = tA.value / 2, h = +tH.value, k = +tK.value;
+    mp.draw(mp.fn(x => target.a * P.f(x - target.h) + target.k, 'c3', { attr: ' stroke-dasharray="8 6"' }) + mp.fn(x => a * P.f(x - h) + k, 'c1'));
+    document.getElementById('toA').textContent = num(a);
+    document.getElementById('toH').textContent = h;
+    document.getElementById('toK').textContent = k;
+    const eq = document.getElementById('matchEq');
+    eq.innerHTML = `\\[ ${eqTex(P, a, 1, h, k)} \\]`;
+    typeset(eq);
+  }
+  [tA, tH, tK].forEach(s => s.addEventListener('input', drawMatch));
+  document.getElementById('matchNew').addEventListener('click', newTarget);
+  document.getElementById('matchCheck').addEventListener('click', () => {
+    const a = tA.value / 2, h = +tH.value, k = +tK.value, fb = document.getElementById('matchFb');
+    const off = [];
+    if (h !== target.h) off.push('the <b>horizontal</b> position (look at where the key point, the vertex or starting point, sits left to right)');
+    if (k !== target.k) off.push('the <b>vertical</b> position');
+    if (Math.sign(a) !== Math.sign(target.a)) off.push('which way the graph <b>opens or points</b>');
+    else if (a !== target.a) off.push('how <b>steep</b> or <b>flat</b> it is (step one unit right of the key point and compare the rise)');
+    if (!off.length) {
+      matched++;
+      document.getElementById('matchScore').textContent = `${matched} matched`;
+      fb.className = 'feedback good';
+      fb.innerHTML = `<b class="tag-good">Matched!</b> Now read the equation above and explain each number to yourself. Then try a <b>new target</b>.`;
+    } else {
+      fb.className = 'feedback try';
+      fb.innerHTML = `<b class="tag-try">Not yet.</b> Still off: ${off.join('; ')}.`;
+    }
+  });
+  newTarget();
+
+  // ---------------- Practice ----------------
+  practiceList(document.getElementById('practice'), [
+    { id: 'tr-write', tag: 'Write the equation',
+      prompt: '<p>Start with \\( y = \\sqrt{x} \\). Shift it <b>left 2</b>, reflect it across the <b>x-axis</b>, then shift it <b>up 3</b>. What is the new equation?</p>',
+      label: 'y =', placeholder: 'e.g. -sqrt(x-1)+4',
+      rungs: [
+        ['Nudge', 'Handle each change separately. Which ones go <i>inside</i> the root, and which go <i>outside</i>?'],
+        ['Hint', 'Left means the inside changes, and inside changes feel backwards. A reflection across the x-axis flips the <i>outputs</i>.'],
+        ['Strategy', 'Build it in order: shift the inside first, then put a negative sign in front of the root, then add the vertical shift at the end.']
+      ],
+      answer: { type: 'expr', vars: ['x'], fn: x => -Math.sqrt(x + 2) + 3, domain: [-2, 6] },
+      mistakes: [
+        { fn: x => -Math.sqrt(x - 2) + 3, msg: 'Check the horizontal shift. Where does your graph start? The target should start 2 units to the <i>left</i> of the origin.' },
+        { fn: x => Math.sqrt(-(x + 2)) + 3, msg: 'A negative <i>inside</i> reflects across the <b>y</b>-axis. To reflect across the x-axis, negate the outputs.' },
+        { fn: x => -(Math.sqrt(x + 2) + 3), msg: 'Order matters here. The vertical shift of 3 happens <i>after</i> the reflection, so it shouldn’t be flipped.' }
+      ],
+      success: 'Its starting point moves from (0, 0) to (−2, 3), and it heads downward from there.' },
+
+    { id: 'tr-compose', tag: 'Composition',
+      prompt: '<p>Let \\( f(x) = x^2 + 1 \\) and \\( g(x) = 2x - 3 \\). Find \\( f(g(x)) \\).</p>',
+      label: 'f(g(x)) =', placeholder: 'an expression in x',
+      rungs: [
+        ['Nudge', 'Which function acts first? That one goes inside.'],
+        ['Hint', 'Take the formula for \\( f \\) and replace its x with the entire expression \\( (2x - 3) \\).'],
+        ['Strategy', 'Write \\( f(\\,\\square\\,) = \\square^2 + 1 \\) and put \\( (2x-3) \\) in the box. You can leave it unexpanded or expand it; either form is accepted.']
+      ],
+      answer: { type: 'expr', vars: ['x'], fn: x => (2 * x - 3) ** 2 + 1 },
+      mistakes: [
+        { fn: x => 2 * (x * x + 1) - 3, msg: 'That’s \\( g(f(x)) \\), with \\( f \\) acting first. In \\( f(g(x)) \\), \\( g \\) acts first.' },
+        { fn: x => (x * x + 1) * (2 * x - 3), msg: 'That’s the product \\( f(x)\\,g(x) \\). Composition feeds one function <i>into</i> the other.' },
+        { fn: x => 2 * x * x - 3 + 1, msg: 'Replace x with the whole expression in parentheses, then square all of it.' }
+      ],
+      success: 'Composition means substitution. The outside function is “square and add 1,” and the inside is \\( 2x - 3 \\).' },
+
+    { id: 'tr-compose-num', tag: 'Composition',
+      prompt: '<p>With the same \\( f(x) = x^2 + 1 \\) and \\( g(x) = 2x - 3 \\), find \\( f(g(2)) \\).</p>',
+      rungs: [
+        ['Nudge', 'Work from the inside out.'],
+        ['Hint', 'Compute \\( g(2) \\) first. That number becomes the input to \\( f \\).'],
+        ['Strategy', 'Two separate evaluations: first \\( g(2) \\), then \\( f(\\text{that result}) \\).']
+      ],
+      answer: { type: 'number', value: 2 },
+      mistakes: [{ value: 7, msg: 'That’s \\( g(f(2)) \\). Start with \\( g \\), since it’s the inside function.' }],
+      success: 'Inside out: \\( g \\) first, then \\( f \\).' },
+
+    { id: 'tr-decompose', tag: 'Spot the inside',
+      prompt: '<p>Write \\( H(x) = \\sqrt{x^2 + 5} \\) as a composition \\( f(g(x)) \\) with \\( f(x) = \\sqrt{x} \\). What is \\( g(x) \\)?</p>',
+      label: 'g(x) =',
+      rungs: [
+        ['Nudge', 'If \\( f \\) is the square root, what is being fed <i>into</i> the square root?'],
+        ['Hint', 'The inside function is whatever sits under the radical.'],
+        ['Strategy', 'Check your answer: take the square root of your \\( g(x) \\). Do you get \\( H(x) \\) back?']
+      ],
+      answer: { type: 'expr', vars: ['x'], fn: x => x * x + 5 },
+      mistakes: [{ fn: x => Math.sqrt(x * x + 5), msg: 'That’s all of \\( H \\). With \\( f \\) already taking the square root, \\( g \\) is only the part inside.' }],
+      success: 'Seeing the inside function this way is the whole setup for the Chain Rule.' },
+
+    { id: 'tr-factor-b', tag: 'Read the shift',
+      prompt: '<p>The graph of \\( y = (2x - 6)^2 \\) is a parabola. At what x-value is its vertex?</p>',
+      label: 'x =',
+      rungs: [
+        ['Nudge', 'The parent \\( x^2 \\) has its vertex where the inside is 0.'],
+        ['Hint', 'Either set the inside equal to 0 and solve, or factor the 2 out of the inside first.'],
+        ['Strategy', 'Factor: \\( 2x - 6 = 2(x - \\,?\\,) \\). The number in the blank is the horizontal shift.']
+      ],
+      answer: { type: 'number', value: 3 },
+      mistakes: [
+        { value: 6, msg: 'That’s the classic trap. Factor the 2 out of \\( 2x - 6 \\) first, <i>then</i> read the shift.' },
+        { value: -3, msg: 'Watch the sign. The inside is 0 when \\( 2x = 6 \\).' }
+      ],
+      success: 'Setting the inside to zero always works, even when the shift is hidden by a coefficient.' }
+  ]);
+
+  trueFalse(document.getElementById('tf'), [
+    { s: 'The graph of \\( y = f(x) - 4 \\) is the graph of \\( f \\) moved down 4.', ok: true, why: 'Subtracting outside lowers every output by 4.' },
+    { s: 'The graph of \\( y = f(x + 4) \\) is the graph of \\( f \\) moved right 4.', ok: false, why: 'Inside changes feel backwards: \\( x + 4 \\) moves it <b>left</b> 4.' },
+    { s: '\\( f(g(x)) \\) and \\( g(f(x)) \\) are always equal.', ok: false, why: 'The composition machine showed otherwise: with \\( x = 2 \\), one order gave 25 and the other gave 7.' },
+    { s: 'The graph of \\( y = -f(x) \\) is the reflection of \\( f \\) across the x-axis.', ok: true, why: 'Every output flips sign, so heights become depths.' },
+    { s: 'The graph of \\( y = f(2x) \\) is twice as wide as \\( y = f(x) \\).', ok: false, why: 'It’s half as wide. The inputs run twice as fast, so everything happens sooner.' }
+  ]);
+});
+</script>
+</body>
+</html>

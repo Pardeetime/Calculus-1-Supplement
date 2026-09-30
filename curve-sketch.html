@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Curve Sketching</title>
+<meta name="description" content="Calculus I Companion, Topic 4.5: building a graph from domain, intercepts, symmetry, asymptotes, monotonicity, extrema, concavity and inflection points.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;1,6..72,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="lesson.css">
+<script src="site.js"></script>
+<script src="course.js"></script>
+<style>
+  .layers { display: grid; gap: 6px; margin-top: 10px; }
+  .layer { text-align: left; border: 1px solid var(--line); background: var(--surface); border-radius: 10px; padding: 8px 12px; cursor: pointer; font-size: 14px; }
+  .layer[aria-pressed="true"] { border-color: var(--uc); background: color-mix(in srgb, var(--uc) 10%, var(--surface)); }
+  .layer:disabled { opacity: .45; cursor: not-allowed; }
+  .layer b { display: block; font-size: 14px; }
+  .layer span { color: var(--ink-2); }
+  .choice svg { width: 170px; max-width: 100%; height: auto; display: block; }
+  .choices.pics { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+</style>
+</head>
+<body data-topic="curve-sketch">
+<main class="wrap">
+
+<!-- ================= SEE IT ================= -->
+<section class="step" id="see" data-title="Build a graph from facts">
+  <div class="prose">
+    <p>A graphing calculator plots points. Calculus finds the <b>features</b>, and together they force the shape of the graph. Turn on the layers one at a time, in order. Before you reveal the last one, try to picture the curve yourself.</p>
+  </div>
+  <div class="card widget">
+    <div class="seg" id="fBtns" role="group" aria-label="Choose a function" style="margin-bottom:12px"></div>
+    <div class="widget-grid">
+      <svg id="csPlot" role="img" aria-label="Graph being built up feature by feature"></svg>
+      <div>
+        <div class="display" id="csTex" style="font-size:19px"></div>
+        <div class="layers" id="layers"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= BUILD IT ================= -->
+<section class="step" id="build" data-title="The checklist">
+  <div class="table-wrap"><table class="ref">
+    <tr><th>Step</th><th>What to find</th><th>Tool</th></tr>
+    <tr><td>A. Domain</td><td>Where f is defined</td><td>Zeros of denominators, roots, logs (Topic 0.1)</td></tr>
+    <tr><td>B. Intercepts</td><td>\( f(0) \); solutions of \( f(x) = 0 \)</td><td>Algebra</td></tr>
+    <tr><td>C. Symmetry</td><td>Even: \( f(-x) = f(x) \). Odd: \( f(-x) = -f(x) \)</td><td>Substitute −x</td></tr>
+    <tr><td>D. Asymptotes</td><td>Vertical and horizontal</td><td>Limits (Topics 1.3, 1.8)</td></tr>
+    <tr><td>E. Increasing/decreasing</td><td>Sign of \( f' \)</td><td>Sign chart (Topic 4.3)</td></tr>
+    <tr><td>F. Local extrema</td><td>Sign changes of \( f' \)</td><td>First Derivative Test</td></tr>
+    <tr><td>G. Concavity & inflection</td><td>Sign of \( f'' \) and where it changes</td><td>Sign chart of \( f'' \)</td></tr>
+    <tr><td>H. Sketch</td><td>Connect everything consistently</td><td>Plot key points, then follow the strips</td></tr>
+  </table></div>
+  <div id="wx1"></div>
+  <div class="callout warn"><b>Consistency check</b>
+    <p>Every feature has to agree. A graph can’t be increasing toward an asymptote from below while being concave up in a way that would cross it, for example. If your sketch contradicts your sign charts, one of them has an error, so recheck the derivative.</p>
+  </div>
+</section>
+
+<!-- ================= TRY IT ================= -->
+<section class="step" id="try" data-title="Your turn">
+  <div class="prose"><p>Problems 1–6 are all about \( f(x) = \dfrac{2x^2}{x^2 - 9} \). Useful facts: \( f'(x) = \dfrac{-36x}{(x^2-9)^2} \) and \( f''(x) = \dfrac{108(x^2 + 3)}{(x^2 - 9)^3} \).</p></div>
+  <div class="practice-list" id="practice"></div>
+</section>
+
+<!-- ================= CHECK ================= -->
+<section class="step" id="check" data-title="Before you move on">
+  <div class="quiz" id="quiz"></div>
+</section>
+
+</main>
+
+<script src="lesson.js"></script>
+<script>
+Lesson.ready(() => {
+  const { Plot, practiceList, worked, quiz, typeset } = Lesson;
+
+  const S3 = Math.sqrt(3);
+  const FNS = [
+    { lbl: 'x²/(x²−1)', tex: 'f(x) = \\dfrac{x^2}{x^2 - 1}', f: x => x * x / (x * x - 1), d: x => -2 * x / (x * x - 1) ** 2, d2: x => (6 * x * x + 2) / (x * x - 1) ** 3,
+      x: [-4, 4], y: [-4, 4], va: [-1, 1], ha: [1], ints: [[0, 0]], ext: [[0, 0, 'max']], infl: [],
+      notes: ['All x except ±1.', 'Only (0, 0).', 'Even: f(−x) = f(x), so it’s symmetric across the y-axis.', 'VA x = ±1; HA y = 1 (equal degrees).', 'f′ = −2x/(x²−1)²: increasing for x < 0, decreasing for x > 0 (skipping ±1).', 'Local max at (0, 0).', 'f″ > 0 for |x| > 1 (∪), f″ < 0 for |x| < 1 (∩). No inflection points, because concavity changes only at the asymptotes, which aren’t on the graph.'] },
+    { lbl: 'x/(x²+1)', tex: 'f(x) = \\dfrac{x}{x^2 + 1}', f: x => x / (x * x + 1), d: x => (1 - x * x) / (x * x + 1) ** 2, d2: x => 2 * x * (x * x - 3) / (x * x + 1) ** 3,
+      x: [-6, 6], y: [-0.9, 0.9], va: [], ha: [0], ints: [[0, 0]], ext: [[1, 0.5, 'max'], [-1, -0.5, 'min']], infl: [[-S3, -S3 / 4], [0, 0], [S3, S3 / 4]],
+      notes: ['All real numbers.', 'Only (0, 0).', 'Odd: f(−x) = −f(x), so it’s symmetric through the origin.', 'No VA; HA y = 0 on both ends (top has lower degree).', 'f′ = (1 − x²)/(x²+1)²: increasing on (−1, 1), decreasing outside.', 'Local max (1, ½), local min (−1, −½).', 'f″ = 2x(x² − 3)/(x²+1)³: inflection points at x = 0, ±√3.'] },
+    { lbl: 'x³ − 3x²', tex: 'f(x) = x^3 - 3x^2', f: x => x ** 3 - 3 * x * x, d: x => 3 * x * x - 6 * x, d2: x => 6 * x - 6,
+      x: [-1.5, 4], y: [-6, 3], va: [], ha: [], ints: [[0, 0], [3, 0]], ext: [[0, 0, 'max'], [2, -4, 'min']], infl: [[1, -2]],
+      notes: ['All real numbers.', '(0, 0) and (3, 0).', 'Neither even nor odd.', 'None. Polynomials have no asymptotes.', 'f′ = 3x(x − 2): increasing outside [0, 2], decreasing on (0, 2).', 'Local max (0, 0), local min (2, −4).', 'f″ = 6x − 6: concave down for x < 1, up for x > 1; inflection at (1, −2).'] }
+  ];
+  const LAYERS = ['A. Domain', 'B. Intercepts', 'C. Symmetry', 'D. Asymptotes', 'E. Increasing / decreasing', 'F. Local extrema', 'G. Concavity & inflection', 'H. The curve'];
+  const cp = Plot(document.getElementById('csPlot'), { x: [-4, 4], y: [-4, 4], h: 400 });
+  let cur = 0, on = 0;
+  document.getElementById('fBtns').innerHTML = FNS.map((F, i) => `<button type="button" data-i="${i}">${F.lbl}</button>`).join('');
+  function band(g, top, clsPos, clsNeg) {
+    const F = FNS[cur], [a, b] = F.x, n = 240, h = 12, y = top ? 0 : cp.H - h; let s = '';
+    for (let i = 0; i < n; i++) { const x = a + (b - a) * (i + 0.5) / n, v = g(x); if (!Number.isFinite(v) || F.va.some(q => Math.abs(q - x) < 0.02)) continue; s += `<rect x="${(i / n * cp.W).toFixed(1)}" y="${y}" width="${(cp.W / n + 0.6).toFixed(1)}" height="${h}" style="fill:${v > 0 ? clsPos : clsNeg};opacity:.5"/>`; }
+    return s;
+  }
+  function drawCS() {
+    const F = FNS[cur];
+    cp.range(F.x, F.y);
+    let s = '';
+    if (on >= 1) F.va.forEach(v => { s += `<rect x="${cp.sx(v) - 3}" y="0" width="6" height="${cp.H}" style="fill:var(--warn);opacity:.25"/>`; });
+    if (on >= 2) s += F.ints.map(p => cp.dot(p[0], p[1], 'c1 solid', 5)).join('');
+    if (on >= 4) { F.va.forEach(v => { s += cp.seg(v, -99, v, 99, 'ghost'); }); F.ha.forEach(h => { s += cp.seg(-99, h, 99, h, 'ghost'); }); }
+    if (on >= 5) s += band(F.d, false, 'var(--good)', 'var(--warn)');
+    if (on >= 6) s += F.ext.map(p => cp.dot(p[0], p[1], 'c2 solid', 6) + cp.text(p[0], p[1], p[2], 'tick', 0, p[2] === 'max' ? -10 : 18, 'middle')).join('');
+    if (on >= 7) s += band(F.d2, true, 'var(--u6)', 'var(--u2)') + F.infl.map(p => cp.dot(p[0], p[1], 'c4 solid', 5)).join('');
+    if (on >= 8) s += cp.fn(F.f, 'c1', { n: 800 });
+    cp.draw(s);
+    document.getElementById('layers').innerHTML = LAYERS.map((L, i) =>
+      `<button type="button" class="layer" data-i="${i}" aria-pressed="${i < on}" ${i > on ? 'disabled' : ''}><b>${L}</b>${i < on && i < 7 ? `<span>${F.notes[i]}</span>` : i < on ? '<span>Does it match what you pictured?</span>' : ''}</button>`).join('') +
+      `<p class="observe">Bottom strip: <span style="color:var(--good)">■</span> increasing, <span style="color:var(--warn)">■</span> decreasing. Top strip: <span style="color:var(--u6)">■</span> concave up, <span style="color:var(--u2)">■</span> concave down.</p>`;
+  }
+  document.getElementById('layers').addEventListener('click', e => { const b = e.target.closest('.layer'); if (b && +b.dataset.i === on) { on++; drawCS(); } });
+  function pick(i) {
+    cur = i; on = 0;
+    document.querySelectorAll('#fBtns button').forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.i === i)));
+    const t = document.getElementById('csTex'); t.innerHTML = `\\[ ${FNS[i].tex} \\]`; typeset(t);
+    drawCS();
+  }
+  document.getElementById('fBtns').addEventListener('click', e => { const b = e.target.closest('button'); if (b) pick(+b.dataset.i); });
+  pick(0);
+
+  worked(document.getElementById('wx1'), {
+    problem: 'Summarize \\( f(x) = x^3 - 3x^2 \\) with a sign chart (the third function in the builder).',
+    steps: [
+      { show: '\\( f\'(x) = 3x(x - 2) \\): + on \\( (-\\infty, 0) \\), − on \\( (0, 2) \\), + on \\( (2, \\infty) \\).' },
+      { show: '\\( f\'\'(x) = 6(x - 1) \\): − on \\( (-\\infty, 1) \\), + on \\( (1, \\infty) \\).' },
+      { show: 'Put it together: rising and concave down up to the max (0, 0); falling and concave down to the inflection point (1, −2); falling and concave up to the min (2, −4); then rising and concave up forever.', why: 'Each interval between key x-values gets one combination, like “rising and ∩”, and that tells you its shape exactly.' }
+    ]
+  });
+
+  practiceList(document.getElementById('practice'), [
+    { id: 'cs-ha', tag: 'Asymptotes', prompt: '<p>Horizontal asymptote of \\( f(x) = \\dfrac{2x^2}{x^2 - 9} \\): \\( y = ? \\)</p>', label: 'y =',
+      answer: { type: 'number', value: 2 },
+      rungs: [['Nudge', 'Compare degrees on top and bottom.'], ['Hint', 'They’re equal, so use the ratio of the leading coefficients.'], ['Strategy', '\\( 2x^2 / x^2 \\).']] },
+    { id: 'cs-va', tag: 'Asymptotes', prompt: '<p>List the vertical asymptotes (x-values).</p>', label: 'x =',
+      answer: { type: 'set', values: [3, -3] }, format: 'List x-values separated by commas.',
+      rungs: [['Nudge', 'Where is the denominator 0?'], ['Hint', '\\( x^2 - 9 = 0 \\).'], ['Strategy', 'Check that the numerator isn’t also 0 there.']] },
+    { id: 'cs-inc', tag: 'Increasing', prompt: '<p>On what set is f increasing?</p>',
+      answer: { type: 'interval', value: '(-inf,-3)U(-3,0)' },
+      rungs: [['Nudge', '\\( f\' = \\dfrac{-36x}{(x^2-9)^2} \\). The denominator is always positive (where defined).'], ['Hint', 'So the sign of \\( f\' \\) is the sign of \\( -36x \\).'], ['Strategy', 'Positive when x < 0, but remove the asymptote at −3.']],
+      mistakes: [{ value: '(-inf,0)', msg: 'f isn’t defined at x = −3. Split the interval there.' }, { value: '(0,3)U(3,inf)', msg: 'That’s where \\( f\' \\lt 0 \\).' }] },
+    { id: 'cs-max', tag: 'Extrema', prompt: '<p>f has one local extremum. What is its <b>value</b> (the y-coordinate)?</p>', label: 'Value',
+      answer: { type: 'number', value: 0 },
+      rungs: [['Nudge', 'Where does \\( f\' \\) change sign?'], ['Hint', 'At x = 0: + to −, so it’s a local max.'], ['Strategy', 'Evaluate f(0).']] },
+    { id: 'cs-cu', tag: 'Concavity', prompt: '<p>On what set is f concave up?</p>',
+      answer: { type: 'interval', value: '(-inf,-3)U(3,inf)' },
+      rungs: [['Nudge', 'The sign of \\( f\'\' \\) depends only on \\( (x^2 - 9)^3 \\), since \\( 108(x^2 + 3) \\gt 0 \\).'], ['Hint', '\\( (x^2 - 9)^3 \\gt 0 \\) exactly when \\( x^2 \\gt 9 \\).'], ['Strategy', 'Outside the asymptotes.']],
+      mistakes: [{ value: '(-3,3)', msg: 'That’s where \\( f\'\' \\lt 0 \\), so f is concave down there.' }] },
+    { id: 'cs-infl', tag: 'Inflection', prompt: '<p>How many inflection points does f have?</p>', label: 'Count',
+      answer: { type: 'number', value: 0 },
+      rungs: [['Nudge', 'Where does \\( f\'\' \\) change sign?'], ['Hint', 'Only at x = ±3.'], ['Strategy', 'Are those points on the graph?']],
+      mistakes: [{ value: 2, msg: 'Concavity changes at ±3, but f isn’t defined there. An inflection point has to be <i>on</i> the graph.' }],
+      success: 'Same situation as the first function in the builder.' }
+  ]);
+
+  quiz(document.getElementById('quiz'), [
+    { q: 'Which graph has \\( f\' \\gt 0 \\) <b>and</b> \\( f\'\' \\lt 0 \\) everywhere shown?',
+      choices: [
+        { t: '<svg id="qa"></svg>', ok: false, why: 'Rising, but bending upward, so \\( f\'\' \\gt 0 \\).' },
+        { t: '<svg id="qb"></svg>', ok: true, why: 'Rising (\\( f\' \\gt 0 \\)), and its slope keeps shrinking (\\( f\'\' \\lt 0 \\)).' },
+        { t: '<svg id="qc"></svg>', ok: false, why: 'This one is falling, so \\( f\' \\lt 0 \\).' },
+        { t: '<svg id="qd"></svg>', ok: false, why: 'Falling and bending up.' }
+      ] },
+    { q: 'A function is even. What symmetry does its graph have?',
+      choices: [{ t: 'Across the y-axis', ok: true, why: 'f(−x) = f(x): the left side mirrors the right.' }, { t: 'Through the origin', ok: false, why: 'That’s odd symmetry.' }] }
+  ]);
+  document.querySelector('#quiz .choices').classList.add('pics');
+  const mini = (id, fn) => { const p = Plot(document.getElementById(id), { x: [0.1, 3], y: [-3, 3], w: 220, h: 140, ticks: false }); p.draw(p.fn(fn, 'c1')); };
+  mini('qa', x => 0.5 * x * x - 2); mini('qb', x => 1.8 * Math.sqrt(x) - 1.5); mini('qc', x => 2 - 0.5 * x * x); mini('qd', x => 1 / x - 1);
+});
+</script>
+</body>
+</html>

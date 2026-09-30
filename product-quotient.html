@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Product and Quotient Rules</title>
+<meta name="description" content="Calculus I Companion, Topic 3.3: why the derivative of a product isn't the product of derivatives, the product rule, and the quotient rule.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;1,6..72,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="lesson.css">
+<script src="site.js"></script>
+<script src="course.js"></script>
+</head>
+<body data-topic="product-quotient">
+<main class="wrap">
+
+<!-- ================= SEE IT ================= -->
+<section class="step" id="see" data-title="A growing rectangle">
+  <div class="prose">
+    <p>A rectangle has width \( f \) and height \( g \), and both are changing. Its area is the product \( f g \). When f grows by \( \Delta f \) and g grows by \( \Delta g \), where does the new area come from?</p>
+  </div>
+  <div class="card widget">
+    <div class="widget-grid">
+      <svg id="rPlot" role="img" aria-label="Rectangle with strips added on the right, top, and a small corner"></svg>
+      <div>
+        <div class="ctls">
+          <div class="ctl"><label for="fS">width f</label><input id="fS" type="range" min="100" max="400" value="300"><output id="fO"></output></div>
+          <div class="ctl"><label for="gS">height g</label><input id="gS" type="range" min="100" max="400" value="200"><output id="gO"></output></div>
+          <div class="ctl"><label for="kS">Growth size</label><input id="kS" type="range" min="1" max="100" value="60"><output id="kO"></output></div>
+        </div>
+        <div class="readout" id="rRead" aria-live="polite"></div>
+        <p class="observe">Here \( \Delta f = 1.5\,\text{(growth)} \) and \( \Delta g = \text{(growth)} \). Shrink the growth and watch the corner vanish.</p>
+      </div>
+    </div>
+  </div>
+  <div class="callout idea"><b>What the picture says</b>
+    <p>The new area is <b>two strips</b>: g times the change in f, plus f times the change in g. The corner \( \Delta f\,\Delta g \) is tiny compared with both. So \( (fg)' = f'g + fg' \). It is <b>not</b> \( f'g' \), which would be just the corner.</p>
+  </div>
+</section>
+
+<!-- ================= BUILD IT ================= -->
+<section class="step" id="build" data-title="The rules">
+  <div class="callout idea"><b>Product Rule</b>
+    <div class="display">\[ \frac{d}{dx}\big[f(x)\,g(x)\big] = f'(x)\,g(x) + f(x)\,g'(x) \]</div>
+    <p>In words: “derivative of the first times the second, plus the first times the derivative of the second.”</p>
+  </div>
+  <div class="callout idea"><b>Quotient Rule</b>
+    <div class="display">\[ \frac{d}{dx}\left[\frac{f(x)}{g(x)}\right] = \frac{f'(x)\,g(x) - f(x)\,g'(x)}{\big[g(x)\big]^2} \]</div>
+    <p>Memory aid: “<b>low</b> d-<b>high</b> minus <b>high</b> d-<b>low</b>, over the square of what’s below.” The order matters because of the minus sign.</p>
+  </div>
+  <div id="wx1"></div>
+  <div id="wx2"></div>
+  <div class="callout warn"><b>Choose the easiest path</b>
+    <p>You don’t always need these rules. \( \dfrac{x^3 + 1}{x} \) splits into \( x^2 + x^{-1} \), and \( 5x^3 \) is a constant multiple, not a product. Use the product rule when <b>both</b> factors contain x, and the quotient rule when the <b>denominator</b> is more than a single term.</p>
+  </div>
+</section>
+
+<!-- ================= TRY IT ================= -->
+<section class="step" id="try" data-title="Your turn">
+  <div id="drill"></div>
+  <div class="practice-list" id="practice" style="margin-top:18px"></div>
+</section>
+
+<!-- ================= CHECK ================= -->
+<section class="step" id="check" data-title="Before you move on">
+  <div class="quiz" id="quiz"></div>
+</section>
+
+</main>
+
+<script src="lesson.js"></script>
+<script>
+Lesson.ready(() => {
+  const { Plot, practiceList, worked, quiz, drill, typeset } = Lesson;
+
+  const rp = Plot(document.getElementById('rPlot'), { x: [-0.3, 5.5], y: [-0.3, 5.5], w: 360, h: 360, ticks: false });
+  const fS = document.getElementById('fS'), gS = document.getElementById('gS'), kS = document.getElementById('kS');
+  const rect = (x0, y0, x1, y1, color, op) => `<rect x="${rp.sx(x0)}" y="${rp.sy(y1)}" width="${rp.sx(x1) - rp.sx(x0)}" height="${rp.sy(y0) - rp.sy(y1)}" style="fill:${color};opacity:${op};stroke:var(--ink-3);stroke-width:1"/>`;
+  function drawR() {
+    const f = fS.value / 100, g = gS.value / 100, k = kS.value / 100, df = 1.5 * k, dg = k;
+    rp.draw(rect(0, 0, f, g, 'var(--curve)', 0.25) + rect(f, 0, f + df, g, 'var(--secant)', 0.55) + rect(0, g, f, g + dg, 'var(--u2)', 0.45) + rect(f, g, f + df, g + dg, 'var(--tangent)', 0.7) +
+      rp.text(f / 2, g / 2, 'f·g', 'lbl', 0, 4, 'middle') + rp.text(f + df / 2, g / 2, 'g·Δf', 'tick', 0, 4, 'middle') + rp.text(f / 2, g + dg / 2, 'f·Δg', 'tick', 0, 4, 'middle'));
+    ['f', 'g', 'k'].forEach((id, i) => { document.getElementById(id + 'O').textContent = [f, g, k][i].toFixed(2); });
+    const r = document.getElementById('rRead');
+    r.innerHTML = `\\( \\Delta(fg) = \\underbrace{g\\,\\Delta f}_{${(g * df).toFixed(3)}} + \\underbrace{f\\,\\Delta g}_{${(f * dg).toFixed(3)}} + \\underbrace{\\Delta f\\,\\Delta g}_{${(df * dg).toFixed(3)}} \\)`;
+    typeset(r);
+  }
+  [fS, gS, kS].forEach(s => s.addEventListener('input', drawR));
+  drawR();
+
+  worked(document.getElementById('wx1'), {
+    problem: 'Differentiate \\( y = x^3 e^x \\).',
+    steps: [
+      { show: 'First \\( = x^3 \\), second \\( = e^x \\). Their derivatives: \\( 3x^2 \\) and \\( e^x \\).', why: 'Write all four pieces down before assembling. It prevents most mistakes.' },
+      { show: '\\( y\' = 3x^2 \\cdot e^x + x^3 \\cdot e^x \\)' },
+      { show: 'Factor: \\( y\' = x^2 e^x (3 + x) \\).', why: 'Factored form makes it easy to find where \\( y\' = 0 \\) (at x = 0 and x = −3), which you’ll need in Unit 4.' }
+    ]
+  });
+  worked(document.getElementById('wx2'), {
+    problem: 'Differentiate \\( y = \\dfrac{x^2 + 1}{x - 3} \\).',
+    steps: [
+      { show: 'High \\( = x^2 + 1 \\), d-high \\( = 2x \\). Low \\( = x - 3 \\), d-low \\( = 1 \\).' },
+      { show: '\\[ y\' = \\frac{(x - 3)(2x) - (x^2 + 1)(1)}{(x - 3)^2} \\]', why: 'Low d-high first, then minus high d-low.' },
+      { show: 'Simplify the top: \\( 2x^2 - 6x - x^2 - 1 = x^2 - 6x - 1 \\), so \\( y\' = \\dfrac{x^2 - 6x - 1}{(x-3)^2} \\).', why: 'Leave the denominator squared and factored. Expanding it doesn’t help.' }
+    ]
+  });
+
+  // ---------------- Drill ----------------
+  const P = [
+    { t: 'x', f: x => x, d: () => 1 }, { t: 'x^{2}', f: x => x * x, d: x => 2 * x }, { t: 'x^{3}', f: x => x ** 3, d: x => 3 * x * x },
+    { t: 'e^{x}', f: Math.exp, d: Math.exp }, { t: '(x + 1)', f: x => x + 1, d: () => 1, bare: 'x + 1' }, { t: '(2x - 3)', f: x => 2 * x - 3, d: () => 2, bare: '2x - 3' },
+    { t: '\\sqrt{x}', f: Math.sqrt, d: x => 0.5 / Math.sqrt(x), pos: true }, { t: '(x^{2} + 1)', f: x => x * x + 1, d: x => 2 * x, bare: 'x^{2} + 1' }
+  ];
+  drill(document.getElementById('drill'), {
+    title: 'Products and quotients', label: 'dy/dx',
+    make() {
+      let a, b; do { a = P[Math.floor(Math.random() * P.length)]; b = P[Math.floor(Math.random() * P.length)]; } while (a === b);
+      const quot = Math.random() < 0.45, pos = a.pos || b.pos;
+      if (quot) {
+        return { q: `y = \\dfrac{${a.bare || a.t}}{${b.bare || b.t}}`, d: x => (a.d(x) * b.f(x) - a.f(x) * b.d(x)) / b.f(x) ** 2,
+          domain: pos ? [0.6, 2.5] : [0.6, 2.5],
+          hints: ['Quotient rule: \\( \\dfrac{f\'g - fg\'}{g^2} \\), low d-high minus high d-low, over low squared.', 'Write down f, f′, g, g′ separately first.'],
+          mistakes: [{ fn: x => (a.f(x) * b.d(x) - a.d(x) * b.f(x)) / b.f(x) ** 2, msg: 'The subtraction is in the wrong order. Low d-high comes first.' }, { fn: x => a.d(x) / b.d(x), msg: 'You can’t differentiate top and bottom separately. Use the quotient rule.' }] };
+      }
+      return { q: `y = ${a.t}\\,${b.t}`, d: x => a.d(x) * b.f(x) + a.f(x) * b.d(x), domain: pos ? [0.5, 2.5] : [-2, 2],
+        hints: ['Product rule: \\( f\'g + fg\' \\).', 'Write down f, f′, g, g′ separately first.'],
+        mistakes: [{ fn: x => a.d(x) * b.d(x), msg: 'The derivative of a product isn’t the product of the derivatives. Remember the rectangle.' }] };
+    }
+  });
+
+  practiceList(document.getElementById('practice'), [
+    { id: 'pq-prod', tag: 'Product', prompt: '<p>Find \\( \\dfrac{d}{dx}\\left(x^2 e^x\\right) \\).</p>', label: 'dy/dx',
+      answer: { type: 'expr', vars: ['x'], fn: x => 2 * x * Math.exp(x) + x * x * Math.exp(x) },
+      rungs: [['Nudge', 'Both factors contain x, so use the product rule.'], ['Hint', 'f = x², f′ = 2x; g = eˣ, g′ = eˣ.'], ['Strategy', 'Assemble \\( f\'g + fg\' \\).']],
+      mistakes: [{ fn: x => 2 * x * Math.exp(x), msg: 'That’s only \\( f\'g\' \\) (or half the rule). There should be two terms.' }] },
+    { id: 'pq-quot', tag: 'Quotient', prompt: '<p>Find \\( \\dfrac{d}{dx}\\,\\dfrac{x}{x + 1} \\).</p>', label: 'dy/dx',
+      answer: { type: 'expr', vars: ['x'], fn: x => 1 / (x + 1) ** 2, domain: [0, 3] },
+      rungs: [['Nudge', 'The denominator has two terms, so use the quotient rule.'], ['Hint', 'High = x, d-high = 1; low = x + 1, d-low = 1.'], ['Strategy', 'Numerator: \\( (x + 1)(1) - x(1) \\). Simplify it.']],
+      mistakes: [{ fn: x => -1 / (x + 1) ** 2, msg: 'Order in the numerator: low d-high <b>minus</b> high d-low.' }, { fn: () => 1, msg: 'You can’t differentiate top and bottom separately.' }] },
+    { id: 'pq-quot2', tag: 'Quotient', prompt: '<p>Find \\( \\dfrac{d}{dx}\\,\\dfrac{x^2 + 1}{x - 3} \\).</p>', label: 'dy/dx',
+      answer: { type: 'expr', vars: ['x'], fn: x => (x * x - 6 * x - 1) / (x - 3) ** 2, domain: [-2, 2] },
+      rungs: [['Nudge', 'This is the second worked example. Try it without looking.'], ['Hint', '\\( \\dfrac{(x-3)(2x) - (x^2+1)(1)}{(x-3)^2} \\)'], ['Strategy', 'Simplifying is optional. Any equivalent form is accepted.']] },
+    { id: 'pq-sqrtexp', tag: 'Product', prompt: '<p>Find \\( \\dfrac{d}{dx}\\left(\\sqrt{x}\\,e^x\\right) \\).</p>', label: 'dy/dx',
+      answer: { type: 'expr', vars: ['x'], fn: x => 0.5 / Math.sqrt(x) * Math.exp(x) + Math.sqrt(x) * Math.exp(x), domain: [0.4, 3] },
+      rungs: [['Nudge', 'Product of \\( x^{1/2} \\) and \\( e^x \\).'], ['Hint', '\\( (x^{1/2})\' = \\tfrac{1}{2}x^{-1/2} \\).'], ['Strategy', '\\( f\'g + fg\' \\).']] },
+    { id: 'pq-table-prod', tag: 'From a table', prompt: '<p>Given \\( f(2) = 3 \\), \\( f\'(2) = -1 \\), \\( g(2) = 4 \\), \\( g\'(2) = 5 \\). Find \\( (fg)\'(2) \\).</p>', label: "(fg)′(2)",
+      answer: { type: 'number', value: 11 },
+      rungs: [['Nudge', 'The product rule works with numbers too.'], ['Hint', '\\( f\'(2)g(2) + f(2)g\'(2) \\).'], ['Strategy', 'Substitute the four given values.']],
+      mistakes: [{ value: -5, msg: 'That’s \\( f\'(2)\\,g\'(2) \\), which isn’t the product rule.' }] },
+    { id: 'pq-table-quot', tag: 'From a table', prompt: '<p>Same values. Find \\( \\left(\\dfrac{f}{g}\\right)\'(2) \\).</p>', label: "(f/g)′(2)",
+      answer: { type: 'number', value: -19 / 16 },
+      rungs: [['Nudge', 'Quotient rule with numbers.'], ['Hint', '\\( \\dfrac{f\'(2)g(2) - f(2)g\'(2)}{g(2)^2} \\).'], ['Strategy', 'Numerator: \\( (-1)(4) - (3)(5) \\). Denominator: \\( 4^2 \\).']],
+      mistakes: [{ value: 19 / 16, msg: 'Check the order of subtraction.' }, { value: -0.2, msg: 'That’s \\( f\'(2)/g\'(2) \\). Use the quotient rule.' }] }
+  ]);
+
+  quiz(document.getElementById('quiz'), [
+    { q: 'Which is <b>not</b> a good use of the product rule?',
+      choices: [{ t: '\\( x^2 e^x \\)', ok: false, why: 'Both factors contain x, so the product rule is needed.' }, { t: '\\( 7x^4 \\)', ok: true, why: '7 is a constant, so this is just a constant multiple: \\( 28x^3 \\).' }, { t: '\\( \\sqrt x\\,(x + 1) \\)', ok: false, why: 'Product rule works (or expand to \\( x^{3/2} + x^{1/2} \\) first).' }] },
+    { q: 'In the quotient rule, what happens if you swap the order of subtraction in the numerator?',
+      choices: [{ t: 'Nothing, subtraction is fine either way', ok: false, why: 'Subtraction isn’t commutative: \\( a - b = -(b - a) \\).' }, { t: 'The answer has the wrong sign', ok: true, why: 'That’s why the order is worth memorizing: low d-high first.' }] },
+    { q: 'For \\( y = \\dfrac{5}{x^2} \\), the fastest method is…',
+      choices: [{ t: 'Quotient rule', ok: false, why: 'It works, but it takes longer.' }, { t: 'Rewrite as \\( 5x^{-2} \\) and use the power rule', ok: true, why: 'One line: \\( -10x^{-3} \\).' }] }
+  ]);
+});
+</script>
+</body>
+</html>

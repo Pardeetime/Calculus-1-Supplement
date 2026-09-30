@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calculus I Companion</title>
+<meta name="description" content="An interactive study guide for first-semester Calculus I, with visual explanations, guided hints and self-checks.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;1,6..72,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<link rel="stylesheet" href="styles.css">
+<script src="site.js"></script>
+<style>
+  /* ---------- Hero ---------- */
+  .hero { display: grid; gap: 28px; padding: 40px 0 8px; align-items: start; }
+  @media (min-width: 900px) { .hero { grid-template-columns: 1fr 1.05fr; gap: 40px; padding-top: 56px; } }
+  .hero > *, .how > *, .unit-grid > * { min-width: 0; }
+  @media (max-width: 400px) { .ctl { grid-template-columns: 70px 1fr 60px; } .unit-grid { grid-template-columns: 1fr; } }
+  .hero h1 { font-size: clamp(34px, 5vw, 52px); margin-bottom: 16px; }
+  .hero h1 em { color: var(--accent); }
+  .lede { font-size: 18px; color: var(--ink-2); max-width: 36em; }
+  .standing { display: flex; align-items: center; gap: 16px; margin-top: 24px; padding: 16px; }
+  .ring { width: 64px; height: 64px; flex: none; }
+  .ring circle { fill: none; stroke-width: 7; }
+  .ring .track { stroke: var(--surface-2); }
+  .ring .fill { stroke: var(--accent); stroke-linecap: round; transform: rotate(-90deg); transform-origin: 50% 50%; transition: stroke-dasharray .4s ease; }
+  .ring text { font: 600 15px var(--font-body); fill: var(--ink); text-anchor: middle; dominant-baseline: central; }
+  .standing h2 { font-size: 20px; margin-bottom: 2px; }
+  .standing p { margin: 0; color: var(--ink-3); font-size: 14px; }
+  .link-btn { background: none; border: 0; padding: 0; color: var(--accent); cursor: pointer; text-decoration: underline; font-size: 14px; }
+
+  /* Secant → tangent explorer */
+  .explorer { padding: 18px 18px 16px; }
+  .explorer-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 6px; }
+  .explorer-head h2 { font-size: 21px; }
+  .explorer p.q { color: var(--ink-2); font-size: 15px; margin: 0 0 10px; }
+  #graph { width: 100%; height: auto; display: block; border-radius: 10px; background: var(--surface-2); touch-action: pan-y; }
+  #graph .grid { stroke: var(--grid); stroke-width: 1; }
+  #graph .axis { stroke: var(--ink-3); stroke-width: 1.2; }
+  #graph .curve { fill: none; stroke: var(--curve); stroke-width: 3; }
+  #graph .secant { stroke: var(--secant); stroke-width: 2.5; }
+  #graph .tangent { stroke: var(--tangent); stroke-width: 2.5; stroke-dasharray: 7 5; }
+  #graph .pt { fill: var(--surface); stroke-width: 3; }
+  #graph .pt.a { stroke: var(--curve); cursor: grab; }
+  #graph .pt.b { stroke: var(--secant); }
+  #graph .rise { stroke: var(--secant); stroke-width: 1.5; stroke-dasharray: 3 4; }
+  #graph text { font: 12px var(--font-mono); fill: var(--ink-3); }
+  @media (max-width: 560px) { #graph text { font-size: 17px; } }
+  .controls { display: grid; gap: 10px; margin-top: 12px; }
+  .ctl { display: grid; grid-template-columns: 88px 1fr 72px; align-items: center; gap: 10px; font-size: 14px; }
+  .ctl output { font-family: var(--font-mono); text-align: right; }
+  .readout { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; justify-content: space-between; margin-top: 12px; padding: 10px 12px; border-radius: 10px; background: var(--gold-soft); font-size: 15px; }
+  .readout strong { font-family: var(--font-mono); font-weight: 500; }
+  .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 9px; overflow: hidden; }
+  .seg button { border: 0; background: var(--surface); padding: 5px 10px; font-size: 13px; cursor: pointer; }
+  .seg button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+  .explorer .foot { display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 10px; font-size: 14px; color: var(--ink-3); }
+
+  /* ---------- Sections ---------- */
+  section.block { margin-top: 64px; }
+  .block-head { display: flex; justify-content: space-between; align-items: end; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; }
+  .block-head h2 { font-size: clamp(26px, 3.4vw, 34px); }
+  .block-head p { margin: 6px 0 0; color: var(--ink-2); max-width: 44em; }
+
+  /* How it works */
+  .how { display: grid; gap: 20px; }
+  @media (min-width: 900px) { .how { grid-template-columns: 1fr 1.15fr; } }
+  .steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+  .steps li { display: grid; grid-template-columns: 40px 1fr; gap: 12px; padding: 14px 16px; }
+  .steps .n { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent); font-weight: 600; font-family: var(--font-head); font-size: 18px; }
+  .steps h3 { font-size: 18px; margin-bottom: 2px; }
+  .steps p { margin: 0; color: var(--ink-2); font-size: 15px; }
+
+  .ladder { padding: 20px; }
+  .ladder h3 { font-size: 20px; margin-bottom: 4px; }
+  .ladder .problem { margin: 14px 0; padding: 14px; border-radius: 10px; background: var(--surface-2); text-align: center; font-size: 18px; overflow-x: auto; }
+  .rungs { display: flex; flex-wrap: wrap; gap: 8px; }
+  .rung[aria-expanded="true"] { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+  .hint-list { display: grid; gap: 8px; margin: 12px 0 0; }
+  .hint { padding: 10px 12px 10px 14px; border-left: 3px solid var(--accent); background: var(--accent-soft); border-radius: 0 8px 8px 0; font-size: 15px; }
+  .hint b { display: block; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+  .answer-row { display: flex; gap: 8px; margin-top: 14px; align-items: center; flex-wrap: wrap; }
+  .answer-row label { font-size: 15px; }
+  .answer-row input { width: 120px; }
+  .feedback { margin-top: 12px; padding: 10px 12px; border-radius: 8px; font-size: 15px; }
+  .feedback.good { background: var(--good-soft); color: var(--good); }
+  .feedback.try { background: var(--warn-soft); color: var(--warn); }
+  .promise { margin-top: 14px; font-size: 13px; color: var(--ink-3); display: flex; gap: 8px; align-items: flex-start; }
+  .promise svg { width: 16px; height: 16px; flex: none; margin-top: 2px; }
+
+  /* Roadmap */
+  .roadmap { display: flex; gap: 6px; overflow-x: auto; padding: 4px 2px 12px; scroll-snap-type: x mandatory; }
+  .roadmap button { scroll-snap-align: start; flex: 1 0 128px; text-align: left; background: var(--surface); border: 1px solid var(--line); border-top: 4px solid var(--uc); border-radius: 10px; padding: 10px 12px; cursor: pointer; position: relative; }
+  .roadmap button:hover { border-color: var(--uc); }
+  .roadmap .rn { font: 500 12px var(--font-mono); color: var(--uc); }
+  .roadmap .rt { display: block; font-weight: 600; font-size: 14px; line-height: 1.25; margin-top: 2px; }
+  .roadmap .rb { height: 4px; border-radius: 4px; background: var(--surface-2); margin-top: 10px; overflow: hidden; }
+  .roadmap .rb i { display: block; height: 100%; background: var(--uc); }
+
+  /* Unit grid */
+  .toolbar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .toolbar { width: 100%; max-width: 300px; }
+  .toolbar input { width: 100%; }
+  .unit-grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); }
+  .unit { display: flex; flex-direction: column; text-align: left; padding: 20px; cursor: pointer; border-top: 5px solid var(--uc); transition: transform .15s ease, box-shadow .15s ease; }
+  .unit:hover { transform: translateY(-2px); box-shadow: 0 2px 4px rgba(0,0,0,.06), 0 12px 28px rgba(0,0,0,.1); }
+  .unit .num { font: 500 13px var(--font-mono); color: var(--uc); }
+  .unit h3 { font-size: 23px; margin: 4px 0 8px; }
+  .unit .blurb { color: var(--ink-2); font-size: 15px; margin-bottom: 12px; }
+  .unit .keytex { padding: 10px; border-radius: 8px; background: var(--surface-2); text-align: center; margin-bottom: 14px; overflow-x: auto; min-height: 44px; }
+  .unit .topics-peek { font-size: 14px; color: var(--ink-3); margin-bottom: 14px; flex: 1; }
+  .unit .meta { display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--ink-3); gap: 10px; }
+  .bar { flex: 1; height: 6px; border-radius: 6px; background: var(--surface-2); overflow: hidden; }
+  .bar i { display: block; height: 100%; background: var(--uc); transition: width .3s ease; }
+  .tag { font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; padding: 2px 8px; border-radius: 99px; background: var(--surface-2); color: var(--ink-3); white-space: nowrap; }
+  .tag.live { background: var(--good-soft); color: var(--good); }
+  .tag.opt { background: var(--gold-soft); color: var(--gold); }
+  .empty { padding: 24px; text-align: center; color: var(--ink-3); }
+
+  /* Unit sheet (dialog) */
+  dialog.sheet { border: 0; padding: 0; width: min(760px, calc(100% - 24px)); max-height: calc(100% - 32px); border-radius: 18px; background: var(--surface); color: var(--ink); box-shadow: 0 20px 60px rgba(0,0,0,.3); }
+  dialog.sheet::backdrop { background: rgba(10, 20, 24, .5); backdrop-filter: blur(2px); }
+  .sheet-head { position: sticky; top: 0; background: var(--surface); padding: 20px 20px 14px; border-bottom: 1px solid var(--line); border-top: 6px solid var(--uc); display: flex; gap: 12px; align-items: flex-start; z-index: 1; }
+  .sheet-head h2 { font-size: 28px; }
+  .sheet-head p { margin: 4px 0 0; color: var(--ink-2); font-size: 15px; }
+  .sheet-head .icon-btn { flex: none; margin-left: auto; }
+  .sheet-body { padding: 8px 20px 24px; }
+  .sheet-note { font-size: 14px; color: var(--ink-3); margin: 12px 0 4px; }
+  .topic { display: grid; grid-template-columns: 34px 1fr; gap: 4px 12px; padding: 16px 0; border-bottom: 1px solid var(--line); }
+  .topic:last-child { border-bottom: 0; }
+  .topic .tn { font: 500 13px var(--font-mono); color: var(--uc); padding-top: 3px; }
+  .topic h3 { font-size: 19px; font-family: var(--font-body); font-weight: 600; letter-spacing: 0; }
+  .topic .big-q { color: var(--ink-2); font-size: 15px; margin: 2px 0 8px; font-style: italic; }
+  .topic .tex { overflow-x: auto; padding: 2px 0 6px; }
+  .keytex .katex-display, .topic .tex .katex-display { margin: 0; }
+  .topic .tex .katex-display { text-align: left; }
+  .topic-foot { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; margin-top: 6px; }
+  .conf { display: inline-flex; gap: 4px; align-items: center; font-size: 13px; color: var(--ink-3); flex-wrap: wrap; }
+  .conf button { border: 1px solid var(--line); background: var(--surface); border-radius: 99px; padding: 3px 10px; font-size: 13px; cursor: pointer; }
+  .conf button[aria-pressed="true"][data-level="1"] { background: var(--warn-soft); border-color: var(--warn); color: var(--warn); }
+  .conf button[aria-pressed="true"][data-level="2"] { background: var(--gold-soft); border-color: var(--gold); color: var(--gold); }
+  .conf button[aria-pressed="true"][data-level="3"] { background: var(--good-soft); border-color: var(--good); color: var(--good); }
+
+  /* Study tools */
+  .tools { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); }
+  .tool { padding: 18px; transition: transform .15s ease, box-shadow .15s ease; }
+  a.tool:hover { transform: translateY(-2px); box-shadow: 0 2px 4px rgba(0,0,0,.06), 0 12px 28px rgba(0,0,0,.1); }
+  .tool svg { width: 26px; height: 26px; color: var(--accent); margin-bottom: 8px; }
+  .tool h3 { font-size: 18px; margin-bottom: 4px; }
+  .tool p { margin: 0 0 10px; font-size: 14px; color: var(--ink-2); }
+
+  /* ---------- TLDR ---------- */
+  .tldr-btn { font-weight: 700; letter-spacing: .06em; padding: 6px 12px; }
+  .tldr-line { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; font-size: 15px; color: var(--ink-2); margin: -4px 0 0; }
+  .tldr-line span { flex: 1 1 220px; }
+  dialog.tldr { width: min(940px, calc(100% - 24px)); height: calc(100% - 32px); max-height: none; display: none; flex-direction: column; overflow: hidden; }
+  dialog.tldr[open] { display: flex; }
+  .tl-head { display: flex; align-items: flex-start; gap: 12px; padding: 18px 20px 10px; border-top: 6px solid var(--accent); }
+  .tl-head h2 { font-size: 28px; }
+  .tl-head .icon-btn { margin-left: auto; flex: none; }
+  .tl-tabs { margin: 0 20px 10px; align-self: flex-start; }
+  .tl-body { overflow-y: auto; padding: 4px 20px 28px; border-top: 1px solid var(--line); flex: 1; }
+  .tl-unit { padding: 18px 0; border-bottom: 1px solid var(--line); }
+  .tl-unit:last-child { border-bottom: 0; }
+  .tl-unit h3 { font-size: 22px; margin-bottom: 6px; }
+  .tl-unit h3 small { display: block; font: 500 12px var(--font-mono); letter-spacing: .08em; color: var(--uc); }
+  .tl-big { font-family: var(--font-head); font-style: italic; font-size: 18px; color: var(--ink-2); margin-bottom: 10px; }
+  .tl-topics { margin: 0 0 12px; padding-left: 1.1em; display: grid; gap: 6px; font-size: 15px; }
+  .tl-topics a { font-weight: 600; text-decoration: none; color: var(--uc); }
+  .tl-why { display: grid; gap: 12px; }
+  @media (min-width: 720px) { .tl-why { grid-template-columns: 1fr 1.3fr; } }
+  .tl-why > div { background: var(--surface-2); border-radius: 10px; padding: 12px 14px; font-size: 15px; }
+  .tl-why b { display: block; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--uc); margin-bottom: 4px; }
+  .tl-why p { margin: 0; }
+  .tl-why ul { margin: 0; padding-left: 1.1em; display: grid; gap: 4px; }
+  .tl-search { width: min(360px, 100%); margin: 14px 0 8px; }
+  .tl-gloss { display: grid; gap: 8px; margin: 0; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+  .tl-gloss > div { background: var(--surface-2); border-radius: 10px; padding: 10px 12px; }
+  .tl-gloss dt { font-weight: 600; font-size: 15px; display: flex; justify-content: space-between; gap: 8px; }
+  .tl-gloss dt a { font-weight: 500; font-size: 12px; white-space: nowrap; text-decoration: none; }
+  .tl-gloss dd { margin: 4px 0 0; font-size: 14px; color: var(--ink-2); }
+  .tl-sym { border-collapse: collapse; width: 100%; font-size: 14px; margin-top: 4px; }
+  .tl-sym th, .tl-sym td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  .tl-sym th { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); position: sticky; top: 0; background: var(--surface); }
+  .tl-sym td:first-child { font-size: 17px; white-space: nowrap; }
+  .tl-sym td:last-child { white-space: nowrap; }
+  @media (max-width: 560px) { .tldr-btn { padding: 5px 9px; } }
+</style>
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="index.html"><span class="brand-mark">∫</span><span>Calculus I Companion<small>Interactive study guide</small></span></a>
+    <span class="header-spacer"></span>
+    <button class="btn primary tldr-btn" type="button" data-tldr="units" aria-haspopup="dialog">TLDR</button>
+    <button class="icon-btn" id="themeBtn" type="button" aria-label="Toggle theme"></button>
+  </div>
+</header>
+
+<main class="wrap">
+  <!-- ======= Hero ======= -->
+  <section class="hero">
+    <div>
+      <div class="eyebrow">Calculus I study guide</div>
+      <h1>Calculus I, <em>one topic at a time</em></h1>
+      <p class="lede">Each lesson starts with an interactive graph, explains the idea step by step, and ends with practice problems. Practice problems offer hints if you get stuck, but they don’t show the answers.</p>
+      <p class="tldr-line">Want the big picture first? <button class="btn tldr-btn" type="button" data-tldr="units">TLDR</button> <span>Unit summaries, real-life uses, a glossary and a guide to every symbol.</span></p>
+      <div class="card standing">
+        <svg class="ring" viewBox="0 0 64 64" aria-hidden="true">
+          <circle class="track" cx="32" cy="32" r="27"/>
+          <circle class="fill" id="ringFill" cx="32" cy="32" r="27" stroke-dasharray="0 170"/>
+          <text x="32" y="33" id="ringText">0%</text>
+        </svg>
+        <div>
+          <h2>Where you stand</h2>
+          <p id="standingText">Rate your confidence on each topic to build your study plan.</p>
+          <button class="link-btn" id="resetBtn" type="button" hidden>Reset my ratings</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Secant to tangent explorer -->
+    <div class="card explorer" aria-labelledby="explorerTitle">
+      <div class="explorer-head">
+        <h2 id="explorerTitle">From secant line to tangent line</h2>
+        <span class="tag">Try it</span>
+      </div>
+      <p class="q">Slide <b>h</b> toward 0. The gold <b>secant</b> line pivots. What slope is it settling on?</p>
+      <svg id="graph" viewBox="0 0 520 330" role="img" aria-label="Graph of a curve with a secant line through two points"></svg>
+      <div class="controls">
+        <div class="ctl"><label for="hSlider">Gap <b>h</b></label><input id="hSlider" type="range" min="0" max="1000" value="0"><output id="hOut">2.000</output></div>
+        <div class="ctl"><label for="aSlider">Point <b>a</b></label><input id="aSlider" type="range" min="-300" max="300" value="-120"><output id="aOut">-1.20</output></div>
+      </div>
+      <div class="readout" aria-live="polite">
+        <span>Secant slope <span data-tex="\tfrac{f(a+h)-f(a)}{h}"></span> = <strong id="mOut">0.000</strong></span>
+        <span class="seg" role="group" aria-label="Approach side">
+          <button type="button" id="sideR" aria-pressed="true">from right</button>
+          <button type="button" id="sideL" aria-pressed="false">from left</button>
+        </span>
+      </div>
+      <div class="foot">
+        <span id="explorerNote">That settling value is the <b>derivative</b>. Limits (Unit 1) make “settling” precise.</span>
+        <button class="btn" id="tangentBtn" type="button" aria-pressed="false">Show tangent line</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======= How it works ======= -->
+  <section class="block" aria-labelledby="howHead">
+    <div class="block-head">
+      <div>
+        <div class="eyebrow">How each lesson works</div>
+        <h2 id="howHead">Four steps in every lesson</h2>
+        <p>Every lesson follows the same four steps. Practice problems check your answer and offer up to three hints, but they don’t show the solution, so the work stays yours.</p>
+      </div>
+    </div>
+    <div class="how">
+      <ol class="steps">
+        <li class="card"><span class="n">1</span><div><h3>See it</h3><p>Start with an interactive graph or model and notice what happens before you see any formula.</p></div></li>
+        <li class="card"><span class="n">2</span><div><h3>Build it</h3><p>Turn the picture into notation one step at a time, with a “why does this work?” at every step.</p></div></li>
+        <li class="card"><span class="n">3</span><div><h3>Try it</h3><p>Practice problems with three levels of hints: nudge, hint, then strategy. Your answer is checked, but the solution isn’t shown.</p></div></li>
+        <li class="card"><span class="n">4</span><div><h3>Check yourself</h3><p>Rate your confidence so this dashboard can show you what to review before the exam.</p></div></li>
+      </ol>
+
+      <div class="card ladder" aria-labelledby="ladderHead">
+        <div class="eyebrow">Try the hint ladder</div>
+        <h3 id="ladderHead">A sample practice problem</h3>
+        <p class="muted" style="margin:0">Work it on paper first. Climb the ladder only as far as you need.</p>
+        <div class="problem"><span data-tex="\displaystyle \lim_{x \to 3} \frac{x^2 - 9}{x - 3}"></span></div>
+        <div class="rungs" id="rungs"></div>
+        <div class="hint-list" id="hintList" aria-live="polite"></div>
+        <form class="answer-row" id="answerForm" autocomplete="off">
+          <label for="answerIn">Your answer:</label>
+          <input id="answerIn" type="text" inputmode="decimal" placeholder="e.g. 2.5">
+          <button class="btn primary" type="submit">Check</button>
+        </form>
+        <div id="feedback" aria-live="polite"></div>
+        <div class="promise"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><span>Answers are checked but not shown. Common wrong answers get feedback about the likely mistake.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======= Roadmap ======= -->
+  <section class="block" aria-labelledby="mapHead">
+    <div class="block-head">
+      <div>
+        <div class="eyebrow">Course roadmap</div>
+        <h2 id="mapHead">How the ideas build on each other</h2>
+        <p>Each unit leans on the one before it. If a later topic feels shaky, the fix is often one step back.</p>
+      </div>
+    </div>
+    <nav class="roadmap" id="roadmap" aria-label="Units in order"></nav>
+  </section>
+
+  <!-- ======= Units ======= -->
+  <section class="block" aria-labelledby="unitsHead">
+    <div class="block-head">
+      <div>
+        <div class="eyebrow">Topics</div>
+        <h2 id="unitsHead">Choose a unit</h2>
+        <p>Open a unit to see its lessons and rate how confident you feel about each one.</p>
+      </div>
+      <div class="toolbar">
+        <input type="search" id="search" placeholder="Search topics, e.g. chain rule" aria-label="Search topics">
+      </div>
+    </div>
+    <div class="unit-grid" id="unitGrid"></div>
+  </section>
+
+  <!-- ======= Study tools ======= -->
+  <section class="block" aria-labelledby="toolsHead">
+    <div class="block-head">
+      <div>
+        <div class="eyebrow">Study tools</div>
+        <h2 id="toolsHead">Reference and review</h2>
+      </div>
+    </div>
+    <div class="tools" id="tools"></div>
+  </section>
+</main>
+
+<dialog class="sheet" id="sheet" aria-labelledby="sheetTitle"></dialog>
+<dialog class="sheet tldr" id="tldr" aria-labelledby="tlTitle"></dialog>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p>An independent study guide for Calculus I, not affiliated with any college or university. Your instructor's syllabus and course materials always come first.</p>
+    <p>Your confidence ratings are saved only in this browser.</p>
+  </div>
+</footer>
+
+<script src="course.js"></script>
+<script src="dashboard.js"></script>
+<script src="tldr.js"></script>
+</body>
+</html>

@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Continuity and the IVT</title>
+<meta name="description" content="Calculus I Companion, Topic 1.7: the definition of continuity, types of discontinuities, making piecewise functions continuous, and the Intermediate Value Theorem.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;1,6..72,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="lesson.css">
+<script src="site.js"></script>
+<script src="course.js"></script>
+</head>
+<body data-topic="continuity">
+<main class="wrap">
+
+<!-- ================= SEE IT ================= -->
+<section class="step" id="see" data-title="The pencil test">
+  <div class="prose">
+    <p>A function is continuous at a point if you can draw through that point without lifting your pencil. Each graph below has something going on at \( x = 1 \). Classify it, and see if you can say exactly <i>what</i> breaks.</p>
+  </div>
+  <div class="card widget">
+    <div class="row" style="justify-content:space-between;margin-bottom:10px">
+      <div class="seg" id="gBtns" role="group" aria-label="Choose a graph"></div>
+      <span class="chip" id="gScore">0 of 6 classified</span>
+    </div>
+    <div class="widget-grid">
+      <svg id="pcPlot" role="img" aria-label="Graph to classify at x equals 1"></svg>
+      <div>
+        <div class="display" id="gTex"></div>
+        <p style="margin:10px 0 8px;font-weight:500">At \( x = 1 \), this function is…</p>
+        <div class="row" id="gChoices">
+          <button class="btn" type="button" data-t="cont">Continuous</button>
+          <button class="btn" type="button" data-t="rem">Removable discontinuity</button>
+          <button class="btn" type="button" data-t="jump">Jump</button>
+          <button class="btn" type="button" data-t="inf">Infinite</button>
+        </div>
+        <div class="feedback" id="gFb" aria-live="polite"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= BUILD IT ================= -->
+<section class="step" id="build" data-title="Continuity, precisely">
+  <div class="callout idea"><b>Definition</b>
+    <p>\( f \) is <b>continuous at a</b> if \( \displaystyle\lim_{x\to a} f(x) = f(a) \). That packs in three checks:</p>
+    <ol style="margin:6px 0 0">
+      <li>\( f(a) \) is defined,</li>
+      <li>\( \displaystyle\lim_{x\to a} f(x) \) exists, and</li>
+      <li>they’re equal.</li>
+    </ol>
+  </div>
+  <div class="table-wrap"><table class="ref">
+    <tr><th>Type</th><th>What fails</th><th>Picture</th></tr>
+    <tr><td><b>Removable</b></td><td>The limit exists, but \( f(a) \) is missing or different</td><td>A hole, possibly with a stray dot</td></tr>
+    <tr><td><b>Jump</b></td><td>The one-sided limits exist but differ, so the limit doesn’t exist</td><td>A step</td></tr>
+    <tr><td><b>Infinite</b></td><td>A one-sided limit is \( \pm\infty \)</td><td>A vertical asymptote</td></tr>
+  </table></div>
+  <div class="prose">
+    <p><b>Removable</b> means you could fix it by redefining one point. Jumps and infinite discontinuities can’t be fixed that way.</p>
+    <p><b>Where functions are continuous:</b> polynomials everywhere; rational functions, roots, trig, exponential and log functions <b>everywhere on their domains</b>. Sums, products, quotients (where the denominator isn’t 0) and compositions of continuous functions are continuous. So in practice, look for trouble only at domain breaks and at the seams of piecewise functions.</p>
+    <p>A function is continuous on a closed interval \( [a, b] \) if it’s continuous inside and continuous from the right at a and from the left at b.</p>
+  </div>
+
+  <h3>Fixing a seam</h3>
+  <div class="card widget">
+    <p class="prompt">\( g(x) = \begin{cases} c\,x, &amp; x \lt 2 \\ x^2 - c, &amp; x \ge 2 \end{cases} \). The two pieces meet at \( x = 2 \) only for one value of c. Find it with the slider, then find it with algebra.</p>
+    <div class="widget-grid">
+      <svg id="seamPlot" role="img" aria-label="Piecewise function with an adjustable constant"></svg>
+      <div>
+        <div class="ctls"><div class="ctl"><label for="cSlider">c</label><input id="cSlider" type="range" min="-200" max="400" value="50"><output id="cOut"></output></div></div>
+        <div class="readout" id="seamRead"></div>
+      </div>
+    </div>
+  </div>
+  <div class="prose"><p><b>Algebra:</b> continuity at 2 needs left limit = right limit = value: \( 2c = 4 - c \), so \( c = \tfrac43 \). Set the pieces equal <i>at the seam</i> and solve.</p></div>
+
+  <h3>The Intermediate Value Theorem</h3>
+  <div class="callout idea"><b>IVT</b>
+    <p>If \( f \) is continuous on \( [a, b] \) and N is any number between \( f(a) \) and \( f(b) \), then there is at least one c in \( (a, b) \) with \( f(c) = N \).</p>
+  </div>
+  <div class="card widget">
+    <div class="widget-grid">
+      <svg id="ivtPlot" role="img" aria-label="Continuous function with a horizontal target line"></svg>
+      <div>
+        <div class="ctls"><div class="ctl"><label for="nSlider">Target N</label><input id="nSlider" type="range" min="0" max="1000" value="400"><output id="nOut"></output></div></div>
+        <div class="row" style="margin-top:12px"><button class="btn" type="button" id="brk" aria-pressed="false">Break continuity</button></div>
+        <div class="readout" id="ivtRead" aria-live="polite"></div>
+      </div>
+    </div>
+  </div>
+  <div class="prose"><p>Its biggest use is <b>proving a root exists</b>: if f is continuous and changes sign on \( [a, b] \), take \( N = 0 \). Keep halving the interval and you can trap the root as tightly as you want:</p></div>
+  <div class="card widget">
+    <p class="prompt">\( f(x) = x^3 + x - 1 \) on \( [0, 1] \): \( f(0) = -1 \lt 0 \) and \( f(1) = 1 \gt 0 \).</p>
+    <div class="row"><button class="btn primary" type="button" id="halve">Halve the interval</button><button class="btn" type="button" id="bReset">Reset</button></div>
+    <div class="table-wrap"><table class="ref" id="bisTable"></table></div>
+  </div>
+  <div id="wx1"></div>
+</section>
+
+<!-- ================= TRY IT ================= -->
+<section class="step" id="try" data-title="Your turn">
+  <div class="practice-list" id="practice"></div>
+</section>
+
+<!-- ================= CHECK ================= -->
+<section class="step" id="check" data-title="Before you move on">
+  <div class="quiz" id="quiz"></div>
+</section>
+
+</main>
+
+<script src="lesson.js"></script>
+<script>
+Lesson.ready(() => {
+  const { Plot, practiceList, worked, quiz, typeset } = Lesson;
+
+  // ---------------- Pencil test ----------------
+  const G = [
+    { t: 'cont', tex: 'f(x) = x^2 - x + 1', f: x => x * x - x + 1, why: 'The limit and the value are both 1. No lifting needed.' },
+    { t: 'rem', tex: 'f(x) = \\begin{cases} x + 1, & x \\ne 1 \\\\ 3, & x = 1 \\end{cases}', f: x => x + 1, dots: p => p.dot(1, 2, 'c1', 5) + p.dot(1, 3, 'c1 solid', 5), why: 'The limit is 2 but \\( f(1) = 3 \\). The limit exists but doesn’t match the value, so redefining one point would fix it.' },
+    { t: 'jump', tex: 'f(x) = \\begin{cases} x + 1, & x \\lt 1 \\\\ \\tfrac12 x, & x \\ge 1 \\end{cases}', f: x => x < 1 ? x + 1 : 0.5 * x, dots: p => p.dot(1, 2, 'c1', 5) + p.dot(1, 0.5, 'c1 solid', 5), why: 'Left heads to 2, right heads to ½. The limit doesn’t exist, and no single point could fix it.' },
+    { t: 'inf', tex: 'f(x) = \\dfrac{1}{x - 1}', f: x => 1 / (x - 1), asym: true, why: 'The outputs blow up. \\( f(1) \\) isn’t even defined, and the one-sided limits are \\( \\pm\\infty \\).' },
+    { t: 'rem', tex: 'f(x) = \\dfrac{x^2 - 1}{x - 1}', f: x => (x * x - 1) / (x - 1), dots: p => p.dot(1, 2, 'c1', 5), why: '\\( f(1) \\) is undefined (0/0), but the limit is 2. Defining \\( f(1) = 2 \\) would plug the hole.' },
+    { t: 'cont', tex: 'f(x) = \\begin{cases} 2x, & x \\lt 1 \\\\ x^2 + 1, & x \\ge 1 \\end{cases}', f: x => x < 1 ? 2 * x : x * x + 1, why: 'Piecewise, but the pieces meet: both sides give 2, and \\( f(1) = 2 \\). A formula change doesn’t automatically mean a break.' }
+  ];
+  const pp = Plot(document.getElementById('pcPlot'), { x: [-2, 4], y: [-3, 6], h: 340 });
+  let gi = 0;
+  const done = {};
+  document.getElementById('gBtns').innerHTML = G.map((g, i) => `<button type="button" data-i="${i}">${i + 1}</button>`).join('');
+  function pickG(i) {
+    gi = i;
+    const g = G[i];
+    pp.draw((g.asym ? pp.seg(1, -5, 1, 8, 'ghost') : '') + pp.fn(g.f, 'c1', { n: 800 }) + (g.dots ? g.dots(pp) : '') + pp.seg(1, -3, 1, -2.6, 'c3'));
+    document.querySelectorAll('#gBtns button').forEach((b, k) => b.setAttribute('aria-pressed', String(k === i)));
+    const t = document.getElementById('gTex'); t.innerHTML = `\\[ ${g.tex} \\]`; typeset(t);
+    const fb = document.getElementById('gFb'); fb.className = done[i] ? 'feedback good' : 'feedback'; fb.innerHTML = done[i] ? `Classified. ${g.why}` : ''; typeset(fb);
+  }
+  const HINTS = {
+    cont: 'Check the three conditions: is \\( f(1) \\) defined, does the limit exist, and do they match?',
+    rem: 'Do the left and right sides head to the same height? If so, the limit exists, so what’s wrong at the point itself?',
+    jump: 'Compare where the left side and right side are heading.',
+    inf: 'Do the outputs approach a finite height at all?'
+  };
+  document.getElementById('gChoices').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    const g = G[gi], fb = document.getElementById('gFb');
+    if (b.dataset.t === g.t) {
+      done[gi] = true;
+      fb.className = 'feedback good'; fb.innerHTML = `<b class="tag-good">Right.</b> ${g.why}`;
+      document.getElementById('gScore').textContent = `${Object.keys(done).length} of 6 classified`;
+    } else { fb.className = 'feedback try'; fb.innerHTML = `<b class="tag-try">Not quite.</b> ${HINTS[g.t]}`; }
+    typeset(fb);
+  });
+  document.getElementById('gBtns').addEventListener('click', e => { const b = e.target.closest('button'); if (b) pickG(+b.dataset.i); });
+  pickG(0);
+
+  // ---------------- Seam ----------------
+  const smp = Plot(document.getElementById('seamPlot'), { x: [-0.5, 4], y: [-3, 8], h: 300 });
+  const cSlider = document.getElementById('cSlider');
+  function drawSeam() {
+    const c = cSlider.value / 100, L = 2 * c, R = 4 - c, gap = Math.abs(L - R);
+    smp.draw(smp.fn(x => c * x, 'c2', { to: 2 }) + smp.fn(x => x * x - c, 'c4', { from: 2 }) + smp.dot(2, L, 'c2', 5) + smp.dot(2, R, 'c4 solid', 5));
+    document.getElementById('cOut').textContent = c.toFixed(2);
+    const r = document.getElementById('seamRead');
+    r.innerHTML = `Left piece at 2: \\( 2c = ${L.toFixed(2)} \\) &nbsp;·&nbsp; Right piece at 2: \\( 4 - c = ${R.toFixed(2)} \\)<br>` +
+      (gap < 0.02 ? '<b style="color:var(--good)">The pieces meet, so g is continuous.</b>' : `Gap: ${gap.toFixed(2)}`);
+    typeset(r);
+  }
+  cSlider.addEventListener('input', drawSeam);
+  drawSeam();
+
+  // ---------------- IVT ----------------
+  const fI = x => 0.3 * x ** 3 - 1.5 * x * x + 1.8 * x + 0.5;
+  const fB = x => x < 2.2 ? fI(x) : fI(x) + 1.3;
+  const ivp = Plot(document.getElementById('ivtPlot'), { x: [-0.4, 4.4], y: [-0.5, 4.5], h: 320 });
+  const nSlider = document.getElementById('nSlider');
+  let broken = false;
+  function drawIVT() {
+    const f = broken ? fB : fI, fa = f(0), fb = f(4), N = fa + (fb - fa) * nSlider.value / 1000;
+    const cs = [];
+    for (let i = 0; i < 2000; i++) {
+      const x1 = 4 * i / 2000, x2 = 4 * (i + 1) / 2000;
+      if ((f(x1) - N) * (f(x2) - N) <= 0 && !(broken && x1 < 2.2 && x2 >= 2.2)) cs.push((x1 + x2) / 2);
+    }
+    const uniq = cs.filter((c, i) => i === 0 || c - cs[i - 1] > 0.01);
+    ivp.draw(ivp.seg(-1, N, 5, N, 'c2 thin') + (broken ? ivp.fn(f, 'c1', { from: 0, to: 2.2 }) + ivp.fn(f, 'c1', { from: 2.2, to: 4 }) + ivp.dot(2.2, fI(2.2), 'c1', 5) + ivp.dot(2.2, fB(2.2), 'c1 solid', 5) : ivp.fn(f, 'c1', { from: 0, to: 4 })) +
+      ivp.dot(0, fa, 'c1 solid', 5) + ivp.dot(4, fb, 'c1 solid', 5) + uniq.map(c => `<circle class="hit" cx="${ivp.sx(c)}" cy="${ivp.sy(N)}" r="7"/>`).join(''));
+    document.getElementById('nOut').textContent = N.toFixed(2);
+    const r = document.getElementById('ivtRead');
+    r.innerHTML = uniq.length ? `\\( f(c) = ${N.toFixed(2)} \\) at ${uniq.length} place${uniq.length > 1 ? 's' : ''}: ${uniq.map(c => `\\( c \\approx ${c.toFixed(2)} \\)`).join(', ')}` :
+      `<b style="color:var(--warn)">No c hits ${N.toFixed(2)}.</b> The jump skipped right over it. Without continuity, the IVT’s guarantee is gone.`;
+    typeset(r);
+  }
+  nSlider.addEventListener('input', drawIVT);
+  document.getElementById('brk').addEventListener('click', e => { broken = !broken; e.currentTarget.setAttribute('aria-pressed', broken); e.currentTarget.textContent = broken ? 'Restore continuity' : 'Break continuity'; drawIVT(); });
+  drawIVT();
+
+  // ---------------- Bisection ----------------
+  const fr = x => x ** 3 + x - 1;
+  let lo = 0, hi = 1, rows = [];
+  function paintBis() {
+    document.getElementById('bisTable').innerHTML = '<tr><th>Interval</th><th>Midpoint m</th><th>f(m)</th><th>Keep</th></tr>' +
+      rows.map(r => `<tr><td class="mono">[${r.lo}, ${r.hi}]</td><td class="mono">${r.m}</td><td class="mono">${r.fm}</td><td>${r.keep}</td></tr>`).join('') +
+      `<tr><td class="mono" colspan="4">Root is trapped in [${+lo.toFixed(6)}, ${+hi.toFixed(6)}], width ${+(hi - lo).toPrecision(3)}</td></tr>`;
+  }
+  document.getElementById('halve').addEventListener('click', () => {
+    if (rows.length >= 12) return;
+    const m = (lo + hi) / 2, fm = fr(m), left = fm > 0;
+    rows.push({ lo: +lo.toFixed(6), hi: +hi.toFixed(6), m: +m.toFixed(6), fm: fm.toFixed(5), keep: left ? 'left half (sign change there)' : 'right half (sign change there)' });
+    if (left) hi = m; else lo = m;
+    paintBis();
+  });
+  document.getElementById('bReset').addEventListener('click', () => { lo = 0; hi = 1; rows = []; paintBis(); });
+  paintBis();
+
+  worked(document.getElementById('wx1'), {
+    problem: 'Show that \\( x^3 + x - 1 = 0 \\) has a solution between 0 and 1.',
+    steps: [
+      { show: 'Let \\( f(x) = x^3 + x - 1 \\). It’s a polynomial, so it’s <b>continuous</b> on \\( [0, 1] \\).', why: 'State continuity. The IVT is useless without it, and graders look for it.' },
+      { show: '\\( f(0) = -1 \\) and \\( f(1) = 1 \\).' },
+      { show: '\\( N = 0 \\) lies between \\( -1 \\) and \\( 1 \\).' },
+      { show: 'By the Intermediate Value Theorem, there is a c in \\( (0, 1) \\) with \\( f(c) = 0 \\). ∎', why: 'The IVT says a root exists but doesn’t say where. Bisection (above) finds it: c ≈ 0.6823.' }
+    ]
+  });
+
+  practiceList(document.getElementById('practice'), [
+    { id: 'ct-where', tag: 'Discontinuities',
+      prompt: '<p>List every x-value where \\( f(x) = \\dfrac{x - 1}{x^2 - 1} \\) is discontinuous.</p>',
+      label: 'x =', format: 'List the x-values separated by commas.',
+      answer: { type: 'set', values: [1, -1] },
+      rungs: [['Nudge', 'A rational function is continuous everywhere on its domain. Where is it undefined?'], ['Hint', 'Solve \\( x^2 - 1 = 0 \\).'], ['Strategy', 'Every point missing from the domain is a discontinuity, including holes.']],
+      mistakes: [{ values: [-1], msg: 'At \\( x = 1 \\) the factor cancels, but \\( f(1) \\) is still undefined (0/0). A hole is still a discontinuity, just a removable one.' }],
+      success: 'Removable at \\( x = 1 \\) (a hole) and infinite at \\( x = -1 \\) (an asymptote).' },
+    { id: 'ct-k', tag: 'Make it continuous',
+      prompt: '<p>Find k so that \\( f(x) = \\begin{cases} kx^2, &amp; x \\lt 2 \\\\ 3x + k, &amp; x \\ge 2 \\end{cases} \\) is continuous everywhere.</p>',
+      label: 'k =', answer: { type: 'number', value: 2 },
+      rungs: [['Nudge', 'Each piece is a polynomial, so the only possible trouble is the seam at \\( x = 2 \\).'], ['Hint', 'Set the left piece at 2 equal to the right piece at 2.'], ['Strategy', '\\( k(2)^2 = 3(2) + k \\). Solve for k.']],
+      mistakes: [{ value: 1.5, msg: 'Did you forget the k on the right side? The right piece at 2 is \\( 6 + k \\).' }, { value: 3, msg: 'Check: \\( k \\cdot 2^2 = 4k \\), not \\( 2k \\).' }],
+      success: 'Setting the pieces equal at the seam always gives the equation.' },
+    { id: 'ct-fill', tag: 'Remove it',
+      prompt: '<p>\\( g(x) = \\dfrac{x^2 + x - 12}{x - 3} \\) has a removable discontinuity at \\( x = 3 \\). What value should \\( g(3) \\) be given to make g continuous there?</p>',
+      label: 'g(3) =', answer: { type: 'number', value: 7 },
+      rungs: [['Nudge', 'To remove the discontinuity, \\( g(3) \\) must equal the limit.'], ['Hint', 'Factor the top: \\( (x - 3)(x + \\,?\\,) \\).'], ['Strategy', 'Cancel, then substitute \\( x = 3 \\).']],
+      mistakes: [{ value: 0, msg: 'The limit isn’t 0/0 or 0. Factor, cancel and substitute.' }, { value: -1, msg: 'Check your factoring: the product of the constants must be −12 and the sum +1.' }],
+      success: 'Filling the hole at the limit’s height makes the function continuous.' },
+    { id: 'ct-ivt', tag: 'IVT',
+      prompt: '<p>Let \\( f(x) = x^3 - 3x + 1 \\). Find an integer \\( n \\ge 1 \\) such that the IVT guarantees a root in \\( (n, n + 1) \\).</p>',
+      label: 'n =', answer: { type: 'number', value: 1 },
+      rungs: [['Nudge', 'Look for a sign change between consecutive integers.'], ['Hint', 'Compute \\( f(1) \\), \\( f(2) \\), \\( f(3) \\), …'], ['Strategy', 'Where the sign flips, a continuous function must cross zero.']],
+      mistakes: [{ value: 2, msg: 'Check \\( f(2) \\) and \\( f(3) \\). Do they have opposite signs?' }],
+      success: '\\( f(1) = -1 \\) and \\( f(2) = 3 \\). A sign change plus continuity guarantees a root.' },
+    { id: 'ct-interval', tag: 'Where continuous',
+      prompt: '<p>On what set is \\( f(x) = \\dfrac{\\sqrt{x - 2}}{x - 5} \\) continuous?</p>',
+      answer: { type: 'interval', value: '[2,5)U(5,inf)' },
+      rungs: [['Nudge', 'Functions built from roots and quotients are continuous on their domains.'], ['Hint', 'So find the domain: root needs \\( x \\ge 2 \\), denominator needs \\( x \\ne 5 \\).'], ['Strategy', 'At \\( x = 2 \\), it’s continuous from the right, and that counts on a closed endpoint.']],
+      mistakes: [{ value: '(2,5)U(5,inf)', msg: 'At \\( x = 2 \\), f is defined and continuous from the right, so include it.' }],
+      success: 'Continuity usually comes down to the domain.' }
+  ]);
+
+  quiz(document.getElementById('quiz'), [
+    { q: 'If \\( \\displaystyle\\lim_{x\\to a} f(x) \\) exists, must f be continuous at a?',
+      choices: [{ t: 'Yes', ok: false, why: 'Graph 2 of the pencil test had a limit of 2 but \\( f(1) = 3 \\).' }, { t: 'No, the limit also has to equal f(a)', ok: true, why: 'Continuity needs all three: defined, limit exists, equal.' }] },
+    { q: 'A function is continuous on [0, 5] with \\( f(0) = 8 \\) and \\( f(5) = 2 \\). Which must be true?',
+      choices: [{ t: 'f(c) = 5 for some c in (0, 5)', ok: true, why: '5 is between 2 and 8, and f is continuous, so the IVT applies.' }, { t: 'f(c) = 0 for some c in (0, 5)', ok: false, why: '0 isn’t between 2 and 8, so the IVT doesn’t say anything about it.' }, { t: 'f is decreasing', ok: false, why: 'It could wiggle up and down in between. The IVT only guarantees values are hit.' }] },
+    { q: 'Which discontinuity can be fixed by redefining one point?',
+      choices: [{ t: 'Jump', ok: false, why: 'The sides disagree, and one point can’t bridge them.' }, { t: 'Removable', ok: true, why: 'The limit exists, so set \\( f(a) \\) equal to it.' }, { t: 'Infinite', ok: false, why: 'There’s no finite height to fill in.' }] }
+  ]);
+});
+</script>
+</body>
+</html>

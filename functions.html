@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Functions and Their Graphs</title>
+<meta name="description" content="Calculus I Companion, Topic 0.1: what makes something a function, domain and range, reading graphs, and evaluating f(a+h).">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;1,6..72,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="lesson.css">
+<script src="site.js"></script>
+<script src="course.js"></script>
+</head>
+<body data-topic="functions">
+<main class="wrap">
+
+<!-- ================= SEE IT ================= -->
+<section class="step" id="see" data-title="One input, one output">
+  <div class="prose">
+    <p>Here are six graphs. Some are functions and some aren’t. Drag the red vertical line across each one and watch how many times it hits the graph. Then decide which kind each graph is.</p>
+  </div>
+
+  <div class="card widget">
+    <div class="row" style="justify-content:space-between;margin-bottom:10px">
+      <div class="seg" id="relBtns" role="group" aria-label="Choose a graph"></div>
+      <span class="chip" id="relScore">0 of 6 classified</span>
+    </div>
+    <div class="widget-grid">
+      <svg id="vlPlot" role="img" aria-label="Graph with a movable vertical line"></svg>
+      <div>
+        <h3 id="relName"></h3>
+        <div class="display" id="relTex"></div>
+        <div class="ctls"><div class="ctl"><label for="vlSlider">Line at x =</label><input id="vlSlider" type="range" min="-480" max="480" value="120"><output id="vlOut"></output></div></div>
+        <div class="readout" id="vlRead" aria-live="polite"></div>
+        <p style="margin:14px 0 8px;font-weight:500">Your call: is this graph a function of <i>x</i>?</p>
+        <div class="row"><button class="btn" type="button" data-call="1">Function</button><button class="btn" type="button" data-call="0">Not a function</button></div>
+        <div class="feedback" id="vlFeedback" aria-live="polite"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout idea"><b>What you just discovered</b>
+    <p>A graph is a function when <b>every vertical line hits it at most once</b>. A vertical line is one input <i>x</i>, and each hit is an output. More than one hit means one input produced several outputs.</p>
+  </div>
+</section>
+
+<!-- ================= BUILD IT ================= -->
+<section class="step" id="build" data-title="Functions, domain and range">
+  <div class="prose">
+    <p>A <b>function</b> is a rule that assigns to each input <i>exactly one</i> output. We write \( y = f(x) \) and read it “<i>f</i> of <i>x</i>.” The parentheses mean “apply <i>f</i> to,” <b>not</b> multiplication.</p>
+    <ul>
+      <li>The <b>domain</b> is the set of inputs the function accepts.</li>
+      <li>The <b>range</b> is the set of outputs it actually produces.</li>
+    </ul>
+  </div>
+  <div class="callout calc"><b>Why calculus cares</b>
+    <p>Calculus studies how an output <i>responds</i> when you nudge the input. That question only makes sense if each input has one output to respond with.</p>
+  </div>
+
+  <h3>Reading a function from its graph</h3>
+  <div class="prose"><p>On a graph, the input is <i>horizontal</i> and the output is <i>vertical</i>. The value \( f(a) \) is the <b>height</b> of the graph above (or below) \( x = a \). The domain is the graph’s shadow on the <i>x</i>-axis, and the range is its shadow on the <i>y</i>-axis.</p></div>
+
+  <div class="card widget">
+    <div class="widget-grid">
+      <svg id="readPlot" role="img" aria-label="Graph of a function on a restricted domain"></svg>
+      <div>
+        <p class="prompt"><b>Predict first:</b> write down the domain and range of this function in interval notation. An open circle marks an endpoint that isn’t included. Then turn on the shadows to check.</p>
+        <div class="ctls"><div class="ctl"><label for="readSlider">Input <i>x</i></label><input id="readSlider" type="range" min="-300" max="399" value="-150"><output id="readOut"></output></div></div>
+        <div class="readout" id="readVal"></div>
+        <div class="row" style="margin-top:12px">
+          <button class="btn" type="button" id="showDom" aria-pressed="false">Show domain shadow</button>
+          <button class="btn" type="button" id="showRng" aria-pressed="false">Show range shadow</button>
+        </div>
+        <div class="observe" id="readNote"></div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Finding the domain from a formula</h3>
+  <div class="prose"><p>Unless the domain is stated, it’s every real number that doesn’t break the formula. In Calculus I only three things break a formula:</p></div>
+  <div class="table-wrap"><table class="ref">
+    <tr><th>Watch for</th><th>Rule</th><th>Example</th></tr>
+    <tr><td>Division</td><td>The denominator can’t be 0</td><td>\( \frac{1}{x-5} \): \( x \ne 5 \)</td></tr>
+    <tr><td>Even roots</td><td>What’s under the root must be \( \ge 0 \)</td><td>\( \sqrt{x+1} \): \( x \ge -1 \)</td></tr>
+    <tr><td>Logarithms</td><td>The input must be \( &gt; 0 \)</td><td>\( \ln(x-2) \): \( x &gt; 2 \)</td></tr>
+  </table></div>
+  <div id="wx1"></div>
+
+  <h3>Evaluating: replace <i>every</i> x</h3>
+  <div class="prose"><p>To evaluate a function, replace <b>every</b> <i>x</i> with the input <b>in parentheses</b>. It works the same way when the input is a whole expression. Calculus uses \( f(a+h) \) constantly, starting with the very first definition of the derivative.</p></div>
+  <div class="card widget">
+    <p class="prompt" style="margin-bottom:8px">Take \( f(x) = 2x^2 - x \). Choose an input and watch where it goes:</p>
+    <div class="seg" id="subBtns" role="group" aria-label="Choose an input"></div>
+    <div class="display" id="subOut" style="margin-top:14px;font-size:18px"></div>
+  </div>
+  <div class="callout warn"><b>Common mistake</b>
+    <p>\( (a+h)^2 \ne a^2 + h^2 \). Squaring means multiplying the whole thing by itself: \( (a+h)(a+h) = a^2 + 2ah + h^2 \). Try it with numbers: \( (3+1)^2 = 16 \), but \( 3^2 + 1^2 = 10 \).</p>
+  </div>
+
+  <h3>Piecewise functions</h3>
+  <div class="prose">
+    <p>A piecewise function uses different formulas on different parts of the domain. To evaluate one, first decide <b>which piece the input belongs to</b>, then use only that formula.</p>
+    <div class="display">\[ |x| = \begin{cases} -x, &amp; x \lt 0 \\ \phantom{-}x, &amp; x \ge 0 \end{cases} \]</div>
+    <p>Pay attention to \( \lt \) versus \( \le \). The boundary point belongs to exactly one piece.</p>
+  </div>
+</section>
+
+<!-- ================= TRY IT ================= -->
+<section class="step" id="try" data-title="Your turn">
+  <div class="prose"><p>Work each problem on paper first. Climb the hint ladder only as far as you need to. Your answer is checked, but the solution is never shown.</p></div>
+  <div class="practice-list" id="practice"></div>
+</section>
+
+<!-- ================= CHECK ================= -->
+<section class="step" id="check" data-title="Before you move on">
+  <div class="prose"><p>Three quick concept checks. If you miss one, the explanation tells you where to look.</p></div>
+  <div class="quiz" id="quiz"></div>
+</section>
+
+</main>
+
+<script src="lesson.js"></script>
+<script>
+Lesson.ready(() => {
+  const { Plot, practiceList, worked, quiz, typeset } = Lesson;
+
+  // ---------------- Vertical line test ----------------
+  const RELS = [
+    { name: 'Parabola', tex: 'y = x^2 - 2', fn: true, G: (x, y) => y - (x * x - 2), draw: p => p.fn(x => x * x - 2) },
+    { name: 'Circle', tex: 'x^2 + y^2 = 9', fn: false, G: (x, y) => x * x + y * y - 9, draw: p => p.param(t => 3 * Math.cos(t), t => 3 * Math.sin(t), 0, 2 * Math.PI) },
+    { name: 'Cubic', tex: 'y = \\tfrac14 x^3 - x', fn: true, G: (x, y) => y - (x ** 3 / 4 - x), draw: p => p.fn(x => x ** 3 / 4 - x) },
+    { name: 'Sideways parabola', tex: 'x = y^2 - 1', fn: false, G: (x, y) => x - (y * y - 1), draw: p => p.param(t => t * t - 1, t => t, -3, 3) },
+    { name: 'Wave', tex: 'y = 2\\sin x', fn: true, G: (x, y) => y - 2 * Math.sin(x), draw: p => p.fn(x => 2 * Math.sin(x)) },
+    { name: 'S-curve', tex: 'x = y^3 - 3y', fn: false, G: (x, y) => x - (y ** 3 - 3 * y), draw: p => p.param(t => t ** 3 - 3 * t, t => t, -2.5, 2.5) }
+  ];
+  const vl = Plot(document.getElementById('vlPlot'), { x: [-5, 5], y: [-4.5, 4.5], h: 400 });
+  const vlSlider = document.getElementById('vlSlider');
+  let rel = 0;
+  const verdicts = {};
+
+  function hits(G, x) {
+    const out = [];
+    const [y0, y1] = vl.y, n = 900;
+    let prevY = y0, prevG = G(x, y0);
+    for (let i = 1; i <= n; i++) {
+      const y = y0 + (y1 - y0) * i / n, g = G(x, y);
+      if (prevG === 0) out.push(prevY);
+      else if (prevG * g < 0) {
+        let a = prevY, b = y;
+        for (let k = 0; k < 40; k++) { const m = (a + b) / 2; (G(x, a) * G(x, m) <= 0) ? b = m : a = m; }
+        out.push((a + b) / 2);
+      }
+      prevY = y; prevG = g;
+    }
+    return out;
+  }
+
+  document.getElementById('relBtns').innerHTML = RELS.map((r, i) => `<button type="button" data-i="${i}">${i + 1}</button>`).join('');
+
+  function drawVL() {
+    const r = RELS[rel], c = vlSlider.value / 100, ys = hits(r.G, c);
+    vl.draw(r.draw(vl) + vl.seg(c, -10, c, 10, 'c3') + ys.map(y => `<circle class="hit" cx="${vl.sx(c)}" cy="${vl.sy(y)}" r="7"/>`).join('')
+      + `<rect data-handle="line" x="${vl.sx(c) - 14}" y="0" width="28" height="${vl.H}" fill="transparent" class="drag"/>`);
+    document.getElementById('vlOut').textContent = c.toFixed(2);
+    const read = document.getElementById('vlRead');
+    if (!ys.length) read.innerHTML = `The line at \\(x = ${c.toFixed(2)}\\) misses the graph, so this input isn’t in the domain. That’s allowed.`;
+    else if (ys.length === 1) read.innerHTML = `<b>1 hit.</b> Input \\(x = ${c.toFixed(2)}\\) gives one output, \\(y \\approx ${ys[0].toFixed(2)}\\).`;
+    else read.innerHTML = `<b>${ys.length} hits.</b> Input \\(x = ${c.toFixed(2)}\\) gives ${ys.length} outputs: ${ys.map(y => `\\(y \\approx ${y.toFixed(2)}\\)`).join(', ')}.`;
+    typeset(read);
+  }
+  function pickRel(i) {
+    rel = i;
+    document.querySelectorAll('#relBtns button').forEach((b, k) => b.setAttribute('aria-pressed', String(k === i)));
+    document.getElementById('relName').textContent = `Graph ${i + 1}: ${RELS[i].name}`;
+    const t = document.getElementById('relTex'); t.innerHTML = `\\[ ${RELS[i].tex} \\]`; typeset(t);
+    const fb = document.getElementById('vlFeedback'); fb.className = 'feedback'; fb.innerHTML = '';
+    if (verdicts[i]) { fb.className = 'feedback good'; fb.innerHTML = 'Already classified correctly.'; }
+    drawVL();
+  }
+  document.getElementById('relBtns').addEventListener('click', e => { const b = e.target.closest('button'); if (b) pickRel(+b.dataset.i); });
+  vlSlider.addEventListener('input', drawVL);
+  vl.onDrag((h, pt) => { vlSlider.value = Math.round(Math.max(-4.8, Math.min(4.8, pt.x)) * 100); drawVL(); }, { anywhere: 'line' });
+
+  document.querySelectorAll('[data-call]').forEach(b => b.addEventListener('click', () => {
+    const r = RELS[rel], call = b.dataset.call === '1', fb = document.getElementById('vlFeedback');
+    if (call === r.fn) {
+      verdicts[rel] = true;
+      fb.className = 'feedback good';
+      fb.innerHTML = r.fn ? '<b>Right.</b> Wherever you put the line, it hits at most once.' : '<b>Right.</b> Somewhere a single input produces more than one output.';
+      const done = Object.keys(verdicts).length;
+      document.getElementById('relScore').textContent = `${done} of 6 classified`;
+      if (done === 6) fb.innerHTML += ' That’s all six. Did you notice that every graph in the form “<i>y</i> = …” passed?';
+    } else {
+      fb.className = 'feedback try';
+      fb.innerHTML = call ? 'Drag the line slowly across the <i>whole</i> graph. Is there any position where it hits more than once?' : 'Can you actually find a position with two or more hits? If every position gives at most one, what does that tell you?';
+    }
+  }));
+  pickRel(0);
+
+  // ---------------- Reading a graph ----------------
+  const f = x => 0.25 * (x - 1) ** 2 - 2;
+  const rp = Plot(document.getElementById('readPlot'), { x: [-5, 6], y: [-3.5, 4], h: 360 });
+  const readSlider = document.getElementById('readSlider');
+  let showD = false, showR = false;
+  function drawRead() {
+    const a = readSlider.value / 100, fa = f(a);
+    let s = rp.fn(f, 'c1', { from: -3, to: 4 });
+    s += rp.seg(a, 0, a, fa, 'c2 thin') + rp.seg(a, fa, 0, fa, 'c2 thin');
+    if (showD) s += rp.seg(-3, 0, 4, 0, 'c2 band') + rp.dot(-3, 0, 'c2 solid', 5) + rp.dot(4, 0, 'c2', 5);
+    if (showR) s += rp.seg(0, -2, 0, 2, 'c4 band') + rp.dot(0, -2, 'c4 solid', 5) + rp.dot(0, 2, 'c4 solid', 5);
+    s += rp.dot(-3, f(-3), 'c1 solid', 5) + rp.dot(4, f(4), 'c1', 5);
+    s += rp.dot(a, fa, 'c2', 7, ' data-handle="pt" style="cursor:grab"');
+    rp.draw(s);
+    document.getElementById('readOut').textContent = a.toFixed(2);
+    const v = document.getElementById('readVal');
+    v.innerHTML = `\\( f(${a.toFixed(2)}) \\approx ${fa.toFixed(2)} \\)  (the height of the graph at this input)`;
+    typeset(v);
+    const note = [];
+    if (showD) note.push('<b style="color:var(--secant)">Domain shadow:</b> from −3 (filled dot, included) to 4 (open dot, not included).');
+    if (showR) note.push('<b style="color:var(--u2)">Range shadow:</b> the lowest point is the vertex; the highest output comes from the <i>included</i> endpoint on the left.');
+    document.getElementById('readNote').innerHTML = note.join('<br>');
+  }
+  readSlider.addEventListener('input', drawRead);
+  rp.onDrag((h, pt) => { readSlider.value = Math.round(Math.max(-3, Math.min(3.99, pt.x)) * 100); drawRead(); });
+  const toggle = (id, set) => document.getElementById(id).addEventListener('click', e => { const on = e.currentTarget.getAttribute('aria-pressed') !== 'true'; e.currentTarget.setAttribute('aria-pressed', on); set(on); drawRead(); });
+  toggle('showDom', v => { showD = v; });
+  toggle('showRng', v => { showR = v; });
+  drawRead();
+
+  // ---------------- Substitution machine ----------------
+  const SUBS = [
+    { lbl: '3', in: '3', out: '2(9) - 3 = 15' },
+    { lbl: '−1', in: '-1', out: '2(1) + 1 = 3' },
+    { lbl: 'a', in: 'a', out: '2a^2 - a' },
+    { lbl: 'a + h', in: 'a+h', out: '2(a^2 + 2ah + h^2) - a - h = 2a^2 + 4ah + 2h^2 - a - h' },
+    { lbl: 'x + 1', in: 'x+1', out: '2(x^2 + 2x + 1) - x - 1 = 2x^2 + 3x + 1' }
+  ];
+  const subBtns = document.getElementById('subBtns');
+  subBtns.innerHTML = SUBS.map((s, i) => `<button type="button" data-i="${i}">${s.lbl}</button>`).join('');
+  function showSub(i) {
+    const s = SUBS[i], box = `\\color{#d0505c}{(${s.in})}`;
+    subBtns.querySelectorAll('button').forEach((b, k) => b.setAttribute('aria-pressed', String(k === i)));
+    const out = document.getElementById('subOut');
+    out.innerHTML = `\\[ f${box} = 2${box}^2 - ${box} \\]\\[ = ${s.out} \\]`;
+    typeset(out);
+  }
+  subBtns.addEventListener('click', e => { const b = e.target.closest('button'); if (b) showSub(+b.dataset.i); });
+  showSub(3);
+
+  // ---------------- Worked example ----------------
+  worked(document.getElementById('wx1'), {
+    problem: 'Find the domain of \\( g(x) = \\dfrac{\\sqrt{x+2}}{x-3} \\).',
+    steps: [
+      { show: 'Spot what could break: a square root and a denominator.', why: 'Those are the only operations here that can fail. Adding and subtracting never break.' },
+      { show: 'Root: \\( x + 2 \\ge 0 \\Rightarrow x \\ge -2 \\).', why: '\\( \\ge \\), not \\( &gt; \\), because \\( \\sqrt{0} = 0 \\) is perfectly fine.' },
+      { show: 'Denominator: \\( x - 3 \\ne 0 \\Rightarrow x \\ne 3 \\).' },
+      { show: 'Combine: start at −2 (included) and skip over 3. \\[ [-2,\\, 3) \\cup (3,\\, \\infty) \\]', why: 'A bracket means included and a parenthesis means excluded. ∞ always gets a parenthesis because it’s not a number you can reach.' }
+    ]
+  });
+
+  // ---------------- Practice ----------------
+  practiceList(document.getElementById('practice'), [
+    { id: 'fn-eval', tag: 'Evaluate',
+      prompt: '<p>Let \\( f(x) = x^2 - 3x + 1 \\). Find \\( f(-2) \\).</p>',
+      rungs: [
+        ['Nudge', 'Replace <i>every</i> x with \\( (-2) \\), and keep the parentheses.'],
+        ['Hint', 'Two sign traps here: \\( (-2)^2 \\) is positive, and \\( -3 \\cdot (-2) \\) is also positive.'],
+        ['Strategy', 'Work out the three terms separately (the square, then \\( -3x \\), then the constant), then add them.']
+      ],
+      answer: { type: 'number', value: 11 },
+      mistakes: [
+        { value: 3, msg: 'It looks like \\( (-2)^2 \\) became \\( -4 \\). The parentheses mean the negative gets squared too.' },
+        { value: -1, msg: 'Check the middle term: \\( -3 \\) times \\( -2 \\) is positive.' }
+      ],
+      success: 'Parentheses around the input protect you from both sign traps.' },
+
+    { id: 'fn-domain', tag: 'Domain',
+      prompt: '<p>Find the domain of \\( g(x) = \\dfrac{\\sqrt{x-4}}{x-7} \\).</p>',
+      rungs: [
+        ['Nudge', 'Which two parts of this formula could fail for some inputs?'],
+        ['Hint', 'The root needs \\( x - 4 \\ge 0 \\). The denominator needs \\( x - 7 \\ne 0 \\).'],
+        ['Strategy', 'Put both conditions on a number line: start at the root’s boundary, and punch a hole where the denominator is 0. Then write it as intervals joined with U.']
+      ],
+      answer: { type: 'interval', value: '[4,7)U(7,inf)' },
+      mistakes: [
+        { value: '[4,inf)', msg: 'What happens to the denominator at \\( x = 7 \\)?' },
+        { value: '(-inf,7)U(7,inf)', msg: 'That handles the denominator. What about the square root? Try \\( x = 0 \\).' }
+      ],
+      success: 'Two restrictions, combined on one number line. You’ll use this exact skill for limits and continuity.' },
+
+    { id: 'fn-piecewise', tag: 'Piecewise',
+      prompt: '<p>Let \\[ f(x) = \\begin{cases} 2x + 5, &amp; x \\lt 1 \\\\ x^2 - 4, &amp; x \\ge 1 \\end{cases} \\] Find \\( f(1) \\).</p>',
+      rungs: [
+        ['Nudge', 'Before computing anything, decide which piece \\( x = 1 \\) belongs to.'],
+        ['Hint', 'Read the conditions carefully. Is \\( 1 \\lt 1 \\) true? Is \\( 1 \\ge 1 \\) true?'],
+        ['Strategy', 'Use only the formula whose condition is true at \\( x = 1 \\).']
+      ],
+      answer: { type: 'number', value: -3 },
+      mistakes: [{ value: 7, msg: 'You used the top piece, but it only applies when \\( x \\) is <i>strictly</i> less than 1.' }],
+      success: 'Boundary points like this are exactly where continuity questions come up in Unit 1.' },
+
+    { id: 'fn-range-graph', tag: 'Read a graph',
+      prompt: '<p>The graph below shows \\( h \\) on its whole domain. What is the <b>range</b> of \\( h \\)?</p><svg id="rangePlot" role="img" aria-label="Graph of h: a downward parabola from an open dot at (-2, -6) up to a peak at (1, 3), then down to a filled dot at (3, -1)"></svg>',
+      rungs: [
+        ['Nudge', 'Range is about <i>outputs</i>, so look at the graph’s shadow on the y-axis, not the x-axis.'],
+        ['Hint', 'Find the highest and lowest points the graph reaches. Is each one actually on the graph (filled dot or a smooth point) or not (open dot)?'],
+        ['Strategy', 'The top of the range is the peak. For the bottom, compare the two endpoints: which is lower, and is it included?']
+      ],
+      answer: { type: 'interval', value: '(-6,3]' },
+      mistakes: [
+        { value: '(-2,3]', msg: 'That’s the domain, the shadow on the <i>x</i>-axis. The range is the shadow on the <i>y</i>-axis.' },
+        { value: '[-1,3]', msg: 'The right endpoint isn’t the lowest point. Look at the left end of the graph.' }
+      ],
+      success: 'The lowest output comes from an open endpoint, so it’s approached but never reached. That idea is the heart of limits.' },
+
+    { id: 'fn-diff-quotient', tag: 'Calculus preview',
+      prompt: '<p>Let \\( f(x) = x^2 \\). Simplify completely, assuming \\( h \\ne 0 \\): \\[ \\frac{f(3+h) - f(3)}{h} \\]</p>',
+      label: 'Simplified expression', placeholder: 'in terms of h',
+      rungs: [
+        ['Nudge', 'Write out \\( f(3+h) \\) and \\( f(3) \\) first. Remember to replace every x with the whole input.'],
+        ['Hint', 'Expand \\( (3+h)^2 \\) as \\( (3+h)(3+h) \\). It is <i>not</i> \\( 9 + h^2 \\).'],
+        ['Strategy', 'After subtracting \\( f(3) \\), every remaining term has a factor of \\( h \\). Factor it out and cancel it with the denominator.']
+      ],
+      answer: { type: 'expr', vars: ['h'], fn: h => 6 + h, domain: [-2, 2] },
+      mistakes: [
+        { fn: h => h, msg: 'This is the \\( (3+h)^2 = 9 + h^2 \\) trap. Multiply \\( (3+h)(3+h) \\) out term by term.' },
+        { fn: h => (6 * h + h * h), msg: 'You’re close. Did you divide by \\( h \\) at the end?' }
+      ],
+      success: 'This expression is the slope of a secant line on \\( y = x^2 \\). As \\( h \\to 0 \\) it approaches a single number. That’s the derivative, coming in Unit 2.' }
+  ]);
+
+  // Static graph inside the range problem.
+  const h = x => -((x - 1) ** 2) + 3;
+  const rg = Plot(document.getElementById('rangePlot'), { x: [-3.5, 4.5], y: [-7, 4.5], h: 300 });
+  rg.draw(rg.fn(h, 'c1', { from: -2, to: 3 }) + rg.dot(-2, h(-2), 'c1', 5) + rg.dot(3, h(3), 'c1 solid', 5) + rg.text(1, 3, 'h', 'lbl', 8, -8));
+
+  // ---------------- Concept checks ----------------
+  quiz(document.getElementById('quiz'), [
+    { q: 'A table of values has these pairs: (1, 4), (2, 5), (2, 6), (3, 7). Is it a function of x?',
+      choices: [
+        { t: 'Yes, every x has a y-value', ok: false, why: 'Having <i>a</i> y-value isn’t enough. Each x needs <i>exactly one</i>.' },
+        { t: 'No, x = 2 has two outputs', ok: true, why: 'One input, two outputs. It fails the same way the circle did.' },
+        { t: 'No, the y-values are all different', ok: false, why: 'Different outputs are fine. It’s repeated <i>inputs</i> with different outputs that break the rule.' }
+      ] },
+    { q: 'If \\( f(x) = x^2 \\), which expression equals \\( f(x+1) \\)?',
+      choices: [
+        { t: '\\( x^2 + 1 \\)', ok: false, why: 'That’s \\( f(x) + 1 \\), which shifts the output. \\( f(x+1) \\) changes the <i>input</i>.' },
+        { t: '\\( x^2 + 2x + 1 \\)', ok: true, why: 'Replace x with \\( (x+1) \\), then expand: \\( (x+1)^2 \\).' },
+        { t: '\\( x^2 + x \\)', ok: false, why: 'Try \\( x = 1 \\): \\( f(2) = 4 \\), but this expression gives 2.' }
+      ] },
+    { q: 'What is the domain of \\( k(x) = \\dfrac{1}{\\sqrt{x}} \\)?',
+      choices: [
+        { t: '\\( [0, \\infty) \\)', ok: false, why: 'Check \\( x = 0 \\): the denominator becomes \\( \\sqrt{0} = 0 \\).' },
+        { t: '\\( (0, \\infty) \\)', ok: true, why: 'The root needs \\( x \\ge 0 \\), and the denominator rules out 0 itself.' },
+        { t: 'All real numbers except 0', ok: false, why: 'Try \\( x = -4 \\). What is \\( \\sqrt{-4} \\) in the real numbers?' }
+      ] }
+  ]);
+});
+</script>
+</body>
+</html>

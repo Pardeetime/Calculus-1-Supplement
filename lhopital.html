@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>L’Hôpital’s Rule</title>
+<meta name="description" content="Calculus I Companion, Topic 4.4: why L'Hôpital's Rule works, 0/0 and ∞/∞ forms, and rewriting products, differences and powers into indeterminate quotients.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;1,6..72,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="lesson.css">
+<script src="site.js"></script>
+<script src="course.js"></script>
+</head>
+<body data-topic="lhopital">
+<main class="wrap">
+
+<!-- ================= SEE IT ================= -->
+<section class="step" id="see" data-title="Zoom in on 0/0">
+  <div class="prose">
+    <p>A \( \frac00 \) limit means both the top function f and the bottom function g pass through zero at the same point. Zoom in there. Both curves turn into straight lines (Topic 2.1), and the ratio of two lines through the same point is just the ratio of their <b>slopes</b>.</p>
+  </div>
+  <div class="card widget">
+    <div class="seg" id="pBtns" role="group" aria-label="Choose a limit" style="margin-bottom:12px"></div>
+    <div class="widget-grid">
+      <svg id="lhPlot" role="img" aria-label="Numerator and denominator functions near a common zero"></svg>
+      <div>
+        <div class="display" id="lhTex" style="font-size:18px"></div>
+        <div class="ctls"><div class="ctl"><label for="zS">Zoom in</label><input id="zS" type="range" min="0" max="100" value="0"><output id="zO"></output></div></div>
+        <div class="readout" id="lhRead" aria-live="polite"></div>
+        <p class="observe"><span style="color:var(--curve)">■</span> top, f &nbsp; <span style="color:var(--secant)">■</span> bottom, g</p>
+      </div>
+    </div>
+  </div>
+  <div class="callout idea"><b>The insight</b>
+    <p>Near a common zero, \( f(x) \approx f'(a)(x - a) \) and \( g(x) \approx g'(a)(x - a) \). The \( (x - a) \) cancels, so \( \dfrac{f(x)}{g(x)} \approx \dfrac{f'(a)}{g'(a)} \). That’s L’Hôpital’s Rule.</p>
+  </div>
+</section>
+
+<!-- ================= BUILD IT ================= -->
+<section class="step" id="build" data-title="The rule and its disguises">
+  <div class="callout idea"><b>L’Hôpital’s Rule</b>
+    <p>If \( \displaystyle\lim \frac{f(x)}{g(x)} \) has the form \( \frac00 \) or \( \frac{\pm\infty}{\pm\infty} \), then</p>
+    <div class="display">\[ \lim \frac{f(x)}{g(x)} = \lim \frac{f'(x)}{g'(x)} \]</div>
+    <p>provided the right-hand limit exists (or is ±∞). It works for \( x \to a \), one-sided limits, and \( x \to \pm\infty \).</p>
+  </div>
+  <div class="callout warn"><b>Three rules about the rule</b>
+    <p><b>1.</b> Check the form first. On anything other than 0/0 or ∞/∞ it gives wrong answers. <b>2.</b> Differentiate the top and bottom <b>separately</b>. It is <i>not</i> the quotient rule. <b>3.</b> After each application, check the form again. You may need to apply it twice, or not at all.</p>
+  </div>
+  <div id="wx1"></div>
+
+  <h3>Other indeterminate forms: rewrite first</h3>
+  <div class="table-wrap"><table class="ref">
+    <tr><th>Form</th><th>Example</th><th>Rewrite as</th></tr>
+    <tr><td>\( 0 \cdot \infty \)</td><td>\( x\ln x \), \( x \to 0^+ \)</td><td>\( \dfrac{\ln x}{1/x} \) (∞/∞)</td></tr>
+    <tr><td>\( \infty - \infty \)</td><td>\( \dfrac1x - \dfrac{1}{\sin x} \)</td><td>A single fraction (common denominator)</td></tr>
+    <tr><td>\( 1^\infty,\ 0^0,\ \infty^0 \)</td><td>\( (1 + \tfrac1x)^x \), \( x^x \)</td><td>Take ln: \( \ln y = (\text{exponent})\cdot\ln(\text{base}) \), find that limit, then exponentiate</td></tr>
+  </table></div>
+  <div id="wx2"></div>
+  <div class="callout calc"><b>Growth rates</b>
+    <p>Repeated L’Hôpital shows \( \dfrac{x^n}{e^x} \to 0 \) and \( \dfrac{\ln x}{x^p} \to 0 \) as \( x \to \infty \). <b>Exponentials beat powers, and powers beat logs.</b> That ranking settles most limits at infinity at a glance.</p>
+  </div>
+</section>
+
+<!-- ================= TRY IT ================= -->
+<section class="step" id="try" data-title="Your turn">
+  <div class="prose"><p>Check the form before every step. Answer with a number, <span class="kbd">inf</span>, <span class="kbd">-inf</span> or <span class="kbd">DNE</span>.</p></div>
+  <div class="practice-list" id="practice"></div>
+</section>
+
+<!-- ================= CHECK ================= -->
+<section class="step" id="check" data-title="Before you move on">
+  <div class="quiz" id="quiz"></div>
+</section>
+
+</main>
+
+<script src="lesson.js"></script>
+<script>
+Lesson.ready(() => {
+  const { Plot, practiceList, worked, quiz, typeset } = Lesson;
+
+  const PAIRS = [
+    { tex: '\\lim_{x\\to0}\\frac{\\sin x}{x}', a: 0, f: Math.sin, g: x => x, fp: 1, gp: 1 },
+    { tex: '\\lim_{x\\to0}\\frac{e^x - 1}{\\sin 2x}', a: 0, f: x => Math.exp(x) - 1, g: x => Math.sin(2 * x), fp: 1, gp: 2 },
+    { tex: '\\lim_{x\\to1}\\frac{\\ln x}{x - 1}', a: 1, f: Math.log, g: x => x - 1, fp: 1, gp: 1 },
+    { tex: '\\lim_{x\\to2}\\frac{x^3 - 8}{x^2 - 4}', a: 2, f: x => x ** 3 - 8, g: x => x * x - 4, fp: 12, gp: 4 }
+  ];
+  const lp = Plot(document.getElementById('lhPlot'), { x: [-2, 2], y: [-2, 2], h: 340, ticks: false });
+  const zS = document.getElementById('zS');
+  let cur = 0;
+  document.getElementById('pBtns').innerHTML = PAIRS.map((P, i) => `<button type="button" data-i="${i}">${'ABCD'[i]}</button>`).join('');
+  function drawLH() {
+    const P = PAIRS[cur], w = 1.5 * Math.pow(10, -3 * zS.value / 100), s = Math.max(P.fp, P.gp) * w * 1.2;
+    lp.range([P.a - w, P.a + w], [-s, s]);
+    lp.draw(lp.seg(P.a - 2 * w, 0, P.a + 2 * w, 0, 'axis') + lp.fn(P.f, 'c1', { from: Math.max(P.a - w, P.a === 1 ? 0.001 : -9) }) + lp.fn(P.g, 'c2') + lp.dot(P.a, 0, 'c3 solid', 5));
+    document.getElementById('zO').textContent = `${Math.round(1.5 / w)}×`;
+    const x = P.a + w / 2, r = document.getElementById('lhRead');
+    r.innerHTML = `At \\( x = ${x.toPrecision(5)} \\): \\( \\dfrac{f(x)}{g(x)} = ${(P.f(x) / P.g(x)).toFixed(5)} \\)<br>Ratio of slopes at a: \\( \\dfrac{f'(a)}{g'(a)} = \\dfrac{${P.fp}}{${P.gp}} = ${(P.fp / P.gp).toFixed(5)} \\)`;
+    typeset(r);
+  }
+  function pick(i) {
+    cur = i; zS.value = 0;
+    document.querySelectorAll('#pBtns button').forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.i === i)));
+    const t = document.getElementById('lhTex'); t.innerHTML = `\\[ ${PAIRS[i].tex} \\]`; typeset(t);
+    drawLH();
+  }
+  document.getElementById('pBtns').addEventListener('click', e => { const b = e.target.closest('button'); if (b) pick(+b.dataset.i); });
+  zS.addEventListener('input', drawLH);
+  pick(1);
+
+  worked(document.getElementById('wx1'), {
+    problem: 'Find \\( \\displaystyle\\lim_{x\\to0}\\frac{1 - \\cos x}{x^2} \\).',
+    steps: [
+      { show: 'Form: \\( \\frac{1 - 1}{0} = \\frac00 \\). ✓ L’Hôpital applies.' },
+      { show: 'Differentiate top and bottom separately: \\( \\displaystyle\\lim_{x\\to0}\\frac{\\sin x}{2x} \\).' },
+      { show: 'Check again: \\( \\frac00 \\) still. Apply again: \\( \\displaystyle\\lim_{x\\to0}\\frac{\\cos x}{2} = \\frac12 \\).', why: 'Or recognize \\( \\frac{\\sin x}{x} \\to 1 \\) from Topic 1.5, which gives \\( \\tfrac12 \\) directly.' }
+    ]
+  });
+  worked(document.getElementById('wx2'), {
+    problem: 'Find \\( \\displaystyle\\lim_{x\\to\\infty}\\left(1 + \\frac1x\\right)^x \\) (form \\( 1^\\infty \\)).',
+    steps: [
+      { show: 'Let \\( y = (1 + \\tfrac1x)^x \\). Take ln: \\( \\ln y = x\\ln(1 + \\tfrac1x) \\), which has the form \\( \\infty \\cdot 0 \\).' },
+      { show: 'Rewrite as a quotient: \\( \\ln y = \\dfrac{\\ln(1 + 1/x)}{1/x} \\), which is \\( \\frac00 \\).' },
+      { show: 'L’Hôpital: \\( \\dfrac{\\frac{1}{1 + 1/x}\\cdot(-1/x^2)}{-1/x^2} = \\dfrac{1}{1 + 1/x} \\to 1 \\).' },
+      { show: 'So \\( \\ln y \\to 1 \\), which means \\( y \\to e^1 = e \\).', why: 'That’s the compound interest limit from Topic 0.3, now proven.' }
+    ]
+  });
+
+  practiceList(document.getElementById('practice'), [
+    { id: 'lh-basic', tag: '0/0', prompt: '<p>Find \\( \\displaystyle\\lim_{x\\to0}\\frac{e^x - 1}{\\sin x} \\).</p>', answer: { type: 'limit', value: 1 },
+      rungs: [['Nudge', 'Check the form.'], ['Hint', 'It’s 0/0. Differentiate the top and bottom separately.'], ['Strategy', '\\( \\dfrac{e^x}{\\cos x} \\) at x = 0.']] },
+    { id: 'lh-twice', tag: 'Twice', prompt: '<p>Find \\( \\displaystyle\\lim_{x\\to0}\\frac{x - \\sin x}{x^3} \\).</p>', answer: { type: 'limit', value: 1 / 6 },
+      rungs: [['Nudge', '0/0. Apply the rule, then check the form again.'], ['Hint', '\\( \\dfrac{1 - \\cos x}{3x^2} \\) is still 0/0, and so is the next step.'], ['Strategy', 'Three applications: \\( \\dfrac{\\sin x}{6x} \\), then \\( \\dfrac{\\cos x}{6} \\).']],
+      mistakes: [{ value: 0, msg: 'Still 0/0 after one step. Keep going while the form is indeterminate.' }, { value: 'dne', msg: 'Keep applying the rule. It settles after three rounds.' }] },
+    { id: 'lh-growth', tag: '∞/∞', prompt: '<p>Find \\( \\displaystyle\\lim_{x\\to\\infty}\\frac{x^2}{e^x} \\).</p>', answer: { type: 'limit', value: 0 },
+      rungs: [['Nudge', '∞/∞.'], ['Hint', 'Apply twice: \\( \\dfrac{2x}{e^x} \\), then \\( \\dfrac{2}{e^x} \\).'], ['Strategy', 'A constant over something growing without bound.']],
+      mistakes: [{ value: Infinity, msg: 'Exponentials grow faster than any power, so the bottom wins.' }] },
+    { id: 'lh-product', tag: '0 · ∞', prompt: '<p>Find \\( \\displaystyle\\lim_{x\\to0^+} x\\ln x \\).</p>', answer: { type: 'limit', value: 0 },
+      rungs: [['Nudge', '0 · (−∞) isn’t a quotient yet. Rewrite it.'], ['Hint', '\\( x\\ln x = \\dfrac{\\ln x}{1/x} \\), which is \\( \\frac{-\\infty}{\\infty} \\).'], ['Strategy', 'Derivatives: \\( \\dfrac{1/x}{-1/x^2} = -x \\).']],
+      mistakes: [{ value: -Infinity, msg: 'ln x goes to −∞, but x shrinks to 0 faster. Rewrite as a quotient and apply the rule.' }] },
+    { id: 'lh-xx', tag: '0⁰', prompt: '<p>Find \\( \\displaystyle\\lim_{x\\to0^+} x^x \\).</p>', answer: { type: 'limit', value: 1 },
+      rungs: [['Nudge', 'Variable base and exponent: take ln.'], ['Hint', '\\( \\ln y = x\\ln x \\). You just found that limit.'], ['Strategy', 'If \\( \\ln y \\to L \\), then \\( y \\to e^L \\).']],
+      mistakes: [{ value: 0, msg: 'That’s the limit of \\( \\ln y \\). Exponentiate to get y.' }] },
+    { id: 'lh-e3', tag: '1^∞', prompt: '<p>Find \\( \\displaystyle\\lim_{x\\to\\infty}\\left(1 + \\frac3x\\right)^x \\).</p>', answer: { type: 'limit', value: Math.exp(3) },
+      rungs: [['Nudge', 'Same pattern as the second worked example.'], ['Hint', '\\( \\ln y = \\dfrac{\\ln(1 + 3/x)}{1/x} \\to 3 \\).'], ['Strategy', 'Exponentiate.']],
+      mistakes: [{ value: 3, msg: 'That’s the limit of ln y.' }, { value: 1, msg: '\\( 1^\\infty \\) is indeterminate, not 1.' }],
+      success: 'In general \\( (1 + \\tfrac{k}{x})^x \\to e^k \\), the continuous-compounding formula.' },
+    { id: 'lh-trap', tag: 'Check the form', prompt: '<p>Find \\( \\displaystyle\\lim_{x\\to0}\\frac{x + 1}{x + 2} \\).</p>', answer: { type: 'limit', value: 0.5 },
+      rungs: [['Nudge', 'What form is this?'], ['Hint', 'Substitute x = 0.'], ['Strategy', 'Not indeterminate, so L’Hôpital doesn’t apply. Substitution already gives the answer.']],
+      mistakes: [{ value: 1, msg: 'That’s what L’Hôpital gives, but the form here is 1/2, not 0/0. The rule doesn’t apply.' }],
+      success: 'Always check the form first.' }
+  ]);
+
+  quiz(document.getElementById('quiz'), [
+    { q: 'For \\( \\displaystyle\\lim\\frac{f}{g} \\) in 0/0 form, L’Hôpital says to compute…',
+      choices: [{ t: '\\( \\lim\\left(\\dfrac{f}{g}\\right)\' \\) with the quotient rule', ok: false, why: 'That’s a different (and messier) thing.' }, { t: '\\( \\lim\\dfrac{f\'}{g\'} \\)', ok: true, why: 'Top and bottom are differentiated separately.' }] },
+    { q: 'Which is <b>not</b> an indeterminate form?',
+      choices: [{ t: '\\( \\frac00 \\)', ok: false, why: 'Indeterminate.' }, { t: '\\( \\infty - \\infty \\)', ok: false, why: 'Indeterminate. It could be anything.' }, { t: '\\( \\frac{1}{0^+} \\)', ok: true, why: 'That’s definitely +∞, with nothing to resolve.' }, { t: '\\( 1^\\infty \\)', ok: false, why: 'Indeterminate. It gave e, e³, …' }] },
+    { q: 'As \\( x \\to \\infty \\), which grows fastest?',
+      choices: [{ t: '\\( x^{100} \\)', ok: false, why: 'Powers lose to exponentials eventually.' }, { t: '\\( e^{0.01x} \\)', ok: true, why: 'Any exponential with a positive rate eventually beats any power.' }, { t: '\\( (\\ln x)^{100} \\)', ok: false, why: 'Logs lose to everything.' }] }
+  ]);
+});
+</script>
+</body>
+</html>

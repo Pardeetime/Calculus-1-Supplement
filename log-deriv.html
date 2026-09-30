@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Derivatives of Logarithms</title>
+<meta name="description" content="Calculus I Companion, Topic 3.7: the derivative of ln x from its mirror image e^x, ln of a function, other bases, and logarithmic differentiation.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;1,6..72,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="lesson.css">
+<script src="site.js"></script>
+<script src="course.js"></script>
+</head>
+<body data-topic="log-deriv">
+<main class="wrap">
+
+<!-- ================= SEE IT ================= -->
+<section class="step" id="see" data-title="Mirror slopes">
+  <div class="prose">
+    <p>\( \ln x \) is the mirror image of \( e^x \) across \( y = x \) (Topic 0.4). Reflecting a line across \( y = x \) swaps rise and run, which <b>flips its slope upside down</b>. Move the point on \( e^x \) and compare the two slopes.</p>
+  </div>
+  <div class="card widget">
+    <div class="widget-grid">
+      <svg id="mPlot" role="img" aria-label="e to the x and ln x mirrored across y equals x, with tangent lines at mirror points"></svg>
+      <div>
+        <div class="ctls"><div class="ctl"><label for="aS">Point on eˣ at x =</label><input id="aS" type="range" min="-150" max="150" value="60"><output id="aO"></output></div></div>
+        <div class="readout" id="mRead" aria-live="polite"></div>
+      </div>
+    </div>
+  </div>
+  <div class="callout idea"><b>What you see</b>
+    <p>At \( (a, e^a) \) the slope of \( e^x \) is \( e^a \). The mirror point on \( \ln x \) is \( (e^a, a) \), and its slope is \( \dfrac{1}{e^a} \). Call that point’s x-coordinate \( x = e^a \): the slope of \( \ln x \) there is simply \( \dfrac1x \).</p>
+  </div>
+</section>
+
+<!-- ================= BUILD IT ================= -->
+<section class="step" id="build" data-title="Log rules and log differentiation">
+  <div id="wx1"></div>
+  <div class="table-wrap"><table class="ref">
+    <tr><th>Function</th><th>Derivative</th><th>Note</th></tr>
+    <tr><td>\( \ln x \)</td><td>\( \dfrac1x \)</td><td>For \( x \gt 0 \)</td></tr>
+    <tr><td>\( \ln|x| \)</td><td>\( \dfrac1x \)</td><td>For all \( x \ne 0 \)</td></tr>
+    <tr><td>\( \ln g(x) \)</td><td>\( \dfrac{g'(x)}{g(x)} \)</td><td>Chain Rule</td></tr>
+    <tr><td>\( \log_b x \)</td><td>\( \dfrac{1}{x\ln b} \)</td><td>Change of base: \( \log_b x = \dfrac{\ln x}{\ln b} \)</td></tr>
+    <tr><td>\( b^x \)</td><td>\( b^x \ln b \)</td><td>Now proven: \( b^x = e^{x\ln b} \)</td></tr>
+  </table></div>
+  <div class="callout calc"><b>Simplify with log laws first</b>
+    <p>\( \ln\!\left(\dfrac{x^3\sqrt{x+1}}{x^2+5}\right) = 3\ln x + \tfrac12\ln(x+1) - \ln(x^2+5) \). Three easy derivatives instead of one quotient-product-chain mess.</p>
+  </div>
+
+  <h3>Logarithmic differentiation</h3>
+  <div class="prose">
+    <p>For functions like \( x^x \), where the variable is in <b>both</b> the base and the exponent, neither the power rule nor the exponential rule applies. The fix: take ln of both sides, use log laws to bring the exponent down, then differentiate implicitly.</p>
+  </div>
+  <div id="wx2"></div>
+  <div class="callout warn"><b>Common mistakes</b>
+    <p>\( \frac{d}{dx}x^x \ne x\cdot x^{x-1} \) (that’s the power rule, which needs a constant exponent) and \( \ne x^x \ln x \) (that’s the exponential rule, which needs a constant base). Also, \( \frac{d}{dx}\ln(x^2+1) \ne \dfrac{1}{x^2+1} \). Don’t forget the inside derivative.</p>
+  </div>
+</section>
+
+<!-- ================= TRY IT ================= -->
+<section class="step" id="try" data-title="Your turn">
+  <div id="drill"></div>
+  <div class="practice-list" id="practice" style="margin-top:18px"></div>
+</section>
+
+<!-- ================= CHECK ================= -->
+<section class="step" id="check" data-title="Before you move on">
+  <div class="tf" id="tf"></div>
+</section>
+
+</main>
+
+<script src="lesson.js"></script>
+<script>
+Lesson.ready(() => {
+  const { Plot, practiceList, worked, trueFalse, drill, typeset } = Lesson;
+
+  const mp = Plot(document.getElementById('mPlot'), { x: [-2.5, 5], y: [-2.5, 5], w: 400, h: 400 });
+  const aS = document.getElementById('aS');
+  function drawM() {
+    const a = aS.value / 100, ea = Math.exp(a);
+    mp.draw(mp.seg(-3, -3, 6, 6, 'mirror') + mp.fn(Math.exp, 'c1') + mp.fn(Math.log, 'c2', { from: 0.01 }) +
+      mp.seg(a - 1, ea - ea, a + 1, ea + ea, 'c1 thin') + mp.seg(ea - 1, a - 1 / ea, ea + 1, a + 1 / ea, 'c2 thin') +
+      mp.seg(a, ea, ea, a, 'mirror') + mp.dot(a, ea, 'c1 solid', 6) + mp.dot(ea, a, 'c2 solid', 6) +
+      mp.text(1.3, Math.exp(1.3), 'eˣ', 'lbl', 8, 0) + mp.text(4.2, Math.log(4.2), 'ln x', 'lbl', 0, -10));
+    document.getElementById('aO').textContent = a.toFixed(2);
+    const r = document.getElementById('mRead');
+    r.innerHTML = `On \\( e^x \\) at \\( (${a.toFixed(2)},\\ ${ea.toFixed(3)}) \\): slope \\( = ${ea.toFixed(3)} \\)<br>` +
+      `On \\( \\ln x \\) at \\( (${ea.toFixed(3)},\\ ${a.toFixed(2)}) \\): slope \\( = ${(1 / ea).toFixed(3)} = \\dfrac{1}{${ea.toFixed(3)}} = \\dfrac1x \\)`;
+    typeset(r);
+  }
+  aS.addEventListener('input', drawM);
+  drawM();
+
+  worked(document.getElementById('wx1'), {
+    problem: 'Prove \\( \\frac{d}{dx}\\ln x = \\frac1x \\) with implicit differentiation.',
+    steps: [
+      { show: 'Let \\( y = \\ln x \\). Undo the log: \\( e^y = x \\).' },
+      { show: 'Differentiate both sides: \\( e^y\\,y\' = 1 \\).', why: 'Chain Rule on \\( e^y \\), just like in Topic 3.6.' },
+      { show: '\\( y\' = \\dfrac{1}{e^y} = \\dfrac1x \\). ∎', why: 'Replace \\( e^y \\) with x, since that’s what it equals.' }
+    ]
+  });
+  worked(document.getElementById('wx2'), {
+    problem: 'Differentiate \\( y = x^x \\) for \\( x \\gt 0 \\).',
+    steps: [
+      { show: 'Take ln of both sides: \\( \\ln y = \\ln(x^x) = x\\ln x \\).', why: 'The log law \\( \\ln(a^b) = b\\ln a \\) brings the exponent down to where the product rule can handle it.' },
+      { show: 'Differentiate implicitly: \\( \\dfrac{y\'}{y} = 1\\cdot\\ln x + x\\cdot\\dfrac1x = \\ln x + 1 \\).' },
+      { show: 'Multiply by y: \\( y\' = y(\\ln x + 1) = x^x(\\ln x + 1) \\).', why: 'Always replace y with the original function at the end.' }
+    ]
+  });
+
+  const ri = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+  const IN = [
+    () => { const c = ri(1, 6); return { t: `x^{2} + ${c}`, f: x => x * x + c, d: x => 2 * x, dom: [-2, 2] }; },
+    () => { const a = ri(2, 5), b = ri(1, 5); return { t: `${a}x + ${b}`, f: x => a * x + b, d: () => a, dom: [0.2, 2] }; },
+    () => ({ t: '\\sin x', f: Math.sin, d: Math.cos, dom: [0.3, 2.8] }),
+    () => ({ t: 'e^{x} + 1', f: x => Math.exp(x) + 1, d: Math.exp, dom: [-2, 2] }),
+    () => { const n = ri(3, 6); return { t: `x^{${n}}`, f: x => x ** n, d: x => n * x ** (n - 1), dom: [0.3, 2] }; }
+  ];
+  drill(document.getElementById('drill'), {
+    title: 'ln of a function', label: 'dy/dx', format: 'Type ln( ) for natural log.',
+    make() {
+      const g = IN[ri(0, IN.length - 1)](), mult = Math.random() < 0.35;
+      if (mult) return { q: `y = x\\ln\\left(${g.t}\\right)`, d: x => Math.log(g.f(x)) + x * g.d(x) / g.f(x), domain: g.dom,
+        hints: ['Product of x and a log: use the product rule.', 'The log part’s derivative is \\( \\dfrac{g\'(x)}{g(x)} \\).'] };
+      return { q: `y = \\ln\\left(${g.t}\\right)`, d: x => g.d(x) / g.f(x), domain: g.dom,
+        hints: ['\\( \\frac{d}{dx}\\ln g(x) = \\dfrac{g\'(x)}{g(x)} \\): derivative of the inside over the inside.', 'For powers, a log law first can help: \\( \\ln x^n = n\\ln x \\).'],
+        mistakes: [{ fn: x => 1 / g.f(x), msg: 'Chain Rule: multiply by the derivative of the inside.' }] };
+    }
+  });
+
+  practiceList(document.getElementById('practice'), [
+    { id: 'lg-chain', tag: 'ln of a function', prompt: '<p>Find \\( \\dfrac{d}{dx}\\ln(x^2 + 1) \\).</p>', label: 'dy/dx',
+      answer: { type: 'expr', vars: ['x'], fn: x => 2 * x / (x * x + 1) },
+      rungs: [['Nudge', 'The inside is \\( x^2 + 1 \\).'], ['Hint', '\\( \\dfrac{(\\text{inside})\'}{\\text{inside}} \\).'], ['Strategy', '\\( \\dfrac{2x}{x^2 + 1} \\)-shaped answer.']],
+      mistakes: [{ fn: x => 1 / (x * x + 1), msg: 'Missing the inside derivative 2x on top.' }, { fn: x => 1 / (2 * x), msg: 'Don’t differentiate the inside and then put it in the log’s place. The rule is \\( g\'/g \\).' }] },
+    { id: 'lg-xlnx', tag: 'Product', prompt: '<p>Find \\( \\dfrac{d}{dx}\\left(x\\ln x - x\\right) \\).</p>', label: 'dy/dx',
+      answer: { type: 'expr', vars: ['x'], fn: x => Math.log(x), domain: [0.3, 4] },
+      rungs: [['Nudge', 'Product rule on \\( x\\ln x \\).'], ['Hint', '\\( 1\\cdot\\ln x + x\\cdot\\tfrac1x \\), then subtract the derivative of x.'], ['Strategy', 'Simplify. Almost everything cancels.']],
+      success: 'So \\( x\\ln x - x \\) is a function whose derivative is \\( \\ln x \\). Remember this when you reach integrals in Unit 5.' },
+    { id: 'lg-base2', tag: 'Other base', prompt: '<p>Find \\( \\dfrac{d}{dx}\\log_2 x \\).</p>', label: 'dy/dx',
+      answer: { type: 'expr', vars: ['x'], fn: x => 1 / (x * Math.log(2)), domain: [0.5, 4] },
+      rungs: [['Nudge', 'Change of base: \\( \\log_2 x = \\dfrac{\\ln x}{\\ln 2} \\).'], ['Hint', '\\( \\ln 2 \\) is just a constant.'], ['Strategy', '\\( \\dfrac{1}{\\ln 2}\\cdot\\dfrac1x \\).']],
+      mistakes: [{ fn: x => 1 / x, msg: 'That’s only right for base e. Other bases pick up a \\( \\ln b \\) factor.' }] },
+    { id: 'lg-lnsin', tag: 'ln of trig', prompt: '<p>Find \\( \\dfrac{d}{dx}\\ln(\\sin x) \\) for \\( 0 \\lt x \\lt \\pi \\).</p>', label: 'dy/dx',
+      answer: { type: 'expr', vars: ['x'], fn: x => Math.cos(x) / Math.sin(x), domain: [0.3, 2.8] },
+      rungs: [['Nudge', 'Inside is \\( \\sin x \\).'], ['Hint', '\\( \\dfrac{\\cos x}{\\sin x} \\).'], ['Strategy', 'That’s also \\( \\cot x \\). Either form works.']] },
+    { id: 'lg-xx', tag: 'Log differentiation', prompt: '<p>Find \\( \\dfrac{d}{dx}\\,x^x \\).</p>', label: 'dy/dx',
+      answer: { type: 'expr', vars: ['x'], fn: x => x ** x * (Math.log(x) + 1), domain: [0.4, 2.5] },
+      rungs: [['Nudge', 'Variable base <i>and</i> variable exponent: take ln of both sides.'], ['Hint', '\\( \\ln y = x\\ln x \\), then \\( \\frac{y\'}{y} = \\ln x + 1 \\).'], ['Strategy', 'Multiply by \\( y = x^x \\).']],
+      mistakes: [{ fn: x => x * x ** (x - 1), msg: 'The power rule needs a constant exponent.' }, { fn: x => x ** x * Math.log(x), msg: 'The exponential rule needs a constant base. You’re missing a term. Use log differentiation.' }] },
+    { id: 'lg-messy', tag: 'Log differentiation', prompt: '<p>Let \\( y = \\dfrac{\\sqrt{x}\\,(x^2 + 1)^5}{(x + 2)^3} \\). Find \\( y\' \\). (Hint: take ln first.)</p>', label: "y′ =",
+      answer: { type: 'expr', vars: ['x'], fn: x => (Math.sqrt(x) * (x * x + 1) ** 5 / (x + 2) ** 3) * (0.5 / x + 10 * x / (x * x + 1) - 3 / (x + 2)), domain: [0.5, 2] },
+      format: 'You can write it as the original expression times a bracket.',
+      rungs: [['Nudge', 'Take ln and expand with log laws: \\( \\ln y = \\tfrac12\\ln x + 5\\ln(x^2 + 1) - 3\\ln(x + 2) \\).'], ['Hint', 'Differentiate each term: \\( \\dfrac{y\'}{y} = \\dfrac{1}{2x} + \\dfrac{10x}{x^2+1} - \\dfrac{3}{x+2} \\).'], ['Strategy', 'Multiply both sides by the original y.']],
+      success: 'Log differentiation turned a product and quotient of three factors into a sum of three simple terms.' }
+  ]);
+
+  trueFalse(document.getElementById('tf'), [
+    { s: '\\( \\dfrac{d}{dx}\\ln 5 = \\dfrac15 \\)', ok: false, why: '\\( \\ln 5 \\) is a constant, so its derivative is 0.' },
+    { s: '\\( \\dfrac{d}{dx}\\ln(5x) = \\dfrac1x \\)', ok: true, why: '\\( \\ln(5x) = \\ln 5 + \\ln x \\). The constant drops out. (Chain Rule agrees: \\( 5/(5x) \\).)' },
+    { s: 'The slope of \\( \\ln x \\) at the point \\( (b, a) \\) is the reciprocal of the slope of \\( e^x \\) at \\( (a, b) \\).', ok: true, why: 'Mirror images across y = x have reciprocal slopes.' },
+    { s: '\\( \\dfrac{d}{dx}\\,x^x = x \\cdot x^{x-1} \\)', ok: false, why: 'The exponent isn’t constant. Log differentiation gives \\( x^x(\\ln x + 1) \\).' }
+  ]);
+});
+</script>
+</body>
+</html>

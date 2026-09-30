@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Limits at Infinity</title>
+<meta name="description" content="Calculus I Companion, Topic 1.8: end behavior, limits at infinity, horizontal asymptotes, dividing by the highest power, roots at negative infinity, and infinity minus infinity.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;1,6..72,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="lesson.css">
+<script src="site.js"></script>
+<script src="course.js"></script>
+</head>
+<body data-topic="limits-infinity">
+<main class="wrap">
+
+<!-- ================= SEE IT ================= -->
+<section class="step" id="see" data-title="Zoom out">
+  <div class="prose">
+    <p>Up to now, x approached a number. Now let x run off toward \( \infty \) (and \( -\infty \)). Zoom way out on each function. Which ones settle toward a horizontal line, and which ones don’t? Before you zoom, look at the <b>highest powers</b> of x on top and bottom.</p>
+  </div>
+  <div class="card widget">
+    <div class="seg" id="fBtns" role="group" aria-label="Choose a function" style="margin-bottom:12px"></div>
+    <div class="widget-grid">
+      <svg id="ziPlot" role="img" aria-label="Graph viewed at increasing zoom-out levels"></svg>
+      <div>
+        <div class="display" id="fTex" style="font-size:19px"></div>
+        <div class="ctls"><div class="ctl"><label for="wSlider">Zoom out</label><input id="wSlider" type="range" min="0" max="100" value="0"><output id="wOut"></output></div></div>
+        <div class="readout" id="ziRead" aria-live="polite"></div>
+        <div class="observe" id="ziNote"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= BUILD IT ================= -->
+<section class="step" id="build" data-title="End behavior">
+  <div class="prose">
+    <p>\( \displaystyle\lim_{x\to\infty} f(x) = L \) means \( f(x) \) gets as close to L as we like once x is <b>large enough</b>. Then \( y = L \) is a <b>horizontal asymptote</b>. The same goes for \( x \to -\infty \). A graph can have a different asymptote on each end, or none.</p>
+    <p>The basic building block: for any \( r \gt 0 \),</p>
+    <div class="display">\[ \lim_{x\to\infty} \frac{1}{x^r} = 0. \]</div>
+    <p>Dividing a fixed number by a huge number gives something tiny.</p>
+  </div>
+
+  <h3>Rational functions: divide by the highest power in the denominator</h3>
+  <div id="wx1"></div>
+  <div class="table-wrap"><table class="ref">
+    <tr><th>Degree of top vs. bottom</th><th>\( \displaystyle\lim_{x\to\pm\infty} \)</th><th>Example</th></tr>
+    <tr><td>Top smaller</td><td>0</td><td>\( \dfrac{4x + 1}{x^2 + 3} \to 0 \)</td></tr>
+    <tr><td>Equal</td><td>Ratio of leading coefficients</td><td>\( \dfrac{3x^2 + 2x}{x^2 + 1} \to 3 \)</td></tr>
+    <tr><td>Top bigger</td><td>\( \pm\infty \) (no horizontal asymptote)</td><td>\( \dfrac{x^3}{x^2 + 1} \to \pm\infty \)</td></tr>
+  </table></div>
+  <div class="prose"><p>The table is a shortcut. On exams you’re usually expected to show the division.</p></div>
+
+  <h3>Roots and negative infinity</h3>
+  <div class="callout warn"><b>The \( \sqrt{x^2} \) trap</b>
+    <p>\( \sqrt{x^2} = |x| \), not x. When \( x \to -\infty \), x is negative, so \( \sqrt{x^2} = -x \). Forgetting this flips the sign of your answer.</p>
+  </div>
+  <div id="wx2"></div>
+
+  <h3>∞ − ∞ is indeterminate</h3>
+  <div class="prose"><p>\( \sqrt{x^2 + x} - x \) looks like “∞ − ∞,” which, like 0/0, could be anything. Multiply by the conjugate to turn the difference into a quotient, then divide by the highest power.</p></div>
+  <div id="wx3"></div>
+
+  <h3>Other functions to know</h3>
+  <div class="prose">
+    <ul>
+      <li>\( \displaystyle\lim_{x\to\infty} e^{-x} = 0 \) and \( \displaystyle\lim_{x\to-\infty} e^{x} = 0 \), so \( y = 0 \) is a horizontal asymptote of \( e^x \) on the left.</li>
+      <li>\( \displaystyle\lim_{x\to\infty} \arctan x = \tfrac{\pi}{2} \) and \( \displaystyle\lim_{x\to-\infty} \arctan x = -\tfrac{\pi}{2} \), which gives two different asymptotes.</li>
+      <li>\( \sin x \) and \( \cos x \) oscillate forever, so they have no limit at \( \infty \). But \( \dfrac{\sin x}{x} \to 0 \) by the Squeeze Theorem.</li>
+    </ul>
+  </div>
+  <div class="callout calc"><b>Where this goes</b>
+    <p>End behavior is a key step in curve sketching (Unit 4). L’Hôpital’s Rule (Unit 4) will give a second way to handle these forms.</p>
+  </div>
+</section>
+
+<!-- ================= TRY IT ================= -->
+<section class="step" id="try" data-title="Your turn">
+  <div class="prose"><p>Answer with a number, <span class="kbd">inf</span>, <span class="kbd">-inf</span> or <span class="kbd">DNE</span>.</p></div>
+  <div class="practice-list" id="practice"></div>
+</section>
+
+<!-- ================= CHECK ================= -->
+<section class="step" id="check" data-title="Before you move on">
+  <div class="tf" id="tf"></div>
+</section>
+
+</main>
+
+<script src="lesson.js"></script>
+<script>
+Lesson.ready(() => {
+  const { Plot, practiceList, worked, trueFalse, typeset } = Lesson;
+
+  const FNS = [
+    { lbl: 'Equal degrees', tex: 'f(x) = \\dfrac{3x^2 + 2x}{x^2 + 1}', f: x => (3 * x * x + 2 * x) / (x * x + 1), ha: [3, 3], note: 'Both ends settle at \\( y = 3 \\), the ratio of the leading coefficients \\( 3x^2 / x^2 \\).' },
+    { lbl: 'Top smaller', tex: 'f(x) = \\dfrac{4x + 1}{x^2 + 3}', f: x => (4 * x + 1) / (x * x + 3), ha: [0, 0], note: 'The bottom outgrows the top, so f is squashed to \\( y = 0 \\).' },
+    { lbl: 'Top bigger', tex: 'f(x) = \\dfrac{x^3}{x^2 + 1}', f: x => x ** 3 / (x * x + 1), ha: null, note: 'No horizontal asymptote: f behaves like \\( x^3/x^2 = x \\), heading to \\( +\\infty \\) on the right and \\( -\\infty \\) on the left.' },
+    { lbl: 'Root', tex: 'f(x) = \\dfrac{2x}{\\sqrt{x^2 + 4}}', f: x => 2 * x / Math.sqrt(x * x + 4), ha: [-2, 2], note: 'Two different asymptotes: \\( y = 2 \\) on the right and \\( y = -2 \\) on the left, because \\( \\sqrt{x^2} = |x| \\).' }
+  ];
+  const zp = Plot(document.getElementById('ziPlot'), { x: [-5, 5], y: [-5, 5], h: 340, ticks: true });
+  const wSlider = document.getElementById('wSlider');
+  let cur = 0;
+  document.getElementById('fBtns').innerHTML = FNS.map((F, i) => `<button type="button" data-i="${i}">${F.lbl}</button>`).join('');
+  const fmt = v => Math.abs(v) >= 1e5 ? v.toExponential(3) : v.toFixed(5);
+  function drawZ() {
+    const F = FNS[cur], w = 5 * Math.pow(10, 3 * wSlider.value / 100);
+    const yr = F.ha ? 5 : Math.max(5, w * 1.1);
+    zp.range([-w, w], [-yr, yr]);
+    let s = '';
+    if (F.ha) new Set(F.ha).forEach(h => { s += zp.seg(-w * 2, h, w * 2, h, 'ghost'); });
+    zp.draw(s + zp.fn(F.f, 'c1', { n: 800 }) + zp.dot(w * 0.95, F.f(w * 0.95), 'c2 solid', 5) + zp.dot(-w * 0.95, F.f(-w * 0.95), 'c4 solid', 5));
+    document.getElementById('wOut').textContent = `±${Math.round(w).toLocaleString()}`;
+    const r = document.getElementById('ziRead');
+    r.innerHTML = `\\( f(${Math.round(w)}) = ${fmt(F.f(w))} \\)<br>\\( f(-${Math.round(w)}) = ${fmt(F.f(-w))} \\)`;
+    typeset(r);
+    const n = document.getElementById('ziNote'); n.innerHTML = wSlider.value > 70 ? F.note : 'Keep zooming out…'; typeset(n);
+  }
+  function pick(i) {
+    cur = i;
+    document.querySelectorAll('#fBtns button').forEach((b, k) => b.setAttribute('aria-pressed', String(k === i)));
+    const t = document.getElementById('fTex'); t.innerHTML = `\\[ ${FNS[i].tex} \\]`; typeset(t);
+    drawZ();
+  }
+  document.getElementById('fBtns').addEventListener('click', e => { const b = e.target.closest('button'); if (b) pick(+b.dataset.i); });
+  wSlider.addEventListener('input', drawZ);
+  pick(0);
+
+  worked(document.getElementById('wx1'), {
+    problem: 'Find \\( \\displaystyle\\lim_{x\\to\\infty} \\frac{3x^2 - x}{5x^2 + 4} \\).',
+    steps: [
+      { show: 'The highest power in the denominator is \\( x^2 \\). Divide every term, top and bottom, by \\( x^2 \\): \\[ \\lim_{x\\to\\infty} \\frac{3 - \\frac1x}{5 + \\frac{4}{x^2}} \\]', why: 'That’s the same as multiplying by \\( \\tfrac{1/x^2}{1/x^2} = 1 \\), so the value doesn’t change.' },
+      { show: 'As \\( x \\to \\infty \\): \\( \\dfrac1x \\to 0 \\) and \\( \\dfrac{4}{x^2} \\to 0 \\).' },
+      { show: 'So the limit is \\( \\dfrac{3 - 0}{5 + 0} = \\dfrac35 \\). The horizontal asymptote is \\( y = \\tfrac35 \\).' }
+    ]
+  });
+  worked(document.getElementById('wx2'), {
+    problem: 'Find \\( \\displaystyle\\lim_{x\\to-\\infty} \\frac{\\sqrt{9x^2 + 1}}{2x - 1} \\).',
+    steps: [
+      { show: 'Under the root, the dominant term is \\( 9x^2 \\), and \\( \\sqrt{x^2} = |x| \\). Divide top and bottom by \\( |x| \\).' },
+      { show: 'Since \\( x \\lt 0 \\), \\( |x| = -x \\). Top: \\( \\dfrac{\\sqrt{9x^2+1}}{|x|} = \\sqrt{9 + \\tfrac{1}{x^2}} \\). Bottom: \\( \\dfrac{2x - 1}{-x} = -2 + \\dfrac1x \\).', why: 'Dividing by \\( |x| \\) inside the root is dividing by \\( \\sqrt{x^2} \\). Outside the root, \\( |x| \\) means \\( -x \\) here.' },
+      { show: 'Limit: \\( \\dfrac{\\sqrt{9 + 0}}{-2 + 0} = -\\dfrac32 \\).', why: 'Sanity check: for very negative x, the top is positive and the bottom negative, so the answer must be negative. ✓' }
+    ]
+  });
+  worked(document.getElementById('wx3'), {
+    problem: 'Find \\( \\displaystyle\\lim_{x\\to\\infty} \\left(\\sqrt{x^2 + x} - x\\right) \\).',
+    steps: [
+      { show: 'Multiply by \\( \\dfrac{\\sqrt{x^2 + x} + x}{\\sqrt{x^2 + x} + x} \\). The top becomes \\( (x^2 + x) - x^2 = x \\): \\[ \\frac{x}{\\sqrt{x^2 + x} + x} \\]' },
+      { show: 'Divide top and bottom by x (positive, so \\( x = \\sqrt{x^2} \\)): \\[ \\frac{1}{\\sqrt{1 + \\frac1x} + 1} \\]' },
+      { show: 'As \\( x \\to \\infty \\): \\( \\dfrac{1}{\\sqrt1 + 1} = \\dfrac12 \\).', why: 'Not 0 and not ∞. The two huge terms almost cancel, and what’s left over approaches ½.' }
+    ]
+  });
+
+  practiceList(document.getElementById('practice'), [
+    { id: 'li-equal', tag: 'Equal degrees',
+      prompt: '<p>Find \\( \\displaystyle\\lim_{x\\to\\infty} \\frac{5x^2 - 3}{2x^2 + x} \\).</p>', answer: { type: 'limit', value: 2.5 },
+      rungs: [['Nudge', 'Compare the highest powers on top and bottom.'], ['Hint', 'Divide every term by \\( x^2 \\).'], ['Strategy', 'Every term with x in a denominator goes to 0. What’s left?']],
+      mistakes: [{ value: 0.4, msg: 'Upside down. Which coefficient is on top?' }, { value: -3, msg: 'The constant terms don’t matter at infinity. The leading terms do.' }],
+      success: 'Equal degrees: ratio of leading coefficients.' },
+    { id: 'li-smaller', tag: 'Top smaller',
+      prompt: '<p>Find \\( \\displaystyle\\lim_{x\\to\\infty} \\frac{4x + 1}{x^2 + 3} \\).</p>', answer: { type: 'limit', value: 0 },
+      rungs: [['Nudge', 'Which grows faster, \\( 4x \\) or \\( x^2 \\)?'], ['Hint', 'Divide top and bottom by \\( x^2 \\).'], ['Strategy', 'Top: \\( \\tfrac4x + \\tfrac1{x^2} \\). Bottom: \\( 1 + \\tfrac3{x^2} \\). Take each to its limit.']],
+      mistakes: [{ value: 4, msg: 'That would need equal degrees. Here the bottom has the higher power.' }] },
+    { id: 'li-bigger', tag: 'Top bigger',
+      prompt: '<p>Find \\( \\displaystyle\\lim_{x\\to-\\infty} \\frac{x^3}{x^2 + 1} \\).</p>', answer: { type: 'limit', value: -Infinity },
+      rungs: [['Nudge', 'The top has higher degree, so it’s \\( \\pm\\infty \\). Which one?'], ['Hint', 'For huge |x|, this behaves like \\( x^3/x^2 = x \\).'], ['Strategy', 'Where does x go as \\( x \\to -\\infty \\)?']],
+      mistakes: [{ value: Infinity, msg: 'Check the sign. For very negative x, \\( x^3 \\) is negative and \\( x^2 + 1 \\) is positive.' }, { value: 'dne', msg: 'It doesn’t settle, but it heads in one definite direction. Describe it with ∞ or −∞.' }],
+      success: 'Always check signs when x → −∞.' },
+    { id: 'li-root', tag: 'Root at −∞',
+      prompt: '<p>Find \\( \\displaystyle\\lim_{x\\to-\\infty} \\frac{\\sqrt{4x^2 + 1}}{x - 3} \\).</p>', answer: { type: 'limit', value: -2 },
+      rungs: [['Nudge', 'This is the \\( \\sqrt{x^2} = |x| \\) situation.'], ['Hint', 'Divide top and bottom by \\( |x| = -x \\) (since \\( x \\lt 0 \\)).'], ['Strategy', 'Top becomes \\( \\sqrt{4 + 1/x^2} \\). Bottom becomes \\( (x - 3)/(-x) \\). Take the limits.']],
+      mistakes: [{ value: 2, msg: 'That’s the trap. For negative x, the top is positive and the bottom is negative.' }],
+      success: 'Sign check first, then the size. It’s a good habit for any limit at −∞.' },
+    { id: 'li-conj', tag: '∞ − ∞',
+      prompt: '<p>Find \\( \\displaystyle\\lim_{x\\to\\infty} \\left(\\sqrt{x^2 + 6x} - x\\right) \\).</p>', answer: { type: 'limit', value: 3 },
+      rungs: [['Nudge', '∞ − ∞ is indeterminate. Turn the difference into a fraction.'], ['Hint', 'Multiply by the conjugate over itself. The top becomes \\( 6x \\).'], ['Strategy', 'Then divide top and bottom by x.']],
+      mistakes: [{ value: 0, msg: '∞ − ∞ isn’t 0. The terms don’t cancel exactly. Try the conjugate.' }, { value: 6, msg: 'Nearly. After dividing by x, the bottom is \\( \\sqrt{1 + 6/x} + 1 \\to 2 \\).' }],
+      success: 'Same pattern as the worked example, with a different leftover.' },
+    { id: 'li-ha', tag: 'Asymptotes',
+      prompt: '<p>List the y-values of <b>all</b> horizontal asymptotes of \\( f(x) = \\dfrac{3x}{\\sqrt{x^2 + 4}} \\).</p>', label: 'y =',
+      answer: { type: 'set', values: [3, -3] }, format: 'List y-values separated by commas.',
+      rungs: [['Nudge', 'Check \\( x \\to \\infty \\) <i>and</i> \\( x \\to -\\infty \\) separately.'], ['Hint', 'Divide by \\( |x| \\). On the right \\( |x| = x \\), on the left \\( |x| = -x \\).'], ['Strategy', 'You should get two different values.']],
+      mistakes: [{ values: [3], msg: 'That’s the right end. What happens as \\( x \\to -\\infty \\)?' }],
+      success: 'Functions with \\( \\sqrt{x^2 + \\ldots} \\) often have different asymptotes on each end.' },
+    { id: 'li-arctan', tag: 'Other functions',
+      prompt: '<p>Find \\( \\displaystyle\\lim_{x\\to\\infty} \\arctan(x^2) \\).</p>', answer: { type: 'limit', value: Math.PI / 2 },
+      rungs: [['Nudge', 'What does the inside, \\( x^2 \\), do as \\( x \\to \\infty \\)?'], ['Hint', 'So you need the limit of \\( \\arctan(u) \\) as \\( u \\to \\infty \\).'], ['Strategy', 'Look back at the “Other functions to know” list.']],
+      mistakes: [{ value: Infinity, msg: 'arctan’s outputs are trapped between \\( -\\tfrac{\\pi}{2} \\) and \\( \\tfrac{\\pi}{2} \\). It can’t go to ∞.' }, { value: 90, msg: 'Use radians: 90° is \\( \\tfrac{\\pi}{2} \\).' }],
+      success: 'Working from the inside out handles limits of compositions like this one.' }
+  ]);
+
+  trueFalse(document.getElementById('tf'), [
+    { s: 'A graph can never cross its horizontal asymptote.', ok: false, why: '\\( \\tfrac{\\sin x}{x} \\) crosses \\( y = 0 \\) infinitely often. Horizontal asymptotes describe the <i>ends</i>, not the middle.' },
+    { s: '\\( \\sqrt{x^2} = x \\) for all x.', ok: false, why: 'It’s \\( |x| \\). For \\( x = -3 \\), \\( \\sqrt{9} = 3 \\ne -3 \\).' },
+    { s: 'If the degree of the top is less than the degree of the bottom, the horizontal asymptote is \\( y = 0 \\).', ok: true, why: 'The bottom grows faster and crushes the fraction.' },
+    { s: '\\( \\infty - \\infty = 0 \\)', ok: false, why: 'It’s indeterminate. The conjugate example gave ½.' },
+    { s: 'A function can have different horizontal asymptotes as \\( x \\to \\infty \\) and \\( x \\to -\\infty \\).', ok: true, why: 'arctan x and \\( \\tfrac{3x}{\\sqrt{x^2+4}} \\) both do.' }
+  ]);
+});
+</script>
+</body>
+</html>

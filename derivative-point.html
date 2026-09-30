@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Derivatives and Rates of Change</title>
+<meta name="description" content="Calculus I Companion, Topic 2.1: the derivative at a point as a limit, local linearity, tangent lines, and interpreting derivatives with units.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;1,6..72,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="lesson.css">
+<script src="site.js"></script>
+<script src="course.js"></script>
+</head>
+<body data-topic="deriv-point">
+<main class="wrap">
+
+<!-- ================= SEE IT ================= -->
+<section class="step" id="see" data-title="Zoom in until it’s straight">
+  <div class="prose">
+    <p>Choose any point on this curve and zoom in on it. Keep zooming. What does the curve start to look like? When the curve looks straight, what’s the slope of that “line”?</p>
+  </div>
+  <div class="card widget">
+    <div class="widget-grid">
+      <svg id="zPlot" role="img" aria-label="A curve viewed at increasing zoom around a chosen point"></svg>
+      <div>
+        <div class="ctls">
+          <div class="ctl"><label for="aSlider">Point a</label><input id="aSlider" type="range" min="-200" max="200" value="150"><output id="aOut"></output></div>
+          <div class="ctl"><label for="zSlider">Zoom in</label><input id="zSlider" type="range" min="0" max="100" value="0"><output id="zOut"></output></div>
+        </div>
+        <div class="readout" id="zRead" aria-live="polite"></div>
+        <div class="row" style="margin-top:12px"><button class="btn" type="button" id="tanBtn" aria-pressed="false">Show tangent line</button></div>
+        <p class="observe">The window keeps the same shape as you zoom, so nothing is being stretched to look flat.</p>
+      </div>
+    </div>
+  </div>
+  <div class="callout idea"><b>Local linearity</b>
+    <p>Zoom in far enough on a smooth curve and it becomes indistinguishable from a straight line, the <b>tangent line</b>. The slope of that line is the <b>derivative</b> at that point. It’s the one number that describes how steep the curve is right there.</p>
+  </div>
+</section>
+
+<!-- ================= BUILD IT ================= -->
+<section class="step" id="build" data-title="The derivative at a point">
+  <div class="callout idea"><b>Definition</b>
+    <p>The <b>derivative of f at a</b> is</p>
+    <div class="display">\[ f'(a) = \lim_{h\to0} \frac{f(a+h) - f(a)}{h}, \]</div>
+    <p>provided this limit exists. An equivalent form, with \( x = a + h \), is \( \displaystyle f'(a) = \lim_{x\to a} \frac{f(x) - f(a)}{x - a} \).</p>
+  </div>
+  <div class="prose">
+    <p>You’ve already computed these in Units 0 and 1 without the name: the stone’s velocity, the slope of \( x^2 \) at 3, the \( (2+h)^2 \) limit. The definition is the secant slope from Topic 1.1 with a limit in front.</p>
+    <p>One number, two meanings:</p>
+    <ul>
+      <li><b>Geometry:</b> \( f'(a) \) is the slope of the tangent line at \( (a, f(a)) \). The tangent line is \( y = f(a) + f'(a)(x - a) \).</li>
+      <li><b>Rates:</b> \( f'(a) \) is the instantaneous rate of change of f at a, in <b>output units per input unit</b>.</li>
+    </ul>
+  </div>
+
+  <h3>Computing from the definition</h3>
+  <div class="prose"><p>The routine is always the same: build the difference quotient, simplify until the h in the denominator cancels, then let \( h \to 0 \). It’s Topic 1.4’s 0/0 toolkit applied to one particular fraction.</p></div>
+  <div id="wx1"></div>
+  <div id="wx2"></div>
+
+  <h3>What a derivative means in context</h3>
+  <div class="prose">
+    <p>Say \( C(q) \) is the cost in dollars of producing q bicycles, and \( C'(100) = 85 \). The units are dollars per bicycle, and it means:</p>
+    <p style="padding-left:1em;border-left:3px solid var(--line)">When 100 bicycles have been made, the cost is increasing at <b>$85 per additional bicycle</b>. Making the 101st costs about $85.</p>
+    <p>A good interpretation says <b>what</b> is changing, <b>how fast</b>, in what <b>units</b>, and <b>at what moment</b>.</p>
+  </div>
+  <div class="callout warn"><b>Common mistake</b>
+    <p>\( f'(a) \) is <b>not</b> \( f(a) \). “\( C'(100) = 85 \)” doesn’t mean 100 bicycles cost $85. It’s the rate at which the cost is climbing at that point.</p>
+  </div>
+</section>
+
+<!-- ================= TRY IT ================= -->
+<section class="step" id="try" data-title="Your turn">
+  <div class="prose"><p>Use the limit definition. (Unit 3 has shortcuts, but they’re built on this.)</p></div>
+  <div class="practice-list" id="practice"></div>
+</section>
+
+<!-- ================= CHECK ================= -->
+<section class="step" id="check" data-title="Before you move on">
+  <div class="quiz" id="quiz"></div>
+</section>
+
+</main>
+
+<script src="lesson.js"></script>
+<script>
+Lesson.ready(() => {
+  const { Plot, practiceList, worked, quiz, typeset } = Lesson;
+
+  // ---------------- Zoom to straight ----------------
+  const f = x => x ** 3 - 3 * x + 1, fp = x => 3 * x * x - 3;
+  const zp = Plot(document.getElementById('zPlot'), { x: [-2.5, 2.5], y: [-4, 5], h: 380 });
+  const aSlider = document.getElementById('aSlider'), zSlider = document.getElementById('zSlider');
+  let showTan = false;
+  function drawZ() {
+    const a = aSlider.value / 100, fa = f(a), w = 2.5 * Math.pow(10, -3.3 * zSlider.value / 100), hy = 1.8 * w;
+    zp.range([a - w, a + w], [fa - hy, fa + hy]);
+    const m = (f(a + w * 0.8) - f(a - w * 0.8)) / (1.6 * w);
+    zp.draw(zp.fn(f, 'c1') + (showTan ? zp.fn(x => fa + fp(a) * (x - a), 'c3', { attr: ' stroke-dasharray="8 6"' }) : '') + zp.dot(a, fa, 'c2 solid', 6));
+    document.getElementById('aOut').textContent = a.toFixed(2);
+    document.getElementById('zOut').textContent = `${Math.round(2.5 / w)}×`;
+    const r = document.getElementById('zRead');
+    r.innerHTML = `Slope across the visible window: <b class="mono">${m.toFixed(5)}</b>` + (showTan ? `<br>Tangent slope \\( f'(${a.toFixed(2)}) = ${fp(a).toFixed(5)} \\)` : '');
+    typeset(r);
+  }
+  aSlider.addEventListener('input', drawZ);
+  zSlider.addEventListener('input', drawZ);
+  document.getElementById('tanBtn').addEventListener('click', e => { showTan = !showTan; e.currentTarget.setAttribute('aria-pressed', showTan); e.currentTarget.textContent = showTan ? 'Hide tangent line' : 'Show tangent line'; drawZ(); });
+  drawZ();
+
+  worked(document.getElementById('wx1'), {
+    problem: 'Use the definition to find \\( f\'(2) \\) for \\( f(x) = x^2 - 3x \\), then write the tangent line at \\( x = 2 \\).',
+    steps: [
+      { show: '\\( f(2 + h) = (2+h)^2 - 3(2+h) = 4 + 4h + h^2 - 6 - 3h = h^2 + h - 2 \\), and \\( f(2) = -2 \\).', why: 'Compute the two function values separately first. It prevents most algebra slips.' },
+      { show: '\\( \\dfrac{f(2+h) - f(2)}{h} = \\dfrac{h^2 + h}{h} = h + 1 \\) for \\( h \\ne 0 \\).' },
+      { show: '\\( f\'(2) = \\displaystyle\\lim_{h\\to0} (h + 1) = 1 \\).' },
+      { show: 'Tangent line: \\( y = f(2) + f\'(2)(x - 2) = -2 + (x - 2) \\), so \\( y = x - 4 \\).' }
+    ]
+  });
+  worked(document.getElementById('wx2'), {
+    problem: 'Use the \\( x \\to a \\) form to find \\( f\'(2) \\) for \\( f(x) = \\dfrac1x \\).',
+    steps: [
+      { show: '\\[ f\'(2) = \\lim_{x\\to2} \\frac{\\frac1x - \\frac12}{x - 2} \\]', why: 'This form is often cleaner with fractions.' },
+      { show: 'Common denominator on top: \\( \\dfrac1x - \\dfrac12 = \\dfrac{2 - x}{2x} \\).' },
+      { show: '\\( \\dfrac{2 - x}{2x(x - 2)} = \\dfrac{-(x - 2)}{2x(x-2)} = -\\dfrac{1}{2x} \\).' },
+      { show: 'Let \\( x \\to 2 \\): \\( f\'(2) = -\\dfrac14 \\).', why: 'Negative, as it should be, because \\( 1/x \\) is decreasing.' }
+    ]
+  });
+
+  practiceList(document.getElementById('practice'), [
+    { id: 'dp-quad', tag: 'Definition',
+      prompt: '<p>Use the definition to find \\( f\'(1) \\) for \\( f(x) = 3x^2 + 1 \\).</p>',
+      label: "f′(1)", answer: { type: 'number', value: 6 },
+      rungs: [['Nudge', 'Compute \\( f(1 + h) \\) and \\( f(1) \\) separately.'], ['Hint', '\\( f(1 + h) = 3(1 + 2h + h^2) + 1 = 4 + 6h + 3h^2 \\).'], ['Strategy', 'Subtract \\( f(1) = 4 \\), divide by h, then let \\( h \\to 0 \\).']],
+      mistakes: [{ value: 3, msg: 'Check the expansion: \\( 3(1+h)^2 = 3 + 6h + 3h^2 \\), not \\( 3 + 3h + \\ldots \\)' }, { value: 7, msg: 'Did the +1 survive the subtraction? \\( f(1+h) - f(1) \\) should cancel the constants.' }],
+      success: 'Slope 6 at \\( (1, 4) \\).' },
+    { id: 'dp-recip', tag: 'Definition',
+      prompt: '<p>Find \\( f\'(3) \\) for \\( f(x) = \\dfrac1x \\).</p>',
+      label: "f′(3)", answer: { type: 'number', value: -1 / 9 },
+      rungs: [['Nudge', 'The second worked example is the model. Use the \\( x \\to a \\) form if you like.'], ['Hint', 'Combine \\( \\dfrac1x - \\dfrac13 \\) into one fraction: \\( \\dfrac{3 - x}{3x} \\).'], ['Strategy', '\\( 3 - x = -(x - 3) \\). Cancel and substitute \\( x = 3 \\).']],
+      mistakes: [{ value: 1 / 9, msg: 'Watch the sign. \\( 1/x \\) is decreasing, so its slope must be negative.' }, { value: -1 / 3, msg: 'After canceling you should have \\( -\\dfrac{1}{3x} \\). Substitute x = 3 there.' }] },
+    { id: 'dp-sqrt', tag: 'Definition',
+      prompt: '<p>Find \\( f\'(9) \\) for \\( f(x) = \\sqrt{x} \\).</p>',
+      label: "f′(9)", answer: { type: 'number', value: 1 / 6 },
+      rungs: [['Nudge', 'A square root in a difference quotient means conjugate.'], ['Hint', '\\( \\dfrac{\\sqrt{9+h} - 3}{h} \\cdot \\dfrac{\\sqrt{9+h} + 3}{\\sqrt{9+h} + 3} \\)'], ['Strategy', 'This is Topic 1.4’s first worked example.']],
+      mistakes: [{ value: 1 / 3, msg: 'After canceling, the denominator is \\( \\sqrt{9+h} + 3 \\to 6 \\).' }],
+      success: 'Same computation as in Topic 1.4, now with a name: the slope of \\( \\sqrt x \\) at 9.' },
+    { id: 'dp-tangent', tag: 'Tangent line',
+      prompt: '<p>Find the equation of the tangent line to \\( y = x^3 \\) at \\( x = 1 \\).</p>',
+      label: 'y =', answer: { type: 'expr', vars: ['x'], fn: x => 3 * x - 2 },
+      rungs: [['Nudge', 'You need \\( f(1) \\) and \\( f\'(1) \\).'], ['Hint', '\\( (1+h)^3 = 1 + 3h + 3h^2 + h^3 \\). Build the difference quotient from that.'], ['Strategy', 'Once you have the slope m, use \\( y = f(1) + m(x - 1) \\).']],
+      mistakes: [{ fn: x => 3 * x, msg: 'The line must pass through \\( (1, 1) \\). Check yours.' }, { fn: x => 3 * x + 2, msg: 'Sign slip when distributing: \\( 1 + 3(x - 1) = 3x - 2 \\).' }, { fn: x => x, msg: 'The slope isn’t 1. Compute the limit of the difference quotient.' }],
+      success: 'The slope of \\( x^3 \\) at 1 is 3. You might be spotting a pattern.' },
+    { id: 'dp-recognize', tag: 'Recognize it',
+      prompt: '<p>The limit \\( \\displaystyle\\lim_{h\\to0} \\frac{(2 + h)^5 - 32}{h} \\) is \\( f\'(2) \\) for some function f. What is \\( f(x) \\)?</p>',
+      label: 'f(x) =', answer: { type: 'expr', vars: ['x'], fn: x => x ** 5 },
+      rungs: [['Nudge', 'Compare it with \\( \\dfrac{f(a + h) - f(a)}{h} \\) with \\( a = 2 \\).'], ['Hint', 'What happens to \\( 2 + h \\) inside f? And what is 32 in terms of f(2)?'], ['Strategy', 'Whatever f does to \\( 2 + h \\), it does to x.']],
+      mistakes: [{ fn: x => (2 + x) ** 5, msg: 'In the definition, \\( a + h \\) is the input. Replace the whole \\( 2 + h \\) with x, not just h.' }],
+      success: 'Reading a limit as a derivative in disguise is a common exam question.' },
+    { id: 'dp-context', tag: 'Rate in context',
+      prompt: '<p>The temperature of a cup of coffee is \\( T(t) \\) °F, with t in minutes. \\( T(3) = 150 \\) and \\( T(3.1) = 149.2 \\). Estimate \\( T\'(3) \\) (include the sign).</p>',
+      label: "T′(3) ≈", answer: { type: 'number', value: -8, acceptDecimal: true }, format: 'A number. The units are °F per minute.',
+      rungs: [['Nudge', 'With only two data points, estimate the derivative with a secant slope.'], ['Hint', '\\( T\'(3) \\approx \\dfrac{T(3.1) - T(3)}{0.1} \\).'], ['Strategy', 'The coffee is cooling, so expect a negative number.']],
+      mistakes: [{ value: 8, msg: 'The temperature went <i>down</i>, so the rate is negative.' }, { value: -0.8, msg: 'That’s the change in temperature. Divide by the change in time, 0.1 min.' }],
+      success: 'At t = 3 the coffee is cooling at about 8 °F per minute.' }
+  ]);
+
+  quiz(document.getElementById('quiz'), [
+    { q: '\\( P(t) \\) is a town’s population t years after 2020. What does \\( P\'(5) = 320 \\) mean?',
+      choices: [
+        { t: 'In 2025 the population was 320.', ok: false, why: 'That would be \\( P(5) = 320 \\). The prime changes the meaning completely.' },
+        { t: 'In 2025 the population was growing at about 320 people per year.', ok: true, why: 'A rate, with units, at a specific moment.' },
+        { t: 'Between 2020 and 2025 the population grew by 320.', ok: false, why: 'That’s a total change over an interval, \\( P(5) - P(0) \\). The derivative is an instantaneous rate.' }
+      ] },
+    { q: 'If \\( f\'(4) = 0 \\), what does the graph of f look like at \\( x = 4 \\)?',
+      choices: [
+        { t: 'It crosses the x-axis', ok: false, why: 'That’s \\( f(4) = 0 \\). The derivative describes slope, not height.' },
+        { t: 'Its tangent line is horizontal', ok: true, why: 'Slope 0 means flat right there, like the top of a hill or the bottom of a valley.' },
+        { t: 'f is undefined at 4', ok: false, why: 'For \\( f\'(4) \\) to exist, f has to be defined there.' }
+      ] },
+    { q: 'Which is the slope of the secant line, <b>not</b> the tangent line?',
+      choices: [
+        { t: '\\( \\dfrac{f(5) - f(2)}{5 - 2} \\)', ok: true, why: 'Two specific points with no limit, so it’s an average rate.' },
+        { t: '\\( \\displaystyle\\lim_{h\\to0}\\dfrac{f(2+h) - f(2)}{h} \\)', ok: false, why: 'The limit makes this the tangent slope, \\( f\'(2) \\).' }
+      ] }
+  ]);
+});
+</script>
+</body>
+</html>

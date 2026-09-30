@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Limit of a Function</title>
+<meta name="description" content="Calculus I Companion, Topic 1.2: what a limit means, estimating limits from graphs and tables, and how limits can fail to exist.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;1,6..72,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="lesson.css">
+<script src="site.js"></script>
+<script src="course.js"></script>
+<style>
+  .gallery { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); margin: 12px 0; }
+  .gallery .card { padding: 12px; }
+  .gallery h4 { margin: 8px 0 2px; font-size: 16px; }
+  .gallery p { margin: 0; font-size: 14px; color: var(--ink-2); }
+  .evalbox { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 8px; font-size: 15px; }
+  .evalbox input { width: 110px; font-family: var(--font-mono); }
+  .evalbox output { font-family: var(--font-mono); }
+</style>
+</head>
+<body data-topic="limit-idea">
+<main class="wrap">
+
+<!-- ================= SEE IT ================= -->
+<section class="step" id="see" data-title="Sneaking up on a hole">
+  <div class="prose">
+    <p>The function \( f(x) = \dfrac{\sin x}{x} \) is <b>undefined</b> at \( x = 0 \) because you can’t divide by zero, so the graph has a hole there. But what height is the graph <i>heading toward</i> as x closes in on 0? Move the two gold points toward the hole from both sides.</p>
+  </div>
+  <div class="card widget">
+    <div class="widget-grid">
+      <svg id="holePlot" role="img" aria-label="Graph of sin x over x with a hole at x equals 0"></svg>
+      <div>
+        <div class="ctls"><div class="ctl"><label for="dSlider">Distance from 0</label><input id="dSlider" type="range" min="0" max="1000" value="0"><output id="dOut"></output></div></div>
+        <div class="readout" id="holeRead" aria-live="polite"></div>
+        <p class="observe">Drag the slider all the way right. The points get within 0.0001 of zero, but they never land on it.</p>
+      </div>
+    </div>
+  </div>
+
+  <h3>Does the value at the point matter?</h3>
+  <div class="prose"><p>Here are three functions that are identical except at \( x = 2 \). Compare what happens <i>near</i> 2 with what happens <i>at</i> 2.</p></div>
+  <div class="card widget">
+    <div class="seg" id="verBtns" role="group" aria-label="Choose a version"><button type="button" data-v="0">Version A</button><button type="button" data-v="1">Version B</button><button type="button" data-v="2">Version C</button></div>
+    <div class="widget-grid" style="margin-top:12px">
+      <svg id="verPlot" role="img" aria-label="Three versions of a function near x equals 2"></svg>
+      <div class="readout" id="verRead" aria-live="polite"></div>
+    </div>
+  </div>
+  <div class="callout idea"><b>The big idea</b>
+    <p>A limit describes where the outputs are <b>heading</b> as x approaches a. It ignores what happens <b>at</b> a. The function might be undefined there, or defined as something else entirely, and the limit is the same either way.</p>
+  </div>
+</section>
+
+<!-- ================= BUILD IT ================= -->
+<section class="step" id="build" data-title="What a limit means">
+  <div class="prose">
+    <p>We write</p>
+    <div class="display">\[ \lim_{x \to a} f(x) = L \]</div>
+    <p>and say “the limit of \( f(x) \), as x approaches a, equals L” if we can make \( f(x) \) <b>as close to L as we like</b> by taking x <b>close enough to a</b>, from either side, <b>but not equal to a</b>. Topic 1.6 turns “close enough” into a precise definition.</p>
+    <p>There are three ways to find a limit:</p>
+    <ul>
+      <li><b>Graphically:</b> follow the curve toward \( x = a \) from both sides and see what height it approaches.</li>
+      <li><b>Numerically:</b> make a table with x-values closer and closer to a on both sides.</li>
+      <li><b>Algebraically:</b> use the limit laws and simplify (Topic 1.4). This is the only method that proves the answer.</li>
+    </ul>
+  </div>
+
+  <h3>Three ways a limit can fail to exist</h3>
+  <div class="gallery">
+    <div class="card"><svg id="g1" role="img" aria-label="A jump"></svg><h4>Jump</h4><p>The left and right sides approach different heights.</p></div>
+    <div class="card"><svg id="g2" role="img" aria-label="A vertical asymptote"></svg><h4>Blow-up</h4><p>The outputs grow without bound, so they don’t approach any number.</p></div>
+    <div class="card"><svg id="g3" role="img" aria-label="Oscillation"></svg><h4>Oscillation</h4><p>The outputs keep bouncing between values and never settle.</p></div>
+  </div>
+
+  <h3>Tables can lie</h3>
+  <div class="prose"><p>Take \( g(x) = \sin\!\left(\dfrac{\pi}{x}\right) \) near 0. A table with “nice” x-values looks convincing:</p></div>
+  <div id="lieTable"></div>
+  <div class="prose"><p>Every value is 0 (or tiny rounding error). So the limit is 0? Now zoom in on the actual graph:</p></div>
+  <div class="card widget">
+    <svg id="liePlot" role="img" aria-label="Graph of sine of pi over x"></svg>
+    <div class="ctls"><div class="ctl"><label for="zSlider">Zoom</label><input id="zSlider" type="range" min="0" max="100" value="0"><output id="zOut"></output></div></div>
+  </div>
+  <div class="callout warn"><b>Lesson</b>
+    <p>The table only checked points where \( \pi/x \) is a multiple of \( \pi \), which are exactly the points where sine happens to be 0. In between, the graph swings all the way between −1 and 1, faster and faster. The limit <b>does not exist</b>. Tables suggest answers, and algebra and theorems prove them.</p>
+  </div>
+  <div id="wx1"></div>
+</section>
+
+<!-- ================= TRY IT ================= -->
+<section class="step" id="try" data-title="Your turn">
+  <div class="card widget" style="max-width:48em">
+    <p class="prompt" style="margin-bottom:8px">Problems 1–3 use this graph of \( q \). An open circle is a missing point, and a filled circle is the actual value.</p>
+    <svg id="qPlot" role="img" aria-label="Graph of q: a hole at (1, 2) with a filled point at (1, 4); a jump at x = 3 from height 1 on the left to a filled point at (3, 3) on the right"></svg>
+  </div>
+  <div class="practice-list" id="practice" style="margin-top:18px"></div>
+</section>
+
+<!-- ================= CHECK ================= -->
+<section class="step" id="check" data-title="Before you move on">
+  <div class="quiz" id="quiz"></div>
+</section>
+
+</main>
+
+<script src="lesson.js"></script>
+<script>
+Lesson.ready(() => {
+  const { Plot, practiceList, worked, quiz, typeset, approachTable } = Lesson;
+
+  // ---------------- sin x / x ----------------
+  const sinc = x => Math.sin(x) / x;
+  const hp = Plot(document.getElementById('holePlot'), { x: [-9, 9], y: [-0.5, 1.4], h: 320, ystep: 0.5 });
+  const dSlider = document.getElementById('dSlider');
+  function drawHole() {
+    const d = 3 * Math.pow(10, -4.5 * dSlider.value / 1000);
+    hp.draw(hp.fn(sinc, 'c1', { n: 600 }) + hp.dot(0, 1, 'c1', 6) + hp.dot(-d, sinc(-d), 'c2 solid', 6) + hp.dot(d, sinc(d), 'c2 solid', 6));
+    document.getElementById('dOut').textContent = d < 0.001 ? d.toExponential(1) : d.toFixed(3);
+    const r = document.getElementById('holeRead');
+    r.innerHTML = `\\( f(${(-d).toPrecision(3)}) = ${sinc(-d).toFixed(8)} \\)<br>\\( f(${d.toPrecision(3)}) = ${sinc(d).toFixed(8)} \\)<br>\\( f(0) \\) is undefined.`;
+    typeset(r);
+  }
+  dSlider.addEventListener('input', drawHole);
+  drawHole();
+
+  // ---------------- Three versions ----------------
+  const g = x => 3 + 0.8 * (x - 2) - 0.25 * (x - 2) ** 2;
+  const vp = Plot(document.getElementById('verPlot'), { x: [-0.5, 4.5], y: [-0.5, 6], h: 300 });
+  const VERS = [
+    { dots: '', val: 'undefined (there’s a hole)' },
+    { dots: 'hollow+filled', val: '5, a single point sitting above the curve' },
+    { dots: 'filled', val: '3, filling in the hole' }
+  ];
+  function drawVer(i) {
+    let s = vp.fn(g, 'c1');
+    if (i === 0) s += vp.dot(2, 3, 'c1', 6);
+    if (i === 1) s += vp.dot(2, 3, 'c1', 6) + vp.dot(2, 5, 'c1 solid', 6);
+    if (i === 2) s += vp.dot(2, 3, 'c1 solid', 6);
+    vp.draw(s);
+    document.querySelectorAll('#verBtns button').forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.v === i)));
+    const r = document.getElementById('verRead');
+    r.innerHTML = `<b>Near</b> \\( x = 2 \\): the curve heads toward height 3 from both sides, so \\( \\displaystyle\\lim_{x\\to2} f(x) = 3 \\).<br><br><b>At</b> \\( x = 2 \\): \\( f(2) \\) is ${VERS[i].val}.`;
+    typeset(r);
+  }
+  document.getElementById('verBtns').addEventListener('click', e => { const b = e.target.closest('button'); if (b) drawVer(+b.dataset.v); });
+  drawVer(0);
+
+  // ---------------- Failure gallery ----------------
+  const mini = id => Plot(document.getElementById(id), { x: [-2, 2], y: [-2, 2], w: 240, h: 170, ticks: false });
+  const g1 = mini('g1'); g1.draw(g1.fn(x => 0.4 * x - 0.8, 'c1', { to: 0 }) + g1.fn(x => 0.3 * x + 1, 'c1', { from: 0 }) + g1.dot(0, -0.8, 'c1', 5) + g1.dot(0, 1, 'c1 solid', 5));
+  const g2 = mini('g2'); g2.draw(g2.fn(x => 0.25 / (x * x), 'c1') + g2.seg(0, -3, 0, 3, 'ghost'));
+  const g3 = mini('g3'); g3.draw(g3.fn(x => Math.sin(3 / x), 'c1', { n: 3000 }));
+
+  // ---------------- Tables can lie ----------------
+  const lie = x => Math.sin(Math.PI / x);
+  document.getElementById('lieTable').innerHTML = approachTable(lie, 0, { hs: [1, 0.1, 0.01, 0.001], digits: 10 });
+  const lp = Plot(document.getElementById('liePlot'), { x: [-1, 1], y: [-1.4, 1.4], h: 260, ystep: 0.5 });
+  const zSlider = document.getElementById('zSlider');
+  function drawLie() {
+    const w = Math.pow(10, -2 * zSlider.value / 100);
+    lp.range([-w, w], [-1.4, 1.4]);
+    lp.draw(lp.fn(lie, 'c1', { n: 4000 }) + [1, 0.1, 0.01, 0.001].filter(x => x <= w).map(x => lp.dot(x, 0, 'c2 solid', 5) + lp.dot(-x, 0, 'c2 solid', 5)).join(''));
+    document.getElementById('zOut').textContent = `±${+w.toPrecision(2)}`;
+  }
+  zSlider.addEventListener('input', drawLie);
+  drawLie();
+
+  worked(document.getElementById('wx1'), {
+    problem: 'Estimate \\( \\displaystyle \\lim_{x\\to0} \\frac{e^x - 1}{x} \\) numerically.',
+    steps: [
+      { show: 'Substitute first: \\( \\dfrac{e^0 - 1}{0} = \\dfrac{0}{0} \\). There’s no answer yet, so estimate.', why: '0/0 doesn’t mean the limit is 0 or undefined. It means “more work needed.”' },
+      { show: 'Build a table from both sides: ' + approachTable(x => (Math.exp(x) - 1) / x, 0, { digits: 7 }) },
+      { show: 'Both columns close in on 1. The estimate is \\( \\displaystyle \\lim_{x\\to0} \\frac{e^x - 1}{x} = 1 \\).', why: 'That’s the slope of \\( e^x \\) at \\( (0, 1) \\), the same fact you discovered with the base slider in Topic 0.3.' }
+    ]
+  });
+
+  // ---------------- Graph for practice ----------------
+  const L = x => 2 + 0.25 * (x - 1) - 0.375 * (x - 1) ** 2, R = x => 3 + 0.5 * (x - 3);
+  const qp = Plot(document.getElementById('qPlot'), { x: [-1.5, 5.5], y: [-0.8, 5], h: 300 });
+  qp.draw(qp.fn(L, 'c1', { from: -1, to: 3 }) + qp.fn(R, 'c1', { from: 3, to: 5 }) + qp.dot(1, 2, 'c1', 5) + qp.dot(1, 4, 'c1 solid', 5) + qp.dot(3, 1, 'c1', 5) + qp.dot(3, 3, 'c1 solid', 5) + qp.text(4.6, R(4.6), 'q', 'lbl', 6, -8));
+
+
+  practiceList(document.getElementById('practice'), [
+    { id: 'li-graph-lim', tag: 'Read the graph',
+      prompt: '<p>Using the graph of \\( q \\) above, find \\( \\displaystyle\\lim_{x\\to1} q(x) \\).</p>',
+      rungs: [
+        ['Nudge', 'A limit asks where the curve is <i>heading</i> near \\( x = 1 \\), not where the filled dot is.'],
+        ['Hint', 'Trace the curve toward \\( x = 1 \\) from the left, then from the right. Do they head to the same height?'],
+        ['Strategy', 'Cover up the single dot with your finger. What height is the hole at?']
+      ],
+      answer: { type: 'limit', value: 2 },
+      mistakes: [{ value: 4, msg: 'That’s \\( q(1) \\), the actual value. The limit ignores the value at the point.' }],
+      success: 'The curve heads toward the hole at height 2. The dot above it doesn’t matter.' },
+
+    { id: 'li-graph-val', tag: 'Read the graph',
+      prompt: '<p>Using the same graph, what is \\( q(1) \\)?</p>',
+      rungs: [
+        ['Nudge', 'This asks for the actual value <i>at</i> \\( x = 1 \\), not a limit.'],
+        ['Hint', 'Filled dots are values. Open dots are missing points.'],
+        ['Strategy', 'Find the filled dot directly above or below \\( x = 1 \\).']
+      ],
+      answer: { type: 'number', value: 4 },
+      mistakes: [{ value: 2, msg: 'That’s where the curve is heading, which is the limit. The actual value is the filled dot.' }],
+      success: 'So here the limit (2) and the value (4) disagree. In Topic 1.7 that’s called a removable discontinuity.' },
+
+    { id: 'li-graph-jump', tag: 'Read the graph',
+      prompt: '<p>Using the same graph, find \\( \\displaystyle\\lim_{x\\to3} q(x) \\).</p>',
+      rungs: [
+        ['Nudge', 'Approach \\( x = 3 \\) from each side separately.'],
+        ['Hint', 'From the left the curve heads toward one height. From the right it heads toward another.'],
+        ['Strategy', 'A limit exists only if both sides approach the <i>same</i> number.']
+      ],
+      answer: { type: 'limit', value: 'dne' },
+      mistakes: [
+        { value: 1, msg: 'That’s only what happens from the left. What about from the right?' },
+        { value: 3, msg: 'That’s the right side (and the actual value \\( q(3) \\)). What happens from the left?' }
+      ],
+      success: 'Left says 1, right says 3. They disagree, so there’s no single number to approach.' },
+
+    { id: 'li-numeric', tag: 'Estimate from a table',
+      prompt: '<p>Estimate \\( \\displaystyle\\lim_{x\\to0} \\frac{\\sqrt{x + 9} - 3}{x} \\) by trying x-values closer and closer to 0 from both sides. Use the tool, or your calculator.</p>' +
+        '<div class="evalbox"><label for="evalIn">f(x) at x =</label><input id="evalIn" type="text" inputmode="decimal" placeholder="e.g. 0.01"><output id="evalOut"></output></div>',
+      acceptDecimal: true, format: 'Your best estimate: a decimal to four places is fine, or an exact fraction.',
+      rungs: [
+        ['Nudge', 'Substituting 0 gives 0/0, so estimate instead. Try \\( x = 0.1 \\), then 0.01, then 0.001.'],
+        ['Hint', 'Try negative values too (−0.1, −0.01, …). Both sides should agree.'],
+        ['Strategy', 'Look at the digits that stop changing. Do they match a familiar simple fraction?']
+      ],
+      answer: { type: 'limit', value: 1 / 6, acceptDecimal: true },
+      success: 'The exact value really is \\( \\tfrac16 \\). In Topic 1.4 you’ll <i>prove</i> it with a conjugate.' }
+  ]);
+
+  // Evaluator for the numeric problem.
+  const evalIn = document.getElementById('evalIn');
+  evalIn.addEventListener('input', () => {
+    const x = parseFloat(evalIn.value), out = document.getElementById('evalOut');
+    if (Number.isNaN(x)) { out.textContent = ''; return; }
+    out.textContent = x === 0 ? '→ undefined (0/0)' : `→ ${((Math.sqrt(x + 9) - 3) / x).toPrecision(9)}`;
+  });
+
+  quiz(document.getElementById('quiz'), [
+    { q: 'If \\( f(2) \\) is undefined, can \\( \\displaystyle\\lim_{x\\to2} f(x) \\) still exist?',
+      choices: [
+        { t: 'No, you need \\( f(2) \\) to find the limit', ok: false, why: 'Remember \\( \\tfrac{\\sin x}{x} \\): undefined at 0, but the limit is 1.' },
+        { t: 'Yes, the limit only depends on x-values near 2', ok: true, why: 'The limit never looks at \\( x = 2 \\) itself.' }
+      ] },
+    { q: 'If \\( \\displaystyle\\lim_{x\\to5} f(x) = 7 \\), what must \\( f(5) \\) be?',
+      choices: [
+        { t: '7', ok: false, why: 'Version B above had a limit of 3 but a value of 5.' },
+        { t: 'Undefined', ok: false, why: 'It could be defined. Nothing about the limit forces a hole.' },
+        { t: 'It could be anything, or undefined', ok: true, why: 'The limit says nothing about the value at the point. (When they <i>do</i> match, that’s continuity, in Topic 1.7.)' }
+      ] },
+    { q: 'A table of \\( f(x) \\) for \\( x = 0.1, 0.01, 0.001 \\) shows 0, 0, 0. What can you conclude?',
+      choices: [
+        { t: 'The limit as \\( x \\to 0 \\) is 0', ok: false, why: 'Remember \\( \\sin(\\pi/x) \\): its table said 0, but the limit doesn’t exist. You also only checked one side.' },
+        { t: 'The limit is probably 0, but you need more evidence', ok: true, why: 'Tables suggest. Check both sides, check the graph, and prove it with algebra when you can.' }
+      ] }
+  ]);
+});
+</script>
+</body>
+</html>

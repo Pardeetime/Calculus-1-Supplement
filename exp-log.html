@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Exponentials and Logarithms</title>
+<meta name="description" content="Calculus I Companion, Topic 0.3: exponential functions, the number e, logarithms and their laws, and solving exponential equations.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;1,6..72,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="lesson.css">
+<script src="site.js"></script>
+<script src="course.js"></script>
+</head>
+<body data-topic="explog">
+<main class="wrap">
+
+<!-- ================= SEE IT ================= -->
+<section class="step" id="see" data-title="Hunting for the natural base">
+  <div class="prose">
+    <p>Every exponential graph \( y = b^x \) passes through the point \( (0, 1) \). The red line is the <b>tangent line</b> there, the line that just grazes the curve. Its steepness depends on the base <i>b</i>.</p>
+    <p><b>Your mission:</b> find the base whose tangent line at \( (0,1) \) has a slope of <b>exactly 1</b>, so that it lands on the dashed guide line \( y = x + 1 \).</p>
+  </div>
+
+  <div class="card widget">
+    <div class="widget-grid">
+      <svg id="ePlot" role="img" aria-label="Graph of b to the x with its tangent line at x equals 0"></svg>
+      <div>
+        <div class="ctls">
+          <div class="ctl"><label for="bSlider">Base <b>b</b></label><input id="bSlider" type="range" min="150" max="400" value="200"><output id="bOut"></output></div>
+        </div>
+        <div class="readout" id="eRead" aria-live="polite"></div>
+        <p class="observe">Tip: after dragging, fine-tune with the arrow keys.</p>
+        <div class="feedback" id="eFb" aria-live="polite"></div>
+      </div>
+    </div>
+  </div>
+  <div class="callout idea"><b>What you just found</b>
+    <p>The special base is \( e \approx 2.71828\ldots \). It’s the <b>only</b> base where the slope at \( (0,1) \) is exactly 1. It also turns out that <b>every</b> point on \( y = e^x \) has a slope equal to its own height. That’s why \( e \) is called the natural base.</p>
+  </div>
+</section>
+
+<!-- ================= BUILD IT ================= -->
+<section class="step" id="build" data-title="Exponentials, e and logarithms">
+  <h3 style="margin-top:0">Exponential functions</h3>
+  <div class="prose">
+    <p>An exponential function has the form \( f(x) = b^x \) with a base \( b \gt 0 \), \( b \ne 1 \). The variable is in the <b>exponent</b>, and that’s what separates it from a power function like \( x^2 \).</p>
+    <ul>
+      <li>If \( b \gt 1 \), the function shows growth. If \( 0 \lt b \lt 1 \), it shows decay.</li>
+      <li>The domain is all real numbers and the range is \( (0, \infty) \). The output is never 0 or negative.</li>
+    </ul>
+  </div>
+  <div class="table-wrap"><table class="ref">
+    <tr><th>Exponent law</th><th>Example</th></tr>
+    <tr><td>\( b^m \cdot b^n = b^{m+n} \)</td><td>\( e^2 e^3 = e^5 \)</td></tr>
+    <tr><td>\( \dfrac{b^m}{b^n} = b^{m-n} \)</td><td>\( \dfrac{e^x}{e^2} = e^{x-2} \)</td></tr>
+    <tr><td>\( (b^m)^n = b^{mn} \)</td><td>\( (e^x)^3 = e^{3x} \)</td></tr>
+    <tr><td>\( b^{-n} = \dfrac{1}{b^n} \), \( b^0 = 1 \)</td><td>\( e^{-x} = \dfrac{1}{e^x} \)</td></tr>
+  </table></div>
+
+  <h3>Where else e shows up: compound interest</h3>
+  <div class="card widget">
+    <p class="prompt" style="margin-bottom:6px">Put $1 in an account paying 100% interest per year, compounded <i>n</i> times per year. After one year you have \( \left(1 + \frac1n\right)^n \) dollars. Does compounding more often make you rich?</p>
+    <div class="ctls"><div class="ctl"><label for="nSlider">Compounding</label><input id="nSlider" type="range" min="0" max="8" value="0"><output id="nOut" style="font-size:12px"></output></div></div>
+    <div class="readout" id="nRead"></div>
+  </div>
+
+  <h3>Logarithms: a log is an exponent</h3>
+  <div class="prose">
+    <p>\( \log_b x \) answers one question: <b>“b to what power gives x?”</b></p>
+    <div class="display">\[ \log_b x = y \quad\Longleftrightarrow\quad b^y = x \]</div>
+    <p>So \( \log_2 8 = 3 \) because \( 2^3 = 8 \). The <b>natural log</b> \( \ln x \) means \( \log_e x \). In calculus, you’ll use \( \ln \) almost every time.</p>
+    <p>Because a log undoes an exponential, \( \ln(e^x) = x \) and \( e^{\ln x} = x \) for \( x \gt 0 \). The domain of \( \ln x \) is \( (0, \infty) \), which is exactly the range of \( e^x \). You’ll see why in the next lesson on inverse functions.</p>
+  </div>
+  <div class="table-wrap"><table class="ref">
+    <tr><th>Log law (x, y &gt; 0)</th><th>Comes from</th></tr>
+    <tr><td>\( \ln(xy) = \ln x + \ln y \)</td><td>Multiplying powers adds exponents</td></tr>
+    <tr><td>\( \ln\!\left(\dfrac{x}{y}\right) = \ln x - \ln y \)</td><td>Dividing powers subtracts exponents</td></tr>
+    <tr><td>\( \ln(x^r) = r \ln x \)</td><td>A power of a power multiplies exponents</td></tr>
+  </table></div>
+  <div class="callout warn"><b>Things that are NOT log laws</b>
+    <p>\( \ln(x + y) \ne \ln x + \ln y \). &nbsp; \( (\ln x)^2 \ne 2\ln x \). &nbsp; \( \dfrac{\ln x}{\ln y} \ne \ln\!\left(\dfrac{x}{y}\right) \). Try any of them with numbers on a calculator.</p>
+  </div>
+  <div id="wx1"></div>
+  <div class="callout calc"><b>Why calculus cares</b>
+    <p>In Unit 3 you’ll show that \( \frac{d}{dx} e^x = e^x \), the slope-equals-height fact you found above. Logs turn products into sums, which makes “logarithmic differentiation” possible for very messy functions.</p>
+  </div>
+</section>
+
+<!-- ================= TRY IT ================= -->
+<section class="step" id="try" data-title="Your turn">
+  <div class="prose"><p>Give exact answers when you can. For example, type <span class="kbd">ln(5)/3</span> rather than a rounded decimal, unless the problem says otherwise.</p></div>
+  <div class="practice-list" id="practice"></div>
+</section>
+
+<!-- ================= CHECK ================= -->
+<section class="step" id="check" data-title="Before you move on">
+  <div class="prose"><p>Sort the real log and exponent laws from the fakes. Assume all variables are positive.</p></div>
+  <div class="tf" id="tf"></div>
+</section>
+
+</main>
+
+<script src="lesson.js"></script>
+<script>
+Lesson.ready(() => {
+  const { Plot, practiceList, worked, trueFalse, typeset } = Lesson;
+
+  // ---------------- Hunting for e ----------------
+  const ep = Plot(document.getElementById('ePlot'), { x: [-3, 3], y: [-1.5, 6], h: 360 });
+  const bSlider = document.getElementById('bSlider');
+  let found = false;
+  function drawE() {
+    const b = bSlider.value / 100, m = Math.log(b);
+    ep.draw(ep.fn(x => x + 1, 'ghost') + ep.fn(x => b ** x, 'c1') + ep.fn(x => 1 + m * x, 'c3') + ep.dot(0, 1, 'c3 solid', 5) +
+      ep.text(1.6, b ** 1.6, `y = ${b.toFixed(2)}ˣ`, 'lbl', 10, 0));
+    document.getElementById('bOut').textContent = b.toFixed(2);
+    const r = document.getElementById('eRead');
+    r.innerHTML = `Slope of tangent at \\( (0,1) \\): <b class="mono">${m.toFixed(3)}</b> &nbsp;·&nbsp; target: <b class="mono">1.000</b>`;
+    typeset(r);
+    const fb = document.getElementById('eFb');
+    if (Math.abs(m - 1) < 0.005) {
+      found = true;
+      fb.className = 'feedback good';
+      fb.innerHTML = `<b class="tag-good">You found it.</b> With b ≈ ${b.toFixed(2)}, the tangent line lands on \\( y = x + 1 \\). This number is <b>e</b>.`;
+      typeset(fb);
+    } else if (!found) {
+      fb.className = 'feedback';
+      fb.innerHTML = '';
+    } else {
+      fb.className = 'feedback near';
+      fb.textContent = m > 1 ? 'Too steep now. You passed e.' : 'Too shallow now. e is a little higher.';
+    }
+  }
+  bSlider.addEventListener('input', drawE);
+  drawE();
+
+  // ---------------- Compound interest ----------------
+  const NS = [[1, 'yearly'], [2, 'twice a year'], [4, 'quarterly'], [12, 'monthly'], [52, 'weekly'], [365, 'daily'], [8760, 'hourly'], [525600, 'every minute'], [31536000, 'every second']];
+  const nSlider = document.getElementById('nSlider');
+  function drawN() {
+    const [n, name] = NS[+nSlider.value], v = (1 + 1 / n) ** n;
+    document.getElementById('nOut').textContent = name;
+    const r = document.getElementById('nRead');
+    r.innerHTML = `\\( n = ${n.toLocaleString('en-US').replace(/,/g, '{,}')} \\): &nbsp; \\( \\left(1 + \\tfrac{1}{n}\\right)^n = \\) <b class="mono">$${v.toFixed(6)}</b>` +
+      (+nSlider.value >= 6 ? '<br><span class="muted">It’s leveling off. Compounding faster and faster approaches a limit, and that limit is e.</span>' : '');
+    typeset(r);
+  }
+  nSlider.addEventListener('input', drawN);
+  drawN();
+
+  worked(document.getElementById('wx1'), {
+    problem: 'Solve \\( 3e^{2x} = 12 \\) exactly.',
+    steps: [
+      { show: 'Isolate the exponential: \\( e^{2x} = 4 \\).', why: 'Clear everything away from the exponential before taking a log.' },
+      { show: 'Take \\( \\ln \\) of both sides: \\( \\ln(e^{2x}) = \\ln 4 \\), so \\( 2x = \\ln 4 \\).', why: '\\( \\ln \\) undoes \\( e^{(\\cdot)} \\) and brings the exponent down.' },
+      { show: 'Solve: \\( x = \\dfrac{\\ln 4}{2} \\).', why: 'That’s an exact answer. You could also write it as \\( \\ln 2 \\), since \\( \\tfrac12 \\ln 4 = \\ln 4^{1/2} \\).' },
+      { show: 'Check: \\( 3e^{2 \\cdot \\ln 2} = 3e^{\\ln 4} = 3 \\cdot 4 = 12 \\). ✓' }
+    ]
+  });
+
+  // ---------------- Practice ----------------
+  practiceList(document.getElementById('practice'), [
+    { id: 'el-eval', tag: 'Evaluate',
+      prompt: '<p>Evaluate \\( \\log_3\\!\\left(\\tfrac{1}{9}\\right) \\) without a calculator.</p>',
+      rungs: [
+        ['Nudge', 'Ask the log question: 3 to <i>what power</i> gives \\( \\tfrac19 \\)?'],
+        ['Hint', 'You know \\( 3^2 = 9 \\). What kind of exponent turns a number into its reciprocal?'],
+        ['Strategy', 'Use \\( b^{-n} = \\dfrac{1}{b^n} \\).']
+      ],
+      answer: { type: 'number', value: -2 },
+      mistakes: [{ value: 2, msg: '\\( 3^2 = 9 \\), not \\( \\tfrac19 \\). What changes when the result is a fraction smaller than 1?' }],
+      success: 'Logs of numbers between 0 and 1 are negative, because you need a negative exponent to shrink.' },
+
+    { id: 'el-simplify', tag: 'Simplify',
+      prompt: '<p>Simplify \\( \\ln(e^3) + e^{\\ln 5} \\).</p>',
+      rungs: [
+        ['Nudge', '\\( \\ln \\) and \\( e^{(\\cdot)} \\) undo each other.'],
+        ['Hint', 'Simplify each term on its own. What does \\( \\ln(e^{\\square}) \\) give back? What about \\( e^{\\ln \\square} \\)?'],
+        ['Strategy', 'Each term collapses to the number inside. Add the two results.']
+      ],
+      answer: { type: 'number', value: 8 },
+      success: 'Undoing pairs like these are the main tool for solving equations with e and ln.' },
+
+    { id: 'el-solve', tag: 'Solve',
+      prompt: '<p>Solve \\( e^{2x} = 7 \\). Give an exact answer.</p>',
+      label: 'x =',
+      rungs: [
+        ['Nudge', 'To get x out of the exponent, apply the function that undoes \\( e^{(\\cdot)} \\).'],
+        ['Hint', 'Take \\( \\ln \\) of both sides. The left side becomes \\( 2x \\).'],
+        ['Strategy', 'After \\( 2x = \\ln 7 \\), there’s one more step to isolate x.']
+      ],
+      answer: { type: 'number', value: Math.log(7) / 2 },
+      mistakes: [
+        { value: Math.log(7) - 2, msg: '\\( 2x \\) means 2 <i>times</i> x. What undoes multiplying by 2?' },
+        { value: Math.log(3.5), msg: 'Divide \\( \\ln 7 \\) by 2. That’s not the same as \\( \\ln(7/2) \\).' },
+        { value: 3.5, msg: 'The 7 is inside an exponential equation, so you need a log to reach x.' }
+      ],
+      success: 'Isolate, take ln, solve. That three-step pattern solves most exponential equations.' },
+
+    { id: 'el-log-eq', tag: 'Solve',
+      prompt: '<p>Solve \\( \\log_2 x + \\log_2(x - 2) = 3 \\). If more than one value comes out of your algebra, list only the ones that actually work.</p>',
+      label: 'x =', format: 'List every solution, separated by commas.',
+      rungs: [
+        ['Nudge', 'Combine the two logs into one using a log law.'],
+        ['Hint', '\\( \\log_2 x + \\log_2(x-2) = \\log_2\\big(x(x-2)\\big) \\). Then rewrite \\( \\log_2(\\ldots) = 3 \\) in exponential form.'],
+        ['Strategy', 'You’ll get a quadratic. Solve it, then plug each candidate into the <b>original</b> equation. A log of a negative number is undefined.']
+      ],
+      answer: { type: 'set', values: [4] },
+      success: 'Checking candidates in the original equation catches extraneous solutions. The log laws only hold where every log is defined.' },
+
+    { id: 'el-model', tag: 'Application',
+      prompt: '<p>A bacteria culture grows according to \\( P(t) = 500e^{0.04t} \\), where \\( t \\) is in hours. After how many hours will the population reach 1500? You can give an exact answer or a decimal to two places.</p>',
+      label: 't =',
+      rungs: [
+        ['Nudge', 'Set \\( P(t) = 1500 \\) and solve for t.'],
+        ['Hint', 'Divide by 500 first. You should get \\( e^{0.04t} = 3 \\).'],
+        ['Strategy', 'Take ln of both sides, then divide by 0.04.']
+      ],
+      answer: { type: 'number', value: Math.log(3) / 0.04, acceptDecimal: true },
+      mistakes: [
+        { value: Math.log(1500) / 0.04, msg: 'Divide by the starting amount 500 <i>before</i> taking ln.' },
+        { value: 3 / 0.04, msg: 'Close, but the 3 is inside an exponential. You need \\( \\ln 3 \\).' }
+      ],
+      success: 'Tripling takes the same time no matter when you start. That’s the signature of exponential growth.' },
+
+    { id: 'el-condense', tag: 'Log laws',
+      prompt: '<p>Write as a <b>single</b> logarithm: \\( 2\\ln x - \\ln(x + 1) \\).</p>',
+      placeholder: 'ln( ... )',
+      form: raw => (raw.toLowerCase().match(/ln|log/g) || []).length === 1,
+      formMsg: 'That’s equivalent, and the algebra is right. Now combine it into <b>one</b> ln.',
+      rungs: [
+        ['Nudge', 'Deal with the coefficient 2 first.'],
+        ['Hint', 'A number in front of a log can move up into the exponent: \\( 2\\ln x = \\ln(\\,?\\,) \\).'],
+        ['Strategy', 'Then a difference of logs is the log of a quotient.']
+      ],
+      answer: { type: 'expr', vars: ['x'], fn: x => 2 * Math.log(x) - Math.log(x + 1), domain: [0.3, 5] },
+      mistakes: [
+        { fn: x => Math.log(2 * x / (x + 1)), msg: 'The 2 isn’t a multiplier on x. \\( 2\\ln x \\) becomes \\( \\ln(x^{2}) \\).' },
+        { fn: x => Math.log(x * x * (x + 1)), msg: 'A <i>minus</i> between logs means division, not multiplication.' }
+      ],
+      success: 'Going both directions (expanding and condensing) is the skill logarithmic differentiation needs.' }
+  ]);
+
+  trueFalse(document.getElementById('tf'), [
+    { s: '\\( \\ln(ab) = \\ln a + \\ln b \\)', ok: true, why: 'A product inside becomes a sum outside.' },
+    { s: '\\( \\ln(a + b) = \\ln a + \\ln b \\)', ok: false, why: 'Try \\( a = b = 1 \\): the left side is \\( \\ln 2 \\approx 0.69 \\), the right side is 0.' },
+    { s: '\\( \\ln(x^5) = 5\\ln x \\)', ok: true, why: 'An exponent inside comes out front as a multiplier.' },
+    { s: '\\( (\\ln x)^2 = 2\\ln x \\)', ok: false, why: 'The square is on the whole log, not on x. Try \\( x = e \\): the left side is 1, the right side is 2.' },
+    { s: '\\( e^{a+b} = e^a \\cdot e^b \\)', ok: true, why: 'Adding exponents means multiplying powers of the same base.' },
+    { s: '\\( \\dfrac{\\ln 8}{\\ln 2} = \\ln 4 \\)', ok: false, why: '\\( \\ln 8 = 3\\ln 2 \\), so the quotient is exactly 3, while \\( \\ln 4 \\approx 1.39 \\).' }
+  ]);
+});
+</script>
+</body>
+</html>

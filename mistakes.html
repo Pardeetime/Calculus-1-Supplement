@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Common Mistakes</title>
+<meta name="description" content="Calculus I Companion: spot the error in worked solutions. Each one contains a classic Calculus I mistake.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;1,6..72,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="lesson.css">
+<script src="site.js"></script>
+<script src="course.js"></script>
+<style>
+  .mk-bar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; margin: 20px 0 16px; }
+  .mk-list { display: grid; gap: 16px; max-width: 52em; }
+  .mk { padding: 18px; }
+  .mk .mk-head { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; margin-bottom: 6px; }
+  .mk .mk-unit { font: 500 12px var(--font-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--uc); }
+  .mk .mk-task { font-size: 17px; margin-bottom: 10px; }
+  .mk-lines { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; counter-reset: ln; }
+  .mk-lines button { counter-increment: ln; width: 100%; text-align: left; display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 10px; align-items: center; border: 1px solid var(--line); background: var(--surface); border-radius: 10px; padding: 8px 12px; cursor: pointer; font-size: 16px; overflow-x: auto; }
+  .mk-lines button::before { content: counter(ln); font: 500 12px var(--font-mono); color: var(--ink-3); }
+  .mk-lines button:hover { border-color: var(--ink-3); }
+  .mk-lines button.ok { border-color: var(--line); opacity: .6; }
+  .mk-lines button.found { border-color: var(--warn); background: var(--warn-soft); opacity: 1; }
+  .mk .fb { margin-top: 10px; }
+  .mk.done { border-color: var(--good); }
+</style>
+</head>
+<body data-tool="Common mistakes" data-sub="Each worked solution below contains one incorrect step. Click the step you think is wrong.">
+<main class="wrap">
+  <div class="mk-bar">
+    <div class="seg" id="uBtns" role="group" aria-label="Filter by unit"></div>
+    <span class="chip" id="mkScore"></span>
+  </div>
+  <div class="mk-list" id="mkList"></div>
+</main>
+
+<script src="lesson.js"></script>
+<script>
+Lesson.ready(() => {
+  const { esc, typeset } = Lesson;
+  // { u: unit id, task, lines: [tex...], bad: index of the wrong line, why, hint, href }
+  const MK = [
+    { u: 'u0', task: 'Simplify \\( f(a+h) \\) for \\( f(x) = x^2 + 1 \\).', lines: ['f(a+h) = (a+h)^2 + 1', '= a^2 + h^2 + 1'], bad: 1,
+      why: '\\( (a+h)^2 = a^2 + 2ah + h^2 \\). Squaring a sum doesn’t square each term separately. Test it: \\( (3+1)^2 = 16 \\), but \\( 3^2 + 1^2 = 10 \\).', href: 'functions.html' },
+    { u: 'u0', task: 'Expand \\( \\ln(x^2 + 1) \\).', lines: ['\\ln(x^2 + 1) = \\ln(x^2) + \\ln 1', '= 2\\ln x + 0 = 2\\ln x'], bad: 0,
+      why: 'Logs turn <i>products</i> into sums: \\( \\ln(ab) = \\ln a + \\ln b \\). There’s no rule for the log of a sum. \\( \\ln(x^2 + 1) \\) is already as simple as it gets.', href: 'exp-log.html' },
+    { u: 'u0', task: 'Find the inverse of \\( f(x) = 2x + 6 \\).', lines: ['y = 2x + 6', 'f^{-1}(x) = \\dfrac{1}{2x + 6}'], bad: 1,
+      why: '\\( f^{-1} \\) means the inverse function, not the reciprocal. Solve \\( y = 2x + 6 \\) for x, then swap: \\( f^{-1}(x) = \\tfrac{x - 6}{2} \\).', href: 'inverse.html' },
+    { u: 'u1', task: 'Find \\( \\displaystyle\\lim_{x\\to2}\\frac{x^2 - 4}{x - 2} \\).', lines: ['\\text{Substitute } x = 2: \\ \\tfrac{0}{0}', '\\text{So the limit does not exist.}'], bad: 1,
+      why: '0/0 is an indeterminate form, a signal to do algebra, not an answer. Factor: \\( \\tfrac{(x-2)(x+2)}{x-2} = x + 2 \\to 4 \\).', href: 'limit-laws.html' },
+    { u: 'u1', task: 'Find \\( \\displaystyle\\lim_{x\\to0}\\frac{\\sin 3x}{x} \\).', lines: ['\\text{We know } \\tfrac{\\sin\\theta}{\\theta} \\to 1', '\\text{so } \\displaystyle\\lim_{x\\to0}\\frac{\\sin 3x}{x} = 1'], bad: 1,
+      why: 'The famous limit needs the angle and the denominator to match. Rewrite as \\( 3\\cdot\\tfrac{\\sin 3x}{3x} \\to 3 \\).', href: 'squeeze.html' },
+    { u: 'u1', task: 'Find \\( \\displaystyle\\lim_{x\\to-\\infty}\\frac{\\sqrt{x^2 + 1}}{x} \\).', lines: ['\\text{Divide by } x: \\ \\dfrac{\\sqrt{x^2+1}/x}{1}', '\\sqrt{x^2+1}/x = \\sqrt{(x^2+1)/x^2} = \\sqrt{1 + 1/x^2}', '\\to \\sqrt{1} = 1'], bad: 1,
+      why: 'Moving x inside the root assumes \\( x = \\sqrt{x^2} \\), which is false for negative x. As \\( x \\to -\\infty \\), \\( x = -\\sqrt{x^2} \\), so the limit is −1.', href: 'limits-infinity.html' },
+    { u: 'u2', task: 'Find the tangent line to \\( f(x) = x^2 \\) at \\( x = 3 \\).', lines: ['f(3) = 9,\\ \\ f\'(x) = 2x', '\\text{slope} = f(3) = 9', 'y = 9 + 9(x - 3)'], bad: 1,
+      why: 'The slope is \\( f\'(3) = 6 \\), not \\( f(3) \\). The height and the slope are different numbers. The correct line is \\( y = 9 + 6(x - 3) \\).', href: 'derivative-point.html' },
+    { u: 'u3', task: 'Differentiate \\( y = x^2 e^x \\).', lines: ['\\text{product of } x^2 \\text{ and } e^x', 'y\' = (2x)(e^x) = 2xe^x'], bad: 1,
+      why: 'The derivative of a product isn’t the product of the derivatives. Product rule: \\( 2xe^x + x^2e^x \\).', href: 'product-quotient.html' },
+    { u: 'u3', task: 'Differentiate \\( y = \\sin(x^2) \\).', lines: ['\\text{outside: } \\sin,\\ \\text{inside: } x^2', 'y\' = \\cos(x^2)'], bad: 1,
+      why: 'The Chain Rule multiplies by the inside derivative: \\( y\' = 2x\\cos(x^2) \\).', href: 'chain-rule.html' },
+    { u: 'u3', task: 'Differentiate \\( y = \\dfrac{x}{x^2 + 1} \\).', lines: ['\\text{high} = x,\\ \\text{low} = x^2 + 1', 'y\' = \\dfrac{x\\cdot 2x - (x^2 + 1)\\cdot 1}{(x^2+1)^2}', '= \\dfrac{x^2 - 1}{(x^2+1)^2}'], bad: 1,
+      why: 'The subtraction is in the wrong order. It’s <b>low</b> d-high minus high d-low: \\( \\tfrac{(x^2+1)(1) - x(2x)}{(x^2+1)^2} = \\tfrac{1 - x^2}{(x^2+1)^2} \\). The sign of the whole answer flipped.', href: 'product-quotient.html' },
+    { u: 'u3', task: 'Find \\( \\frac{dy}{dx} \\) for \\( x^2 + y^2 = 25 \\).', lines: ['\\tfrac{d}{dx}: \\ 2x + 2y = 0', 'y\' = \\ldots'], bad: 0,
+      why: 'y depends on x, so \\( \\frac{d}{dx}y^2 = 2y\\,y\' \\). Without the \\( y\' \\) there’s nothing to solve for. Correct: \\( 2x + 2yy\' = 0 \\), so \\( y\' = -x/y \\).', href: 'implicit.html' },
+    { u: 'u3', task: 'A ladder 10 ft long slides away from a wall at 1 ft/s. How fast does the top fall when the bottom is 6 ft out?', lines: ['x^2 + y^2 = 100', '\\text{At the moment: } 6^2 + y^2 = 100', '\\tfrac{d}{dt}: \\ 0 + 2y\\,y\' = 0 \\Rightarrow y\' = 0'], bad: 1,
+      why: 'Substituting x = 6 <i>before</i> differentiating turns a changing quantity into a constant. Differentiate first: \\( 2xx\' + 2yy\' = 0 \\), then plug in x = 6, y = 8, x′ = 1 to get y′ = −3/4 ft/s.', href: 'related-rates.html' },
+    { u: 'u4', task: 'Find \\( \\displaystyle\\lim_{x\\to0}\\frac{x + 1}{x + 2} \\).', lines: ['\\text{L’Hôpital: } \\displaystyle\\lim_{x\\to0}\\frac{1}{1}', '= 1'], bad: 0,
+      why: 'L’Hôpital only applies to 0/0 or ∞/∞. Here substitution gives \\( \\tfrac12 \\), and that’s the limit.', href: 'lhopital.html' },
+    { u: 'u4', task: 'Classify the critical number of \\( f(x) = x^4 \\).', lines: ['f\'(x) = 4x^3 = 0 \\Rightarrow x = 0', 'f\'\'(0) = 0', '\\text{So } x = 0 \\text{ is neither a max nor a min.}'], bad: 2,
+      why: '\\( f\'\'(c) = 0 \\) means the Second Derivative Test is <b>inconclusive</b>, not “neither.” The First Derivative Test shows − to +, so x = 0 is a local (and absolute) min.', href: 'shape.html' },
+    { u: 'u4', task: 'An open box is made from a 10 × 16 sheet by cutting x × x corners. Maximize the volume.', lines: ['V = x(10 - 2x)(16 - 2x)', 'V\' = 12x^2 - 104x + 160 = 0', 'x = 2 \\text{ or } x = \\tfrac{20}{3}', '\\text{Largest volume at } x = \\tfrac{20}{3}'], bad: 3,
+      why: 'x = 20/3 ≈ 6.67 is outside the physical domain \\( 0 \\lt x \\lt 5 \\), since you can’t cut more than half of the 10-inch side. The answer is x = 2.', href: 'optimization.html' },
+    { u: 'u5', task: 'Evaluate \\( \\displaystyle\\int_0^{\\pi}\\sin x\\,dx \\).', lines: ['\\int \\sin x\\,dx = \\cos x', '\\Big[\\cos x\\Big]_0^\\pi = -1 - 1 = -2'], bad: 0,
+      why: 'The antiderivative of \\( \\sin x \\) is \\( -\\cos x \\). Check: \\( (\\cos x)\' = -\\sin x \\). Correct value: \\( [-\\cos x]_0^\\pi = 2 \\).', href: 'ftc.html' },
+    { u: 'u5', task: 'Evaluate \\( \\displaystyle\\int_0^1 x(x^2+1)^3\\,dx \\).', lines: ['u = x^2 + 1,\\ \\ du = 2x\\,dx', '= \\tfrac12\\displaystyle\\int_0^1 u^3\\,du', '= \\tfrac12\\cdot\\tfrac14 = \\tfrac18'], bad: 1,
+      why: 'The limits must change to u-values: when x = 0, u = 1, and when x = 1, u = 2. Correct: \\( \\tfrac12\\int_1^2 u^3\\,du = \\tfrac{15}{8} \\).', href: 'substitution.html' },
+    { u: 'u5', task: 'Find \\( \\displaystyle\\int x\\cdot x\\,dx \\).', lines: ['\\int x\\,dx = \\tfrac{x^2}{2}', '\\int x\\cdot x\\,dx = \\tfrac{x^2}{2}\\cdot\\tfrac{x^2}{2} = \\tfrac{x^4}{4} + C'], bad: 1,
+      why: 'There’s no product rule for integrals that works factor by factor. Multiply first: \\( \\int x^2\\,dx = \\tfrac{x^3}{3} + C \\). Differentiating \\( \\tfrac{x^4}{4} \\) gives \\( x^3 \\), not \\( x^2 \\).', href: 'antiderivatives.html' },
+    { u: 'u6', task: 'Find the total area between \\( y = x^3 \\) and \\( y = x \\).', lines: ['\\text{Intersections: } x = -1, 0, 1', 'A = \\displaystyle\\int_{-1}^{1}(x - x^3)\\,dx', '= 0'], bad: 1,
+      why: 'The curves cross at x = 0, so “top” changes. One integral lets the two lobes cancel. Split at 0: each lobe is ¼, for a total of ½.', href: 'area-between.html' }
+  ];
+  const found = new Set();
+  let filter = 'all';
+  const uOf = id => UNITS.find(u => u.id === id);
+  document.getElementById('uBtns').innerHTML = `<button type="button" data-u="all" aria-pressed="true">All</button>` + UNITS.filter(u => MK.some(m => m.u === u.id)).map(u => `<button type="button" data-u="${u.id}" aria-pressed="false">Unit ${u.num}</button>`).join('');
+  function score() { document.getElementById('mkScore').textContent = `${found.size} of ${MK.length} found`; }
+  function render() {
+    const list = document.getElementById('mkList');
+    list.innerHTML = MK.map((m, i) => {
+      if (filter !== 'all' && m.u !== filter) return '';
+      const u = uOf(m.u);
+      return `<article class="card mk${found.has(i) ? ' done' : ''}" data-i="${i}" style="--uc:${u.color}">
+        <div class="mk-head"><span class="mk-unit">Unit ${u.num} · ${esc(u.title)}</span>${found.has(i) ? '<span class="p-solved">✓ Found</span>' : ''}</div>
+        <div class="mk-task">${m.task}</div>
+        <ol class="mk-lines">${m.lines.map((l, k) => `<li><button type="button" data-k="${k}" class="${found.has(i) ? (k === m.bad ? 'found' : 'ok') : ''}">\\( ${l} \\)</button></li>`).join('')}</ol>
+        <div class="feedback fb" aria-live="polite">${found.has(i) ? `<b class="tag-good">Found it.</b> ${m.why} <a href="${m.href}">Review the lesson →</a>` : ''}</div>
+      </article>`;
+    }).join('');
+    typeset(list);
+    list.querySelectorAll('.feedback').forEach(f => { f.className = 'feedback fb' + (f.innerHTML ? ' good' : ''); });
+  }
+  document.getElementById('mkList').addEventListener('click', e => {
+    const b = e.target.closest('.mk-lines button'); if (!b) return;
+    const card = b.closest('.mk'), i = +card.dataset.i, k = +b.dataset.k, m = MK[i];
+    if (found.has(i)) return;
+    const fb = card.querySelector('.fb');
+    if (k === m.bad) {
+      found.add(i); score();
+      b.classList.add('found');
+      card.classList.add('done');
+      card.querySelectorAll('.mk-lines button').forEach((x, j) => { if (j !== k) x.classList.add('ok'); });
+      fb.className = 'feedback fb good';
+      fb.innerHTML = `<b class="tag-good">Found it.</b> ${m.why} <a href="${m.href}">Review the lesson →</a>`;
+    } else {
+      b.classList.add('ok');
+      fb.className = 'feedback fb try';
+      fb.innerHTML = `<b class="tag-try">Line ${k + 1} is fine.</b> Keep looking. Check each step by testing it with actual numbers.`;
+    }
+    typeset(fb);
+  });
+  document.getElementById('uBtns').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    filter = b.dataset.u;
+    document.querySelectorAll('#uBtns button').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+    render();
+  });
+  score(); render();
+});
+</script>
+</body>
+</html>

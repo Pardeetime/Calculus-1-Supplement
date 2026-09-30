@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Inverse Functions</title>
+<meta name="description" content="Calculus I Companion, Topic 0.4: one-to-one functions, the horizontal line test, finding inverses and restricting domains.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;1,6..72,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="lesson.css">
+<script src="site.js"></script>
+<script src="course.js"></script>
+</head>
+<body data-topic="inverse">
+<main class="wrap">
+
+<!-- ================= SEE IT ================= -->
+<section class="step" id="see" data-title="The mirror line">
+  <div class="prose">
+    <p>An inverse function runs a function <b>backwards</b>: outputs go in and the original inputs come out. On a graph, that means swapping every point \( (a, b) \) to \( (b, a) \). Move the point below and watch where its swapped twin lands.</p>
+  </div>
+
+  <div class="card widget">
+    <div class="row" style="margin-bottom:12px"><span class="muted" style="font-size:14px">Function:</span><div class="seg" id="fnBtns" role="group" aria-label="Choose a function"></div></div>
+    <div class="widget-grid">
+      <svg id="invPlot" role="img" aria-label="A function, its reflection across y equals x, and a point with its mirror"></svg>
+      <div>
+        <div class="ctls">
+          <div class="ctl"><label for="aSlider">Input <i>a</i></label><input id="aSlider" type="range" min="-300" max="300" value="100"><output id="aOut"></output></div>
+        </div>
+        <div class="readout" id="invRead" aria-live="polite"></div>
+        <div class="row" style="margin-top:12px">
+          <button class="btn" type="button" id="showMirror" aria-pressed="false">Show whole mirror image</button>
+          <button class="btn" type="button" id="showHLT" aria-pressed="false">Horizontal line test</button>
+        </div>
+        <div class="ctls" id="hltCtl" hidden><div class="ctl"><label for="cSlider">Line at y =</label><input id="cSlider" type="range" min="-450" max="450" value="150"><output id="cOut"></output></div></div>
+        <div class="row" id="restrictRow" style="margin-top:12px" hidden><button class="btn" type="button" id="restrict" aria-pressed="false">Restrict domain to x ≥ 0</button></div>
+        <div class="observe" id="invNote"></div>
+      </div>
+    </div>
+  </div>
+  <ol class="observe prose">
+    <li>Where do the point and its twin meet? What’s special about the dotted line?</li>
+    <li>Choose \( x^2 \) and show the whole mirror image. Would that mirror image pass the <i>vertical</i> line test?</li>
+    <li>Now run the <i>horizontal</i> line test on \( x^2 \). How is that connected to question 2?</li>
+  </ol>
+</section>
+
+<!-- ================= BUILD IT ================= -->
+<section class="step" id="build" data-title="When a function can be undone">
+  <div class="prose">
+    <p>A function is <b>one-to-one</b> if different inputs always give different outputs. Only one-to-one functions have inverses. If two inputs share an output, then running backwards from that output gives two answers, and that isn’t a function.</p>
+  </div>
+  <div class="callout idea"><b>Horizontal line test</b>
+    <p>A function is one-to-one exactly when <b>every horizontal line hits its graph at most once</b>. Reflecting across \( y = x \) turns horizontal lines into vertical ones, so this is the vertical line test applied to the mirror image.</p>
+  </div>
+  <div class="prose">
+    <p>If \( f \) is one-to-one, its inverse \( f^{-1} \) is defined by</p>
+    <div class="display">\[ f^{-1}(b) = a \quad\Longleftrightarrow\quad f(a) = b. \]</div>
+    <p>Each one cancels the other: \( f^{-1}(f(x)) = x \) and \( f(f^{-1}(x)) = x \). The <b>domain</b> of \( f^{-1} \) is the <b>range</b> of \( f \), and the other way around.</p>
+  </div>
+  <div class="callout warn"><b>Notation trap</b>
+    <p>\( f^{-1}(x) \) does <b>not</b> mean \( \dfrac{1}{f(x)} \). The −1 here means “inverse function,” not “reciprocal.”</p>
+  </div>
+
+  <h3>Finding an inverse algebraically</h3>
+  <div class="prose">
+    <ol>
+      <li>Write \( y = f(x) \).</li>
+      <li>Solve for \( x \) in terms of \( y \). This is the “run it backwards” step.</li>
+      <li>Swap the letters so the inverse uses \( x \) as its input: \( f^{-1}(x) = \ldots \)</li>
+      <li>Check the domain. It should match the range of \( f \).</li>
+    </ol>
+  </div>
+  <div id="wx1"></div>
+
+  <h3>Restricting the domain</h3>
+  <div class="prose">
+    <p>Some useful functions aren’t one-to-one, but you can keep just one piece of them. \( x^2 \) fails the horizontal line test, but on \( [0, \infty) \) it passes, and its inverse is \( \sqrt{x} \). That’s why \( \sqrt{9} = 3 \) and not \( \pm 3 \).</p>
+  </div>
+  <div class="callout calc"><b>Why calculus cares</b>
+    <p>\( \ln x \) is defined as the inverse of \( e^x \). The inverse trig functions (arcsin, arctan, …) come from restricting sine and tangent. In Unit 3 you’ll find their derivatives using exactly the mirror picture above.</p>
+  </div>
+</section>
+
+<!-- ================= TRY IT ================= -->
+<section class="step" id="try" data-title="Your turn">
+  <div class="practice-list" id="practice"></div>
+</section>
+
+<!-- ================= CHECK ================= -->
+<section class="step" id="check" data-title="Before you move on">
+  <div class="quiz" id="quiz"></div>
+</section>
+
+</main>
+
+<script src="lesson.js"></script>
+<script>
+Lesson.ready(() => {
+  const { Plot, practiceList, worked, quiz, typeset } = Lesson;
+
+  // ---------------- Mirror explorer ----------------
+  const FNS = [
+    { lbl: '2x + 1', tex: 'f(x) = 2x + 1', f: x => 2 * x + 1, inv: 'f^{-1}(x) = \\tfrac{x-1}{2}' },
+    { lbl: 'x³', tex: 'f(x) = x^3', f: x => x ** 3, inv: 'f^{-1}(x) = \\sqrt[3]{x}' },
+    { lbl: 'eˣ', tex: 'f(x) = e^x', f: Math.exp, inv: 'f^{-1}(x) = \\ln x' },
+    { lbl: 'x²', tex: 'f(x) = x^2', f: x => x * x, inv: null, restrictable: true }
+  ];
+  const ip = Plot(document.getElementById('invPlot'), { x: [-5, 5], y: [-5, 5], w: 420, h: 420 });
+  const aSlider = document.getElementById('aSlider'), cSlider = document.getElementById('cSlider');
+  let cur = 0, mirror = false, hlt = false, restricted = false;
+  document.getElementById('fnBtns').innerHTML = FNS.map((F, i) => `<button type="button" data-i="${i}">${F.lbl}</button>`).join('');
+
+  const lo = () => (FNS[cur].restrictable && restricted ? 0 : -5);
+  function hits(f, c) {
+    const out = [], a = lo(), n = 1000;
+    let px = a, pv = f(a) - c;
+    for (let i = 1; i <= n; i++) {
+      const x = a + (5 - a) * i / n, v = f(x) - c;
+      if (pv === 0) out.push(px);
+      else if (pv * v < 0) { let l = px, r = x; for (let k = 0; k < 40; k++) { const m = (l + r) / 2; (f(l) - c) * (f(m) - c) <= 0 ? r = m : l = m; } out.push((l + r) / 2); }
+      px = x; pv = v;
+    }
+    return out;
+  }
+  function drawInv() {
+    const F = FNS[cur];
+    const a = Math.max(lo(), aSlider.value / 100), b = F.f(a);
+    let s = ip.seg(-6, -6, 6, 6, 'mirror') + ip.text(4.2, 4.6, 'y = x', 'tick', -4, 0, 'end');
+    s += ip.fn(F.f, 'c1', { from: lo() });
+    if (F.restrictable && restricted) s += ip.fn(F.f, 'ghost', { to: 0 });
+    if (mirror) s += ip.param(t => F.f(t), t => t, lo(), 5, 'c2');
+    s += ip.seg(a, b, b, a, 'c3 thin');
+    let hitList = [];
+    if (hlt) {
+      const c = cSlider.value / 100;
+      hitList = hits(F.f, c);
+      s += ip.seg(-6, c, 6, c, 'c3') + hitList.map(x => `<circle class="hit" cx="${ip.sx(x)}" cy="${ip.sy(c)}" r="7"/>`).join('');
+      document.getElementById('cOut').textContent = c.toFixed(2);
+    }
+    s += ip.dot(a, b, 'c1', 7, ' data-handle="p" style="cursor:grab"') + ip.dot(b, a, 'c2 solid', 6);
+    ip.draw(s);
+    document.getElementById('aOut').textContent = a.toFixed(2);
+    const r = document.getElementById('invRead');
+    r.innerHTML = `\\( f(${a.toFixed(2)}) = ${b.toFixed(2)} \\), so the twin point is \\( (${b.toFixed(2)},\\ ${a.toFixed(2)}) \\).` +
+      (F.inv || restricted ? ` Running backwards: \\( f^{-1}(${b.toFixed(2)}) = ${a.toFixed(2)} \\).` : '');
+    typeset(r);
+    const note = document.getElementById('invNote');
+    let msg = '';
+    if (hlt) {
+      if (hitList.length > 1) msg = `<b>${hitList.length} hits.</b> Two inputs share the output ${(cSlider.value / 100).toFixed(2)}, so running backwards is ambiguous and there’s no inverse function.`;
+      else if (hitList.length === 1) msg = '<b>1 hit.</b> Only one input produces this output.';
+      else msg = 'No hits: this value isn’t in the range.';
+    }
+    if (F.restrictable && restricted) msg += (msg ? '<br>' : '') + 'Restricted to \\( x \\ge 0 \\), the mirror image is \\( y = \\sqrt{x} \\).';
+    else if (F.inv && mirror) msg += (msg ? '<br>' : '') + `The gold mirror image is \\( ${F.inv} \\).`;
+    note.innerHTML = msg;
+    typeset(note);
+    document.querySelectorAll('#fnBtns button').forEach((x, k) => x.setAttribute('aria-pressed', String(k === cur)));
+    document.getElementById('restrictRow').hidden = !F.restrictable;
+  }
+  document.getElementById('fnBtns').addEventListener('click', e => { const x = e.target.closest('button'); if (x) { cur = +x.dataset.i; restricted = false; document.getElementById('restrict').setAttribute('aria-pressed', 'false'); drawInv(); } });
+  aSlider.addEventListener('input', drawInv);
+  cSlider.addEventListener('input', drawInv);
+  ip.onDrag((h, pt) => { aSlider.value = Math.round(Math.max(-3, Math.min(3, pt.x)) * 100); drawInv(); });
+  const tog = (id, fn) => document.getElementById(id).addEventListener('click', e => { const on = e.currentTarget.getAttribute('aria-pressed') !== 'true'; e.currentTarget.setAttribute('aria-pressed', on); fn(on); drawInv(); });
+  tog('showMirror', v => { mirror = v; });
+  tog('showHLT', v => { hlt = v; document.getElementById('hltCtl').hidden = !v; });
+  tog('restrict', v => { restricted = v; });
+  drawInv();
+
+  worked(document.getElementById('wx1'), {
+    problem: 'Find the inverse of \\( f(x) = \\sqrt{2x - 4} \\), whose domain is \\( x \\ge 2 \\) and range is \\( [0, \\infty) \\).',
+    steps: [
+      { show: 'Write \\( y = \\sqrt{2x - 4} \\).' },
+      { show: 'Solve for x. Square both sides: \\( y^2 = 2x - 4 \\).', why: 'Squaring undoes the root. It’s safe here because \\( y \\ge 0 \\).' },
+      { show: '\\( 2x = y^2 + 4 \\), so \\( x = \\dfrac{y^2 + 4}{2} \\).' },
+      { show: 'Swap letters: \\( f^{-1}(x) = \\dfrac{x^2 + 4}{2} \\), for \\( x \\ge 0 \\).', why: 'The domain of \\( f^{-1} \\) is the range of \\( f \\). Without “\\( x \\ge 0 \\),” this would be a whole parabola, and it wouldn’t undo \\( f \\).' },
+      { show: 'Check: \\( f(f^{-1}(2)) = f(4) = \\sqrt{4} = 2 \\). ✓' }
+    ]
+  });
+
+  // ---------------- Practice ----------------
+  practiceList(document.getElementById('practice'), [
+    { id: 'inv-linear', tag: 'Find the inverse',
+      prompt: '<p>Find \\( f^{-1}(x) \\) for \\( f(x) = \\dfrac{2x + 1}{3} \\).</p>',
+      label: 'f⁻¹(x) =',
+      rungs: [
+        ['Nudge', 'Write \\( y = \\dfrac{2x+1}{3} \\) and solve for x.'],
+        ['Hint', 'Undo the operations in reverse order: \\( f \\) doubles, adds 1, then divides by 3. So first multiply by 3.'],
+        ['Strategy', 'Once you have x in terms of y, swap the letters. Check your answer: does \\( f^{-1}(f(1)) \\) give 1?']
+      ],
+      answer: { type: 'expr', vars: ['x'], fn: x => (3 * x - 1) / 2 },
+      mistakes: [
+        { fn: x => 3 / (2 * x + 1), msg: 'That’s the reciprocal \\( \\tfrac{1}{f(x)} \\). The inverse runs \\( f \\) <i>backwards</i>.' },
+        { fn: x => (3 * x + 1) / 2, msg: 'Check the sign. Undoing “add 1” means subtracting 1.' },
+        { fn: x => 3 * x / 2 - 1, msg: 'Order matters when undoing. The last thing \\( f \\) does is divide by 3, so undo that <i>first</i>.' }
+      ],
+      success: 'An inverse reverses the steps in reverse order, the same way you take off your shoes before your socks.' },
+
+    { id: 'inv-value', tag: 'Evaluate',
+      prompt: '<p>Let \\( f(x) = x^3 + 2 \\). Find \\( f^{-1}(10) \\).</p>',
+      rungs: [
+        ['Nudge', '\\( f^{-1}(10) \\) asks: which <i>input</i> to \\( f \\) produces the output 10?'],
+        ['Hint', 'Set \\( x^3 + 2 = 10 \\) and solve. You don’t need the whole inverse formula.'],
+        ['Strategy', 'Subtract 2, then take a cube root.']
+      ],
+      answer: { type: 'number', value: 2 },
+      mistakes: [
+        { value: 1002, msg: 'That’s \\( f(10) \\). The inverse goes the other way: 10 is the output, and you want the input.' },
+        { value: 1 / 1002, msg: '\\( f^{-1} \\) isn’t \\( 1/f \\). Which input gives the output 10?' }
+      ],
+      success: 'You don’t always need the inverse formula, since \\( f^{-1}(b) \\) is just “solve \\( f(x) = b \\).”' },
+
+    { id: 'inv-exp', tag: 'Find the inverse',
+      prompt: '<p>Find \\( f^{-1}(x) \\) for \\( f(x) = e^{x - 1} \\).</p>',
+      label: 'f⁻¹(x) =',
+      rungs: [
+        ['Nudge', 'Write \\( y = e^{x-1} \\). What undoes an exponential?'],
+        ['Hint', 'Take \\( \\ln \\) of both sides: \\( \\ln y = x - 1 \\).'],
+        ['Strategy', 'Solve for x, then swap letters.']
+      ],
+      answer: { type: 'expr', vars: ['x'], fn: x => Math.log(x) + 1, domain: [0.2, 6] },
+      mistakes: [
+        { fn: x => Math.log(x - 1), msg: 'The “− 1” is in the exponent of \\( f \\), so after taking ln it’s attached to x, not inside the log.' },
+        { fn: x => Math.log(x) - 1, msg: 'Check the sign. If \\( \\ln y = x - 1 \\), what is x?' }
+      ],
+      success: 'The range of \\( e^{x-1} \\) is \\( (0,\\infty) \\), and that’s exactly the domain of \\( \\ln x + 1 \\).' },
+
+    { id: 'inv-restrict', tag: 'Restrict the domain',
+      prompt: '<p>The function \\( g(x) = x^2 - 4x \\) is not one-to-one. If we restrict it to \\( [a, \\infty) \\), what is the <b>smallest</b> value of \\( a \\) that makes it one-to-one?</p>',
+      label: 'a =',
+      rungs: [
+        ['Nudge', 'Sketch the parabola. Where does it stop going down and start going up?'],
+        ['Hint', 'A parabola passes the horizontal line test on either side of its vertex. Find the vertex.'],
+        ['Strategy', 'Complete the square, or use \\( x = -\\tfrac{b}{2a} \\) for the vertex of \\( ax^2 + bx + c \\).']
+      ],
+      answer: { type: 'number', value: 2 },
+      mistakes: [
+        { value: 4, msg: '\\( x = 4 \\) is where the graph crosses the x-axis. Is it already one-to-one on a larger interval than that?' },
+        { value: 0, msg: 'Between 0 and the vertex, the graph is still going down, and it comes back up to those same heights later.' },
+        { value: -2, msg: 'The vertex is at \\( x = -\\tfrac{b}{2a} \\), and here \\( b = -4 \\). Watch the signs.' }
+      ],
+      success: 'Turning points are where one-to-one-ness breaks. In Unit 4 you’ll find them with derivatives.' },
+
+    { id: 'inv-domain', tag: 'Domain swap',
+      prompt: '<p>\\( f(x) = \\sqrt{x - 3} \\) has domain \\( [3, \\infty) \\). What is the <b>domain</b> of \\( f^{-1} \\)?</p>',
+      rungs: [
+        ['Nudge', 'The inverse accepts exactly the values that \\( f \\) produces.'],
+        ['Hint', 'So find the <i>range</i> of \\( f \\). What outputs can a square root give?'],
+        ['Strategy', 'The smallest output happens at \\( x = 3 \\). Does it have a largest output?']
+      ],
+      answer: { type: 'interval', value: '[0,inf)' },
+      mistakes: [{ value: '[3,inf)', msg: 'That’s the domain of \\( f \\). Domain and range swap for the inverse.' }],
+      success: 'Domain and range trade places, just like x and y do.' }
+  ]);
+
+  quiz(document.getElementById('quiz'), [
+    { q: 'What does \\( f^{-1}(x) \\) mean?',
+      choices: [
+        { t: '\\( \\dfrac{1}{f(x)} \\)', ok: false, why: 'That’s the reciprocal. The notation looks similar, but it means something different.' },
+        { t: 'The function that undoes \\( f \\)', ok: true, why: 'If \\( f \\) sends a to b, then \\( f^{-1} \\) sends b back to a.' },
+        { t: '\\( -f(x) \\)', ok: false, why: 'That reflects across the x-axis. The inverse reflects across \\( y = x \\).' }
+      ] },
+    { q: 'Which function has an inverse function on all real numbers?',
+      choices: [
+        { t: '\\( x^2 \\)', ok: false, why: '\\( (-2)^2 = 2^2 \\), so it fails the horizontal line test.' },
+        { t: '\\( |x| \\)', ok: false, why: '\\( |-3| = |3| \\). Two inputs share one output.' },
+        { t: '\\( x^3 \\)', ok: true, why: 'It’s always increasing, so every horizontal line crosses it exactly once.' },
+        { t: '\\( \\cos x \\)', ok: false, why: 'It repeats forever, so horizontal lines hit it infinitely often.' }
+      ] },
+    { q: 'The graph of \\( f^{-1} \\) is the graph of \\( f \\) reflected across…',
+      choices: [
+        { t: 'the x-axis', ok: false, why: 'That’s \\( -f(x) \\).' },
+        { t: 'the y-axis', ok: false, why: 'That’s \\( f(-x) \\).' },
+        { t: 'the line \\( y = x \\)', ok: true, why: 'Swapping every \\( (a,b) \\) to \\( (b,a) \\) is a reflection across \\( y = x \\).' }
+      ] }
+  ]);
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Newton’s Method</title>
+<meta name="description" content="Calculus I Companion, Topic 4.7: using tangent lines to hunt down roots, the Newton iteration formula, how fast it converges, and how it can fail.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;1,6..72,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="lesson.css">
+<script src="site.js"></script>
+<script src="course.js"></script>
+</head>
+<body data-topic="newton">
+<main class="wrap">
+
+<!-- ================= SEE IT ================= -->
+<section class="step" id="see" data-title="Ride the tangent to the root">
+  <div class="prose">
+    <p>To solve \( f(x) = 0 \), start with a guess \( x_0 \). Replace the curve with its tangent line there. A line is easy to solve, so find where the <b>tangent</b> hits zero and use that as your next guess. Repeat. Press <b>Step</b> and watch the guesses close in. Then try the last two functions to see how the method can go wrong.</p>
+  </div>
+  <div class="card widget">
+    <div class="seg" id="fBtns" role="group" aria-label="Choose a function" style="margin-bottom:12px"></div>
+    <div class="widget-grid">
+      <svg id="nPlot" role="img" aria-label="Newton's method iterations drawn as tangent lines"></svg>
+      <div>
+        <div class="display" id="nTex" style="font-size:18px"></div>
+        <div class="ctls"><div class="ctl"><label for="x0S">Start x₀</label><input id="x0S" type="range" min="-300" max="300" value="100"><output id="x0O"></output></div></div>
+        <div class="row" style="margin-top:10px"><button class="btn primary" type="button" id="step">Step</button><button class="btn" type="button" id="reset">Reset</button></div>
+        <div class="table-wrap"><table class="ref" id="nTable"></table></div>
+        <p class="observe" id="nNote"></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= BUILD IT ================= -->
+<section class="step" id="build" data-title="The formula">
+  <div class="prose">
+    <p>The tangent at \( x_n \) is \( y = f(x_n) + f'(x_n)(x - x_n) \). Set \( y = 0 \) and solve for x:</p>
+  </div>
+  <div class="callout idea"><b>Newton’s Method</b>
+    <div class="display">\[ x_{n+1} = x_n - \frac{f(x_n)}{f'(x_n)} \]</div>
+  </div>
+  <div id="wx1"></div>
+  <div class="callout calc"><b>Speed</b>
+    <p>Near a simple root, Newton’s method roughly <b>doubles the number of correct digits</b> with every step. That’s why calculators and computers use it (or cousins of it) to compute square roots and solve equations.</p>
+  </div>
+  <div class="callout warn"><b>How it fails</b>
+    <p><b>Flat tangent:</b> if \( f'(x_n) = 0 \), the tangent never crosses zero and the formula divides by zero. <b>Cycling:</b> for \( x^3 - 2x + 2 \) starting at 0, the guesses bounce 0 → 1 → 0 → 1 forever. <b>Running away:</b> for \( \sqrt[3]{x} \), each step lands twice as far from the root. A good starting guess (use a graph!) avoids most trouble.</p>
+  </div>
+</section>
+
+<!-- ================= TRY IT ================= -->
+<section class="step" id="try" data-title="Your turn">
+  <div class="prose"><p>Exact fractions or decimals to four places are fine.</p></div>
+  <div class="practice-list" id="practice"></div>
+</section>
+
+<!-- ================= CHECK ================= -->
+<section class="step" id="check" data-title="Before you move on">
+  <div class="quiz" id="quiz"></div>
+</section>
+
+</main>
+
+<script src="lesson.js"></script>
+<script>
+Lesson.ready(() => {
+  const { Plot, practiceList, worked, quiz, typeset } = Lesson;
+
+  const FNS = [
+    { lbl: 'x² − 2', tex: 'f(x) = x^2 - 2', f: x => x * x - 2, d: x => 2 * x, x: [-0.5, 3.2], y: [-3, 8], x0: 3, note: 'Converges to √2 ≈ 1.41421356 in just a few steps. Count the correct digits in each row.' },
+    { lbl: 'cos x − x', tex: 'f(x) = \\cos x - x', f: x => Math.cos(x) - x, d: x => -Math.sin(x) - 1, x: [-1, 3], y: [-3.5, 2], x0: 1, note: 'Solves cos x = x, which has no algebraic solution: x ≈ 0.739085.' },
+    { lbl: 'x³ − 2x + 2', tex: 'f(x) = x^3 - 2x + 2', f: x => x ** 3 - 2 * x + 2, d: x => 3 * x * x - 2, x: [-2.5, 2], y: [-4, 6], x0: 0, note: 'From x₀ = 0 the guesses cycle 0 → 1 → 0 → 1 … forever. Try starting at −1.5 instead.' },
+    { lbl: '∛x', tex: 'f(x) = \\sqrt[3]{x}', f: Math.cbrt, d: x => 1 / (3 * Math.cbrt(x * x)), x: [-6, 6], y: [-2.2, 2.2], x0: 0.5, note: 'Each step is x → −2x: the guesses run away from the root at 0, even when you start close.' }
+  ];
+  const np = Plot(document.getElementById('nPlot'), { x: [-0.5, 3.2], y: [-3, 8], h: 360 });
+  const x0S = document.getElementById('x0S');
+  let cur = 0, xs = [];
+  document.getElementById('fBtns').innerHTML = FNS.map((F, i) => `<button type="button" data-i="${i}">${F.lbl}</button>`).join('');
+  function drawN() {
+    const F = FNS[cur];
+    np.range(F.x, F.y);
+    let s = np.fn(F.f, 'c1', { n: 800 });
+    xs.forEach((x, i) => {
+      if (i === xs.length - 1) return;
+      const y = F.f(x);
+      s += np.seg(x, 0, x, y, 'mirror') + np.seg(x, y, xs[i + 1], 0, 'c3 thin');
+    });
+    xs.forEach((x, i) => { s += np.dot(x, 0, i === xs.length - 1 ? 'c3 solid' : 'c2 solid', i === 0 ? 6 : 4); });
+    np.draw(s);
+    document.getElementById('x0O').textContent = xs[0].toFixed(2);
+    document.getElementById('nTable').innerHTML = '<tr><th>n</th><th>xₙ</th><th>f(xₙ)</th></tr>' + xs.map((x, i) => `<tr><td>${i}</td><td class="mono">${Number.isFinite(x) ? x.toFixed(10) : '—'}</td><td class="mono">${Number.isFinite(x) ? F.f(x).toExponential(3) : ''}</td></tr>`).join('');
+    document.getElementById('nNote').textContent = xs.length > 3 ? F.note : '';
+  }
+  function reset() { xs = [x0S.value / 100]; drawN(); }
+  function pick(i) {
+    cur = i; x0S.value = Math.round(FNS[i].x0 * 100);
+    document.querySelectorAll('#fBtns button').forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.i === i)));
+    const t = document.getElementById('nTex'); t.innerHTML = `\\[ ${FNS[i].tex} \\]`; typeset(t);
+    reset();
+  }
+  document.getElementById('step').addEventListener('click', () => {
+    const F = FNS[cur], x = xs[xs.length - 1], d = F.d(x);
+    if (xs.length > 12 || !Number.isFinite(x)) return;
+    if (!d || !Number.isFinite(d)) { document.getElementById('nNote').textContent = 'The tangent is horizontal (f′ = 0), so there’s no crossing. Newton’s method fails here.'; return; }
+    xs.push(x - F.f(x) / d); drawN();
+  });
+  document.getElementById('reset').addEventListener('click', reset);
+  x0S.addEventListener('input', reset);
+  document.getElementById('fBtns').addEventListener('click', e => { const b = e.target.closest('button'); if (b) pick(+b.dataset.i); });
+  pick(0);
+
+  worked(document.getElementById('wx1'), {
+    problem: 'Approximate \\( \\sqrt2 \\) with Newton’s method, starting at \\( x_0 = 1 \\).',
+    steps: [
+      { show: '\\( \\sqrt 2 \\) is a root of \\( f(x) = x^2 - 2 \\), and \\( f\'(x) = 2x \\). The iteration is \\( x_{n+1} = x_n - \\dfrac{x_n^2 - 2}{2x_n} \\).' },
+      { show: '\\( x_1 = 1 - \\dfrac{1 - 2}{2} = 1.5 \\).' },
+      { show: '\\( x_2 = 1.5 - \\dfrac{2.25 - 2}{3} = 1.41\\overline{6} \\).' },
+      { show: '\\( x_3 \\approx 1.414215686 \\). True: 1.414213562…, so 6 correct digits after three steps.', why: 'The correct digits went 1 → 3 → 6: roughly doubling each time.' }
+    ]
+  });
+
+  practiceList(document.getElementById('practice'), [
+    { id: 'nw-1', tag: 'One step', prompt: '<p>Use Newton’s method on \\( f(x) = x^2 - 5 \\) with \\( x_0 = 2 \\). Find \\( x_1 \\).</p>', label: 'x₁ =',
+      answer: { type: 'number', value: 2.25, acceptDecimal: true },
+      rungs: [['Nudge', '\\( x_1 = x_0 - \\dfrac{f(x_0)}{f\'(x_0)} \\).'], ['Hint', '\\( f(2) = -1 \\), \\( f\'(2) = 4 \\).'], ['Strategy', '\\( 2 - \\dfrac{-1}{4} \\). Watch the double negative.']],
+      mistakes: [{ value: 1.75, msg: 'Subtracting a negative adds: \\( 2 - (-\\tfrac14) \\).' }] },
+    { id: 'nw-2', tag: 'Second step', prompt: '<p>Continue: find \\( x_2 \\).</p>', label: 'x₂ =',
+      answer: { type: 'number', value: 161 / 72, acceptDecimal: true, tol: 0.00002 }, format: 'An exact fraction, or a decimal to at least 5 places.',
+      mistakes: [{ value: Math.sqrt(5), tol: 0.000015, msg: 'That’s \\( \\sqrt5 \\) itself, the target. The question asks for Newton’s second estimate \\( x_2 \\).' }],
+      rungs: [['Nudge', 'Same formula, starting from \\( x_1 = 2.25 \\).'], ['Hint', '\\( f(2.25) = 0.0625 \\), \\( f\'(2.25) = 4.5 \\).'], ['Strategy', '\\( 2.25 - \\dfrac{0.0625}{4.5} \\).']],
+      success: '\\( \\sqrt5 = 2.2360679… \\), so two steps already give 5 correct digits.' },
+    { id: 'nw-formula', tag: 'Iteration formula', prompt: '<p>Write the Newton iteration for approximating \\( \\sqrt[3]{7} \\), as an expression in \\( x \\) (standing for \\( x_n \\)) that gives \\( x_{n+1} \\).</p>', label: 'xₙ₊₁ =',
+      answer: { type: 'expr', vars: ['x'], fn: x => x - (x ** 3 - 7) / (3 * x * x), domain: [1, 3] },
+      rungs: [['Nudge', 'Which function has \\( \\sqrt[3]7 \\) as a root?'], ['Hint', '\\( f(x) = x^3 - 7 \\), \\( f\'(x) = 3x^2 \\).'], ['Strategy', 'Substitute into \\( x - f(x)/f\'(x) \\).']],
+      mistakes: [{ fn: x => x + (x ** 3 - 7) / (3 * x * x), msg: 'It’s x <b>minus</b> f/f′.' }, { fn: x => x - (x ** 3 - 7) / (3 * x), msg: 'The derivative of \\( x^3 \\) is \\( 3x^2 \\).' }] },
+    { id: 'nw-cos', tag: 'Transcendental', prompt: '<p>Solve \\( \\cos x = x \\) with one step of Newton’s method from \\( x_0 = 1 \\). Give \\( x_1 \\) to four decimal places.</p>', label: 'x₁ ≈',
+      answer: { type: 'number', value: 1 - (Math.cos(1) - 1) / (-Math.sin(1) - 1), acceptDecimal: true, tol: 0.0006 },
+      rungs: [['Nudge', 'Rewrite as \\( f(x) = \\cos x - x = 0 \\).'], ['Hint', '\\( f\'(x) = -\\sin x - 1 \\).'], ['Strategy', '\\( 1 - \\dfrac{\\cos 1 - 1}{-\\sin 1 - 1} \\), with your calculator in radians.']],
+      mistakes: [{ value: 1 - (Math.cos(Math.PI / 180) - 1) / (-Math.sin(Math.PI / 180) - 1), tol: 0.001, msg: 'Your calculator is in degrees. Switch to radians.' }],
+      success: 'About 0.7504. The true solution is 0.739085…' }
+  ]);
+
+  quiz(document.getElementById('quiz'), [
+    { q: 'Newton’s method fails immediately if…',
+      choices: [{ t: '\\( f(x_n) = 0 \\)', ok: false, why: 'Then you’ve found the root exactly.' }, { t: '\\( f\'(x_n) = 0 \\)', ok: true, why: 'A horizontal tangent never crosses zero, so you’d divide by 0.' }] },
+    { q: 'Geometrically, \\( x_{n+1} \\) is…',
+      choices: [{ t: 'where the tangent line at \\( x_n \\) crosses the x-axis', ok: true, why: 'That’s the whole idea.' }, { t: 'where the curve crosses the x-axis', ok: false, why: 'That’s the root we’re trying to find.' }, { t: 'halfway between \\( x_n \\) and the root', ok: false, why: 'That would be bisection-like and much slower.' }] }
+  ]);
+});
+</script>
+</body>
+</html>

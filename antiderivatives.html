@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Antiderivatives</title>
+<meta name="description" content="Calculus I Companion, Topic 4.8: running derivatives in reverse, the + C family, basic antiderivative rules, initial value problems and motion.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;1,6..72,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="lesson.css">
+<script src="site.js"></script>
+<script src="course.js"></script>
+</head>
+<body data-topic="antiderivatives">
+<main class="wrap">
+
+<!-- ================= SEE IT ================= -->
+<section class="step" id="see" data-title="A whole family of answers">
+  <div class="prose">
+    <p>Each little segment shows the slope that a function F must have at that spot, given \( F'(x) = f(x) \). Any curve that follows the segments is an antiderivative, and there are infinitely many, stacked vertically. Drag the red point to choose <b>one</b> of them.</p>
+  </div>
+  <div class="card widget">
+    <div class="seg" id="fBtns" role="group" aria-label="Choose f" style="margin-bottom:12px"></div>
+    <div class="widget-grid">
+      <svg id="sfPlot" role="img" aria-label="Slope field with a family of antiderivative curves and one selected by a point"></svg>
+      <div>
+        <div class="display" id="sfTex" style="font-size:18px"></div>
+        <div class="readout" id="sfRead" aria-live="polite"></div>
+        <p class="observe">Drag the red point anywhere. Every curve in the family has the same shape, and only the vertical shift C changes.</p>
+      </div>
+    </div>
+  </div>
+  <div class="callout idea"><b>Why “+ C”</b>
+    <p>Shifting a graph up or down doesn’t change any slopes. So if \( F' = f \), then \( (F + C)' = f \) too. By the Mean Value Theorem (Topic 4.2), those are the <b>only</b> antiderivatives. One extra fact, like a point the curve passes through, pins down C.</p>
+  </div>
+</section>
+
+<!-- ================= BUILD IT ================= -->
+<section class="step" id="build" data-title="Running the rules backwards">
+  <div class="prose"><p>F is an <b>antiderivative</b> of f if \( F' = f \). The most general antiderivative is \( F(x) + C \). Every derivative rule, read backwards, is an antiderivative rule:</p></div>
+  <div class="table-wrap"><table class="ref">
+    <tr><th>\( f(x) \)</th><th>Most general antiderivative</th><th>Check by differentiating</th></tr>
+    <tr><td>\( x^n \ (n \ne -1) \)</td><td>\( \dfrac{x^{n+1}}{n+1} + C \)</td><td>\( \frac{n+1}{n+1}x^n \) ✓</td></tr>
+    <tr><td>\( \dfrac1x \)</td><td>\( \ln|x| + C \)</td><td>The \( n = -1 \) gap is filled by ln</td></tr>
+    <tr><td>\( e^x \)</td><td>\( e^x + C \)</td><td></td></tr>
+    <tr><td>\( \cos x \)</td><td>\( \sin x + C \)</td><td></td></tr>
+    <tr><td>\( \sin x \)</td><td>\( -\cos x + C \)</td><td>Watch the sign</td></tr>
+    <tr><td>\( \sec^2 x \)</td><td>\( \tan x + C \)</td><td></td></tr>
+    <tr><td>\( \dfrac{1}{1 + x^2} \)</td><td>\( \arctan x + C \)</td><td>From Topic 3.8</td></tr>
+  </table></div>
+  <div class="prose"><p>Constant multiples and sums work term by term. <b>Always check</b> by differentiating your answer. It takes seconds and catches almost every mistake.</p></div>
+  <div class="callout warn"><b>Common mistakes</b>
+    <p>Forgetting + C. Using the power rule on \( x^{-1} \), which would divide by zero. Getting the sign wrong on \( \sin x \to -\cos x \). And trying to antidifferentiate products factor by factor: \( \int x\cdot x \ne \frac{x^2}{2}\cdot\frac{x^2}{2} \). Multiply out first.</p>
+  </div>
+
+  <h3>Initial value problems</h3>
+  <div class="prose"><p>Find the general antiderivative, then use the given value to solve for C. With \( f'' \), antidifferentiate twice, and each step gets its own constant.</p></div>
+  <div id="wx1"></div>
+  <div id="wx2"></div>
+  <div class="callout calc"><b>Where this goes</b>
+    <p>Antiderivatives are the engine of Unit 5: the Fundamental Theorem of Calculus turns every area problem into “find an antiderivative.”</p>
+  </div>
+</section>
+
+<!-- ================= TRY IT ================= -->
+<section class="step" id="try" data-title="Your turn">
+  <div id="drill"></div>
+  <div class="practice-list" id="practice" style="margin-top:18px"></div>
+</section>
+
+<!-- ================= CHECK ================= -->
+<section class="step" id="check" data-title="Before you move on">
+  <div class="quiz" id="quiz"></div>
+</section>
+
+</main>
+
+<script src="lesson.js"></script>
+<script>
+Lesson.ready(() => {
+  const { Plot, practiceList, worked, quiz, drill, typeset } = Lesson;
+
+  const FNS = [
+    { lbl: 'f = 2x', tex: "F'(x) = 2x \\quad\\Rightarrow\\quad F(x) = x^2 + C", f: x => 2 * x, F: x => x * x, y: [-4, 6], name: 'x^2' },
+    { lbl: 'f = cos x', tex: "F'(x) = \\cos x \\quad\\Rightarrow\\quad F(x) = \\sin x + C", f: Math.cos, F: Math.sin, y: [-4, 4], name: '\\sin x' },
+    { lbl: 'f = x² − 1', tex: "F'(x) = x^2 - 1 \\quad\\Rightarrow\\quad F(x) = \\tfrac13 x^3 - x + C", f: x => x * x - 1, F: x => x ** 3 / 3 - x, y: [-4, 4], name: '\\tfrac13x^3 - x' }
+  ];
+  const sp = Plot(document.getElementById('sfPlot'), { x: [-3, 3], y: [-4, 6], h: 400 });
+  let cur = 0, px = 1, py = 2;
+  document.getElementById('fBtns').innerHTML = FNS.map((F, i) => `<button type="button" data-i="${i}">${F.lbl}</button>`).join('');
+  function drawSF() {
+    const F = FNS[cur], [y0, y1] = F.y;
+    sp.range([-3, 3], F.y);
+    let s = '';
+    const hx = 0.5, hy = (y1 - y0) / 14;
+    for (let x = -2.75; x <= 2.8; x += hx) for (let y = y0 + hy / 2; y < y1; y += hy) {
+      const m = F.f(x), dx = 8 / Math.hypot(sp.W / 6, m * sp.H / (y1 - y0)); // ~16px segments
+      s += `<line x1="${sp.sx(x - dx)}" y1="${sp.sy(y - m * dx)}" x2="${sp.sx(x + dx)}" y2="${sp.sy(y + m * dx)}" style="stroke:var(--ink-3);stroke-width:1.4;opacity:.6"/>`;
+    }
+    const C = py - F.F(px);
+    for (let k = -6; k <= 6; k++) s += sp.fn(x => F.F(x) + k, 'ghost', { attr: ' style="opacity:.35"' });
+    s += sp.fn(x => F.F(x) + C, 'c3') + `<circle data-handle="p" cx="${sp.sx(px)}" cy="${sp.sy(py)}" r="9" style="fill:var(--tangent);stroke:var(--surface);stroke-width:2;cursor:grab"/>`;
+    sp.draw(s);
+    const r = document.getElementById('sfRead');
+    r.innerHTML = `The point \\( (${px.toFixed(2)},\\ ${py.toFixed(2)}) \\) selects \\( C = ${C.toFixed(2)} \\):<br>\\( F(x) = ${F.name} ${C < 0 ? '-' : '+'} ${Math.abs(C).toFixed(2)} \\)`;
+    typeset(r);
+  }
+  sp.onDrag((h, pt) => { px = Math.max(-2.9, Math.min(2.9, pt.x)); py = Math.max(FNS[cur].y[0], Math.min(FNS[cur].y[1], pt.y)); drawSF(); });
+  function pick(i) {
+    cur = i;
+    document.querySelectorAll('#fBtns button').forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.i === i)));
+    const t = document.getElementById('sfTex'); t.innerHTML = `\\[ ${FNS[i].tex} \\]`; typeset(t);
+    drawSF();
+  }
+  document.getElementById('fBtns').addEventListener('click', e => { const b = e.target.closest('button'); if (b) pick(+b.dataset.i); });
+  pick(0);
+
+  worked(document.getElementById('wx1'), {
+    problem: 'Find f if \\( f\'\'(x) = 6x \\), \\( f\'(0) = 2 \\), and \\( f(0) = 1 \\).',
+    steps: [
+      { show: 'Antidifferentiate once: \\( f\'(x) = 3x^2 + C_1 \\). Use \\( f\'(0) = 2 \\): \\( C_1 = 2 \\).' },
+      { show: 'Again: \\( f(x) = x^3 + 2x + C_2 \\). Use \\( f(0) = 1 \\): \\( C_2 = 1 \\).', why: 'Solve for each constant as soon as it appears, before antidifferentiating again.' },
+      { show: '\\( f(x) = x^3 + 2x + 1 \\). Check: \\( f\'\' = 6x \\) ✓, \\( f\'(0) = 2 \\) ✓, \\( f(0) = 1 \\) ✓' }
+    ]
+  });
+  worked(document.getElementById('wx2'), {
+    problem: 'A ball is thrown upward at 48 ft/s from a 64-ft rooftop. Acceleration is \\( -32 \\) ft/s². Find its height function.',
+    steps: [
+      { show: '\\( a(t) = -32 \\), so \\( v(t) = -32t + C_1 \\). \\( v(0) = 48 \\), so \\( v(t) = -32t + 48 \\).' },
+      { show: '\\( s(t) = -16t^2 + 48t + C_2 \\). \\( s(0) = 64 \\), so \\( s(t) = -16t^2 + 48t + 64 \\).' },
+      { show: 'Peak when \\( v = 0 \\): \\( t = 1.5 \\) s, height \\( s(1.5) = 100 \\) ft. Hits the ground when \\( s = 0 \\): \\( t = 4 \\) s.', why: 'Acceleration → velocity → position: two antiderivatives, with one initial value each.' }
+    ]
+  });
+
+  // ---------------- Antiderivative drill ----------------
+  const ri = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+  const TERMS = [
+    () => { const n = ri(1, 4), c = (n + 1) * ri(1, 3); return { t: `${c}x^{${n}}`, F: x => c / (n + 1) * x ** (n + 1) }; },
+    () => { const c = ri(2, 9); return { t: `${c}`, F: x => c * x }; },
+    () => { const c = ri(1, 4); return { t: `${c === 1 ? '' : c}\\cos x`, F: x => c * Math.sin(x) }; },
+    () => { const c = ri(1, 4); return { t: `${c === 1 ? '' : c}\\sin x`, F: x => -c * Math.cos(x), trap: true }; },
+    () => { const c = ri(1, 4); return { t: `${c === 1 ? '' : c}e^{x}`, F: x => c * Math.exp(x) }; },
+    () => { const c = ri(1, 5); return { t: `\\frac{${c}}{x}`, F: x => c * Math.log(x), pos: true }; },
+    () => ({ t: '\\sqrt{x}', F: x => (2 / 3) * x ** 1.5, pos: true }),
+    () => ({ t: '\\sec^2 x', F: Math.tan })
+  ];
+  drill(document.getElementById('drill'), {
+    title: 'Antiderivatives', label: 'F(x)', antideriv: true,
+    intro: 'Find the most general antiderivative, ending with + C. Unlimited problems, checked but never shown.',
+    make() {
+      const picks = [...TERMS].sort(() => Math.random() - 0.5).slice(0, ri(2, 3)).map(g => g());
+      const pos = picks.some(p => p.pos);
+      return { q: `f(x) = ${picks.map(p => p.t).join(' + ')}`, d: x => picks.reduce((s, p) => s + p.F(x), 0), domain: pos ? [0.4, 1.4] : [-1.2, 1.2],
+        hints: ['Work term by term. For powers: add 1 to the exponent, then divide by the new exponent.', 'Reverse the derivative table: \\( \\cos \\to \\sin \\), \\( \\sin \\to -\\cos \\), \\( \\frac1x \\to \\ln|x| \\), \\( \\sqrt x = x^{1/2} \\).', 'Check by differentiating your answer. You should get f back exactly.'],
+        mistakes: picks.some(p => p.trap) ? [{ fn: x => picks.reduce((s, p) => s + (p.trap ? -p.F(x) : p.F(x)), 0), msg: 'Check the sign on the sine term: the antiderivative of \\( \\sin x \\) is \\( -\\cos x \\).' }] : [] };
+    }
+  });
+
+  practiceList(document.getElementById('practice'), [
+    { id: 'ad-poly', tag: 'General', prompt: '<p>Find the most general antiderivative of \\( f(x) = 3x^2 - 4x + 5 \\).</p>', label: 'F(x) =',
+      answer: { type: 'antideriv', fn: x => x ** 3 - 2 * x * x + 5 * x },
+      rungs: [['Nudge', 'Reverse the power rule on each term.'], ['Hint', '\\( 3x^2 \\to x^3 \\), \\( -4x \\to -2x^2 \\), \\( 5 \\to 5x \\).'], ['Strategy', 'Add + C, then check by differentiating.']],
+      mistakes: [{ fn: x => 6 * x - 4, noC: true, msg: 'That’s the <i>derivative</i>. Go the other way.' }] },
+    { id: 'ad-recip', tag: 'ln', prompt: '<p>Find the most general antiderivative of \\( f(x) = \\dfrac{1}{x} \\) for \\( x \\gt 0 \\).</p>', label: 'F(x) =',
+      answer: { type: 'antideriv', fn: x => Math.log(x), domain: [0.3, 4] },
+      rungs: [['Nudge', 'The power rule fails here, since you’d divide by \\( -1 + 1 = 0 \\).'], ['Hint', 'Which function has derivative \\( \\frac1x \\)?'], ['Strategy', 'Topic 3.7.']],
+      success: 'In general, \\( \\ln|x| + C \\) covers negative x too.' },
+    { id: 'ad-trig', tag: 'Mixed', prompt: '<p>Find the most general antiderivative of \\( f(x) = \\cos x + e^x \\).</p>', label: 'F(x) =',
+      answer: { type: 'antideriv', fn: x => Math.sin(x) + Math.exp(x) },
+      rungs: [['Nudge', 'Term by term from the table.'], ['Hint', 'What has derivative cos x? What has derivative eˣ?'], ['Strategy', 'Don’t forget + C.']],
+      mistakes: [{ fn: x => -Math.sin(x) + Math.exp(x), noC: true, msg: 'Sign: \\( (\\sin x)\' = \\cos x \\), so the antiderivative of cos is +sin.' }] },
+    { id: 'ad-ivp', tag: 'Initial value', prompt: '<p>Find f if \\( f\'(x) = 4x^3 \\) and \\( f(1) = 5 \\).</p>', label: 'f(x) =',
+      answer: { type: 'expr', vars: ['x'], fn: x => x ** 4 + 4 },
+      rungs: [['Nudge', 'General antiderivative first: \\( x^4 + C \\).'], ['Hint', 'Use \\( f(1) = 5 \\): \\( 1 + C = 5 \\).'], ['Strategy', 'Substitute C back in.']],
+      mistakes: [{ fn: x => x ** 4 + 5, msg: '\\( f(1) = 1 + C \\), so C isn’t 5.' }] },
+    { id: 'ad-ivp2', tag: 'Twice', prompt: '<p>Find f if \\( f\'\'(x) = 12x^2 + 2 \\), \\( f\'(0) = 1 \\), \\( f(0) = 3 \\).</p>', label: 'f(x) =',
+      answer: { type: 'expr', vars: ['x'], fn: x => x ** 4 + x * x + x + 3 },
+      rungs: [['Nudge', 'Antidifferentiate once, then use \\( f\'(0) = 1 \\).'], ['Hint', '\\( f\'(x) = 4x^3 + 2x + 1 \\).'], ['Strategy', 'Antidifferentiate again, then use \\( f(0) = 3 \\).']],
+      mistakes: [{ fn: x => x ** 4 + x * x + 3, msg: 'The first constant \\( C_1 = 1 \\) becomes an \\( x \\) term after the second antiderivative.' }] },
+    { id: 'ad-ball', tag: 'Motion', prompt: '<p>A ball is thrown upward from the ground at 64 ft/s, with \\( a(t) = -32 \\) ft/s². What is its maximum height (ft)?</p>', label: 'Max height',
+      answer: { type: 'number', value: 64 },
+      rungs: [['Nudge', 'Find \\( v(t) \\) and \\( s(t) \\) with \\( v(0) = 64 \\), \\( s(0) = 0 \\).'], ['Hint', '\\( v(t) = -32t + 64 \\), \\( s(t) = -16t^2 + 64t \\).'], ['Strategy', 'Max height when \\( v = 0 \\), at t = 2. Evaluate s there.']],
+      mistakes: [{ value: 2, msg: 'That’s the time of the peak. The question asks for the height.' }, { value: 128, msg: 'Check s(2): \\( -16(4) + 64(2) \\).' }] }
+  ]);
+
+  quiz(document.getElementById('quiz'), [
+    { q: 'Which is <b>not</b> an antiderivative of \\( 2x \\)?',
+      choices: [{ t: '\\( x^2 \\)', ok: false, why: 'Derivative 2x ✓.' }, { t: '\\( x^2 - 7 \\)', ok: false, why: 'Derivative 2x ✓. Constants disappear.' }, { t: '\\( x^2 + x \\)', ok: true, why: 'Its derivative is 2x + 1.' }] },
+    { q: 'The antiderivative of \\( \\sin x \\) is…',
+      choices: [{ t: '\\( \\cos x + C \\)', ok: false, why: 'Check: \\( (\\cos x)\' = -\\sin x \\), the wrong sign.' }, { t: '\\( -\\cos x + C \\)', ok: true, why: '\\( (-\\cos x)\' = \\sin x \\) ✓.' }] },
+    { q: 'Why can’t the power rule give \\( \\int x^{-1} \\)?',
+      choices: [{ t: 'It would require dividing by 0', ok: true, why: '\\( \\frac{x^0}{0} \\) is undefined. ln fills the gap.' }, { t: 'Negative exponents never work', ok: false, why: '\\( x^{-2} \\to -x^{-1} \\) works fine.' }] }
+  ]);
+});
+</script>
+</body>
+</html>

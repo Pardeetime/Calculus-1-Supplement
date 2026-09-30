@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Derivative as a Function</title>
+<meta name="description" content="Calculus I Companion, Topic 2.2: building the derivative function, derivative notation, computing f′(x) from the definition, and higher derivatives.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;1,6..72,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="lesson.css">
+<script src="site.js"></script>
+<script src="course.js"></script>
+<style>
+  .stack { display: grid; gap: 8px; }
+  .stack .tag-f { font-size: 13px; color: var(--ink-3); margin: 0 0 2px 4px; }
+</style>
+</head>
+<body data-topic="deriv-function">
+<main class="wrap">
+
+<!-- ================= SEE IT ================= -->
+<section class="step" id="see" data-title="The slope tracker">
+  <div class="prose">
+    <p>Every point on a smooth curve has its own slope. Drag the point along f (top). Its tangent slope is plotted as a height on the bottom graph. Sweep across the whole curve and the slopes trace out a brand-new function.</p>
+  </div>
+  <div class="card widget">
+    <div class="seg" id="fBtns" role="group" aria-label="Choose f" style="margin-bottom:12px"></div>
+    <div class="widget-grid">
+      <div class="stack">
+        <div><p class="tag-f">f(x)</p><svg id="topPlot" role="img" aria-label="Graph of f with a tangent line"></svg></div>
+        <div><p class="tag-f">slope of f at x</p><svg id="botPlot" role="img" aria-label="Slopes of f plotted as a new graph"></svg></div>
+      </div>
+      <div>
+        <div class="display" id="fTex" style="font-size:19px"></div>
+        <div class="ctls"><div class="ctl"><label for="xSlider">x</label><input id="xSlider" type="range" min="-300" max="300" value="-250"><output id="xOut"></output></div></div>
+        <div class="readout" id="tRead" aria-live="polite"></div>
+        <div class="row" style="margin-top:12px"><button class="btn" type="button" id="clearTrail">Clear trail</button></div>
+        <form class="answer-row" id="guessForm" autocomplete="off" style="margin-top:16px">
+          <label for="guessIn">Guess a formula for the slope graph:</label>
+          <input id="guessIn" type="text" spellcheck="false" placeholder="in terms of x">
+          <button class="btn primary" type="submit">Check</button>
+        </form>
+        <div class="p-preview" id="guessPrev"></div>
+        <div class="feedback" id="guessFb" aria-live="polite"></div>
+      </div>
+    </div>
+  </div>
+  <div class="callout idea"><b>What you built</b>
+    <p>The slope graph is a function in its own right: <b>the derivative function</b> \( f' \). It takes an input x and returns the slope of f at x.</p>
+  </div>
+</section>
+
+<!-- ================= BUILD IT ================= -->
+<section class="step" id="build" data-title="From a number to a function">
+  <div class="callout idea"><b>Definition</b>
+    <div class="display">\[ f'(x) = \lim_{h\to0} \frac{f(x+h) - f(x)}{h} \]</div>
+    <p>It’s the same limit as in Topic 2.1, but with x left as a variable instead of a specific number a. The result is a formula that gives every slope at once. The domain of \( f' \) is every x where this limit exists.</p>
+  </div>
+  <div id="wx1"></div>
+  <div id="wx2"></div>
+
+  <h3>Notation</h3>
+  <div class="table-wrap"><table class="ref">
+    <tr><th>Notation</th><th>Read as</th><th>Notes</th></tr>
+    <tr><td>\( f'(x) \), \( y' \)</td><td>“f prime of x”</td><td>Lagrange’s notation, compact</td></tr>
+    <tr><td>\( \dfrac{dy}{dx} \), \( \dfrac{df}{dx} \)</td><td>“dee y dee x”</td><td>Leibniz’s notation: a tiny change in y over a tiny change in x. It’s not a fraction you can cancel (at least not yet).</td></tr>
+    <tr><td>\( \dfrac{d}{dx}\big[x^2\big] \)</td><td>“the derivative of \( x^2 \)”</td><td>\( \frac{d}{dx} \) is an instruction: take the derivative of what follows.</td></tr>
+    <tr><td>\( \left.\dfrac{dy}{dx}\right|_{x=3} \)</td><td>“dy/dx at 3”</td><td>Same as \( f'(3) \)</td></tr>
+  </table></div>
+
+  <h3>A pattern worth noticing</h3>
+  <div class="prose">
+    <p>From the definition (you’ve done several of these already):</p>
+    <div class="display">\[ \frac{d}{dx}\,x = 1, \qquad \frac{d}{dx}\,x^2 = 2x, \qquad \frac{d}{dx}\,x^3 = 3x^2 \]</div>
+    <p>Do you see the pattern? Unit 3 proves it for every power. Until then, the definition is your tool.</p>
+  </div>
+
+  <h3>Higher derivatives</h3>
+  <div class="prose">
+    <p>\( f' \) is a function, so it has its own derivative: the <b>second derivative</b> \( f'' = (f')' \), also written \( \dfrac{d^2y}{dx^2} \). If \( s(t) \) is position, then \( s'(t) = v(t) \) is velocity and \( s''(t) = a(t) \) is <b>acceleration</b>, the rate at which velocity changes.</p>
+  </div>
+</section>
+
+<!-- ================= TRY IT ================= -->
+<section class="step" id="try" data-title="Your turn">
+  <div class="prose"><p>Use the limit definition, keeping x as a variable.</p></div>
+  <div class="practice-list" id="practice"></div>
+</section>
+
+<!-- ================= CHECK ================= -->
+<section class="step" id="check" data-title="Before you move on">
+  <div class="tf" id="tf"></div>
+</section>
+
+</main>
+
+<script src="lesson.js"></script>
+<script>
+Lesson.ready(() => {
+  const { Plot, practiceList, worked, trueFalse, typeset, check, parse, toTex } = Lesson;
+
+  // ---------------- Slope tracker ----------------
+  const FNS = [
+    { lbl: 'x²', tex: 'f(x) = x^2', f: x => x * x, fp: x => 2 * x, y: [-1, 9], dy: [-6.5, 6.5], ok: 'Yes: \\( f\'(x) = 2x \\). Slopes are negative on the left, 0 at the bottom, and positive on the right, along a straight line.' },
+    { lbl: 'x³ − 3x', tex: 'f(x) = x^3 - 3x', f: x => x ** 3 - 3 * x, fp: x => 3 * x * x - 3, y: [-5, 5], dy: [-4, 10], ok: 'Yes: \\( f\'(x) = 3x^2 - 3 \\). It’s zero at \\( x = \\pm1 \\), exactly where f has its hilltop and valley.' },
+    { lbl: 'sin x', tex: 'f(x) = \\sin x', f: Math.sin, fp: Math.cos, y: [-1.6, 1.6], dy: [-1.6, 1.6], ok: 'Yes: \\( f\'(x) = \\cos x \\). You’ll prove it in Unit 3, using the \\( \\frac{\\sin\\theta}{\\theta} \\) limit from Topic 1.5.' },
+    { lbl: 'eˣ', tex: 'f(x) = e^x', f: Math.exp, fp: Math.exp, y: [-1, 12], dy: [-1, 12], ok: 'Yes: \\( f\'(x) = e^x \\). The slope equals the height everywhere, as you found in Topic 0.3.' }
+  ];
+  const tp = Plot(document.getElementById('topPlot'), { x: [-3, 3], y: [-1, 9], h: 220 });
+  const bp = Plot(document.getElementById('botPlot'), { x: [-3, 3], y: [-6, 6], h: 220 });
+  const xSlider = document.getElementById('xSlider');
+  let cur = 0, trail = new Set();
+  document.getElementById('fBtns').innerHTML = FNS.map((F, i) => `<button type="button" data-i="${i}">${F.lbl}</button>`).join('');
+  function drawT() {
+    const F = FNS[cur], x = xSlider.value / 100, m = F.fp(x), y = F.f(x);
+    trail.add(Math.round(x * 20) / 20);
+    tp.range([-3, 3], F.y); bp.range([-3, 3], F.dy);
+    tp.draw(tp.fn(F.f, 'c1') + tp.seg(x - 1.2, y - 1.2 * m, x + 1.2, y + 1.2 * m, 'c3') + tp.dot(x, y, 'c1', 7, ' data-handle="p" style="cursor:grab"'));
+    bp.draw([...trail].map(t => bp.dot(t, F.fp(t), 'c2 solid', 3)).join('') + bp.seg(x, 0, x, m, 'c3 thin') + bp.dot(x, m, 'c3 solid', 6));
+    document.getElementById('xOut').textContent = x.toFixed(2);
+    const r = document.getElementById('tRead');
+    r.innerHTML = `At \\( x = ${x.toFixed(2)} \\): tangent slope = <b class="mono">${m.toFixed(3)}</b>. That becomes the height of the red dot below.`;
+    typeset(r);
+  }
+  function pick(i) {
+    cur = i; trail = new Set();
+    document.querySelectorAll('#fBtns button').forEach((b, k) => b.setAttribute('aria-pressed', String(k === i)));
+    const t = document.getElementById('fTex'); t.innerHTML = `\\[ ${FNS[i].tex} \\]`; typeset(t);
+    document.getElementById('guessIn').value = ''; document.getElementById('guessPrev').textContent = '';
+    const fb = document.getElementById('guessFb'); fb.className = 'feedback'; fb.innerHTML = '';
+    xSlider.value = -250; drawT();
+  }
+  document.getElementById('fBtns').addEventListener('click', e => { const b = e.target.closest('button'); if (b) pick(+b.dataset.i); });
+  xSlider.addEventListener('input', drawT);
+  tp.onDrag((h, pt) => { xSlider.value = Math.round(Math.max(-3, Math.min(3, pt.x)) * 100); drawT(); });
+  document.getElementById('clearTrail').addEventListener('click', () => { trail = new Set(); drawT(); });
+  document.getElementById('guessIn').addEventListener('input', e => {
+    const p = document.getElementById('guessPrev');
+    try { p.innerHTML = 'Reads as: <span></span>'; katex.render(toTex(parse(e.target.value)), p.querySelector('span')); } catch (err) { p.textContent = ''; }
+  });
+  document.getElementById('guessForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const raw = document.getElementById('guessIn').value.trim(), fb = document.getElementById('guessFb'), F = FNS[cur];
+    if (!raw) return;
+    if (trail.size < 25) { fb.className = 'feedback near'; fb.textContent = 'Trace more of the curve first. Sweep the point from one side to the other.'; return; }
+    let res;
+    try { res = check.expr(raw, { vars: ['x'], fn: F.fp, domain: [-2.5, 2.5], constOk: true }); }
+    catch (err) { fb.className = 'feedback try'; fb.textContent = err.message; return; }
+    if (res.state === 'correct') { fb.className = 'feedback good'; fb.innerHTML = F.ok; }
+    else { fb.className = 'feedback try'; fb.innerHTML = 'Not a match. Check it at a few points: where is the slope graph zero? What’s its height at x = 1? Does your formula agree?'; }
+    typeset(fb);
+  });
+  pick(0);
+
+  worked(document.getElementById('wx1'), {
+    problem: 'Find \\( f\'(x) \\) for \\( f(x) = x^2 - 2x \\).',
+    steps: [
+      { show: '\\( f(x + h) = (x+h)^2 - 2(x+h) = x^2 + 2xh + h^2 - 2x - 2h \\).', why: 'Replace every x with \\( (x + h) \\). Both x and h are letters now, so expand carefully.' },
+      { show: 'Subtract \\( f(x) = x^2 - 2x \\): \\( f(x+h) - f(x) = 2xh + h^2 - 2h \\).', why: 'Every term without an h cancels. If one doesn’t, there’s an error.' },
+      { show: 'Divide by h: \\( 2x + h - 2 \\).' },
+      { show: 'Let \\( h \\to 0 \\): \\( f\'(x) = 2x - 2 \\).', why: 'Check: \\( f\'(1) = 0 \\), and \\( x = 1 \\) is the vertex of this parabola. ✓' }
+    ]
+  });
+  worked(document.getElementById('wx2'), {
+    problem: 'Find \\( f\'(x) \\) for \\( f(x) = \\sqrt{x} \\), and state its domain.',
+    steps: [
+      { show: '\\[ \\frac{\\sqrt{x+h} - \\sqrt x}{h} \\cdot \\frac{\\sqrt{x+h} + \\sqrt x}{\\sqrt{x+h} + \\sqrt x} = \\frac{(x + h) - x}{h(\\sqrt{x+h} + \\sqrt x)} \\]' },
+      { show: '\\( = \\dfrac{1}{\\sqrt{x+h} + \\sqrt x} \\to \\dfrac{1}{2\\sqrt x} \\) as \\( h \\to 0 \\).' },
+      { show: 'So \\( f\'(x) = \\dfrac{1}{2\\sqrt x} \\), with domain \\( (0, \\infty) \\).', why: 'f is defined at 0, but \\( f\' \\) isn’t: the tangent at the origin is vertical. The derivative’s domain can be smaller than f’s. Topic 2.3 explains why.' }
+    ]
+  });
+
+  practiceList(document.getElementById('practice'), [
+    { id: 'df-linear', tag: 'Definition',
+      prompt: '<p>Find \\( f\'(x) \\) for \\( f(x) = 5x - 2 \\).</p>', label: "f′(x) =",
+      answer: { type: 'expr', vars: ['x'], fn: () => 5, constOk: true },
+      rungs: [['Nudge', 'What’s the slope of a line?'], ['Hint', '\\( f(x + h) - f(x) = 5(x+h) - 2 - (5x - 2) \\).'], ['Strategy', 'Simplify: everything except one term cancels.']],
+      mistakes: [{ fn: x => 5 * x, msg: 'The derivative is the <i>slope</i>, and a line has the same slope everywhere.' }],
+      success: 'A line’s derivative is its slope, a constant.' },
+    { id: 'df-quad', tag: 'Definition',
+      prompt: '<p>Find \\( f\'(x) \\) for \\( f(x) = x^2 + 4x \\).</p>', label: "f′(x) =",
+      answer: { type: 'expr', vars: ['x'], fn: x => 2 * x + 4 },
+      rungs: [['Nudge', 'Follow the first worked example step by step.'], ['Hint', '\\( f(x+h) = x^2 + 2xh + h^2 + 4x + 4h \\).'], ['Strategy', 'Subtract f(x), divide by h, let \\( h \\to 0 \\).']],
+      mistakes: [{ fn: x => 2 * x, msg: 'The \\( 4x \\) term contributes to the slope too. What happens to \\( 4(x + h) - 4x \\)?' }],
+      success: 'Each piece contributes its own slope. That’s the sum rule, coming in Unit 3.' },
+    { id: 'df-recip', tag: 'Definition',
+      prompt: '<p>Find \\( f\'(x) \\) for \\( f(x) = \\dfrac{1}{x + 1} \\).</p>', label: "f′(x) =",
+      answer: { type: 'expr', vars: ['x'], fn: x => -1 / (x + 1) ** 2, domain: [0, 3] },
+      rungs: [['Nudge', 'Fractions inside fractions: common denominator.'], ['Hint', '\\( \\dfrac{1}{x+h+1} - \\dfrac{1}{x+1} = \\dfrac{(x+1) - (x+h+1)}{(x+h+1)(x+1)} = \\dfrac{-h}{(x+h+1)(x+1)} \\).'], ['Strategy', 'Divide by h, then let \\( h \\to 0 \\). Keep the bottom factored.']],
+      mistakes: [{ fn: x => 1 / (x + 1) ** 2, msg: 'Check the sign. Is \\( \\tfrac{1}{x+1} \\) increasing or decreasing?' }, { fn: x => -1 / (x + 1), msg: 'When h goes to 0, both factors \\( (x + h + 1) \\) and \\( (x + 1) \\) remain in the denominator.' }],
+      success: 'Always negative, which matches a graph that falls everywhere.' },
+    { id: 'df-sqrt', tag: 'Definition',
+      prompt: '<p>Find \\( f\'(x) \\) for \\( f(x) = \\sqrt{x + 3} \\).</p>', label: "f′(x) =",
+      answer: { type: 'expr', vars: ['x'], fn: x => 1 / (2 * Math.sqrt(x + 3)), domain: [-2.5, 5] },
+      rungs: [['Nudge', 'Root in the difference quotient: conjugate.'], ['Hint', 'Multiply by \\( \\dfrac{\\sqrt{x+h+3} + \\sqrt{x+3}}{\\sqrt{x+h+3} + \\sqrt{x+3}} \\). The top becomes h.'], ['Strategy', 'Cancel h, then let \\( h \\to 0 \\). It follows the \\( \\sqrt x \\) worked example exactly.']],
+      mistakes: [{ fn: x => 1 / Math.sqrt(x + 3), msg: 'As \\( h \\to 0 \\), the denominator becomes \\( \\sqrt{x+3} + \\sqrt{x+3} \\). How many copies is that?' }],
+      success: 'A shift inside gives the same shift in the derivative.' },
+    { id: 'df-second', tag: 'Second derivative',
+      prompt: '<p>For \\( f(x) = x^3 - x \\), the definition gives \\( f\'(x) = 3x^2 - 1 \\). Use the definition again to find \\( f\'\'(x) \\).</p>', label: "f″(x) =",
+      answer: { type: 'expr', vars: ['x'], fn: x => 6 * x },
+      rungs: [['Nudge', 'Treat \\( g(x) = 3x^2 - 1 \\) as a new function and find \\( g\'(x) \\).'], ['Hint', '\\( g(x+h) - g(x) = 3(2xh + h^2) \\).'], ['Strategy', 'Divide by h and let \\( h \\to 0 \\).']],
+      mistakes: [{ fn: x => 3 * x * x - 1, msg: 'That’s \\( f\' \\). Differentiate it one more time.' }, { fn: x => 3 * x, msg: 'Check the expansion: \\( 3(x+h)^2 - 3x^2 = 6xh + 3h^2 \\).' }],
+      success: 'f″ measures how the slope itself is changing. In Unit 4 its sign will tell you about concavity.' },
+    { id: 'df-velocity', tag: 'Motion',
+      prompt: '<p>A cart’s position is \\( s(t) = t^2 - 6t \\) meters at time t seconds. Its velocity is \\( s\'(t) \\). At what time is the cart momentarily at rest?</p>', label: 't =',
+      answer: { type: 'number', value: 3 },
+      rungs: [['Nudge', '“At rest” means velocity 0.'], ['Hint', 'Find \\( s\'(t) \\) from the definition (it looks like the first worked example).'], ['Strategy', 'Set \\( s\'(t) = 0 \\) and solve.']],
+      mistakes: [{ value: 6, msg: 'That’s when the <i>position</i> is back to 0. Rest means velocity 0.' }, { value: 0, msg: 'At t = 0 the position is 0, but is the velocity 0? Check \\( s\'(0) \\).' }],
+      success: 'The cart moves backward (negative velocity), stops at t = 3, then moves forward.' }
+  ]);
+
+  trueFalse(document.getElementById('tf'), [
+    { s: '\\( f\'(x) \\) is a function, while \\( f\'(3) \\) is a single number.', ok: true, why: 'One is the whole slope graph, the other is its height at x = 3.' },
+    { s: 'If f is defined at a, then \\( f\'(a) \\) must exist.', ok: false, why: '\\( \\sqrt x \\) is defined at 0, but \\( f\'(0) \\) doesn’t exist because the tangent there is vertical.' },
+    { s: '\\( \\dfrac{dy}{dx} \\) and \\( f\'(x) \\) mean the same thing when \\( y = f(x) \\).', ok: true, why: 'They’re two notations for the same derivative.' },
+    { s: 'If \\( s(t) \\) is position, then \\( s\'\'(t) \\) is velocity.', ok: false, why: '\\( s\' \\) is velocity, and \\( s\'\' \\) is acceleration.' }
+  ]);
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Precise Definition of a Limit</title>
+<meta name="description" content="Calculus I Companion, Topic 1.6: the epsilon-delta definition of a limit as a challenge-response game, with linear proofs and finding delta.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;1,6..72,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="lesson.css">
+<script src="site.js"></script>
+<script src="course.js"></script>
+</head>
+<body data-topic="epsilon-delta">
+<main class="wrap">
+
+<!-- ================= SEE IT ================= -->
+<section class="step" id="see" data-title="The ε–δ challenge">
+  <div class="prose">
+    <p>We claim \( \displaystyle\lim_{x\to2} x^2 = 4 \). A skeptic doesn’t believe it and issues a challenge: <i>“Keep the output within <b style="color:var(--secant)">ε</b> of 4.”</i> Your job is to answer with a <b style="color:var(--u2)">δ</b>: a distance so that <b>every</b> x within δ of 2 has an output inside the gold band.</p>
+    <p>Wherever the curve inside your purple strip leaves the gold band, it turns red. Make it all green, then lock it in. The challenges get harder.</p>
+  </div>
+  <div class="card widget">
+    <div class="widget-grid">
+      <svg id="edPlot" role="img" aria-label="Epsilon band around 4 and delta strip around 2 on the graph of x squared"></svg>
+      <div>
+        <div class="readout" id="edChallenge" style="font-size:17px"></div>
+        <div class="ctls"><div class="ctl"><label for="dSlider">Your δ</label><input id="dSlider" type="range" min="1" max="1000" value="650"><output id="dOut"></output></div></div>
+        <div class="row" style="margin-top:12px"><button class="btn primary" type="button" id="lock">Lock in δ</button><span class="chip" id="edLevel"></span></div>
+        <div class="feedback" id="edFb" aria-live="polite"></div>
+      </div>
+    </div>
+  </div>
+  <div class="callout idea"><b>What the game shows</b>
+    <p>No matter how small an ε the skeptic picks, you can always answer with some δ. That guarantee, for <b>every</b> ε, is exactly what it <i>means</i> for the limit to be 4.</p>
+  </div>
+</section>
+
+<!-- ================= BUILD IT ================= -->
+<section class="step" id="build" data-title="Making “close” exact">
+  <div class="callout idea"><b>Definition</b>
+    <p>\( \displaystyle\lim_{x\to a} f(x) = L \) means: for every \( \varepsilon \gt 0 \) there is a \( \delta \gt 0 \) such that</p>
+    <div class="display">\[ 0 \lt |x - a| \lt \delta \quad\Longrightarrow\quad |f(x) - L| \lt \varepsilon. \]</div>
+  </div>
+  <div class="prose">
+    <p>Read it piece by piece:</p>
+    <ul>
+      <li>\( |f(x) - L| \lt \varepsilon \): “the output is within ε of L” (the gold band).</li>
+      <li>\( |x - a| \lt \delta \): “the input is within δ of a” (the purple strip).</li>
+      <li>\( 0 \lt |x - a| \): “but x isn’t a itself,” because limits never look at a.</li>
+      <li>“For every ε there is a δ”: the skeptic moves first, and your δ is allowed to depend on their ε.</li>
+    </ul>
+  </div>
+
+  <h3>Linear functions: δ = ε / |slope|</h3>
+  <div class="prose"><p>For a line with slope m, moving the input by δ moves the output by exactly \( |m|\delta \). To keep the output change under ε, choose \( \delta = \varepsilon/|m| \). A steeper line needs a narrower strip.</p></div>
+  <div id="wx1"></div>
+
+  <h3>Curves: find the largest δ from both sides</h3>
+  <div class="prose"><p>For a curve, the two sides of a usually allow different distances. Find each one, then take the <b>smaller</b>, because δ has to work on both sides at once.</p></div>
+  <div id="wx2"></div>
+  <div class="callout warn"><b>Common mistakes</b>
+    <p>Picking the <i>larger</i> side distance: then on the tighter side some x escapes the band. And writing δ in terms of x: δ may depend on ε (and a), but never on x.</p>
+  </div>
+</section>
+
+<!-- ================= TRY IT ================= -->
+<section class="step" id="try" data-title="Your turn">
+  <div class="practice-list" id="practice"></div>
+</section>
+
+<!-- ================= CHECK ================= -->
+<section class="step" id="check" data-title="Before you move on">
+  <div class="quiz" id="quiz"></div>
+</section>
+
+</main>
+
+<script src="lesson.js"></script>
+<script>
+Lesson.ready(() => {
+  const { Plot, practiceList, worked, quiz, typeset } = Lesson;
+
+  // ---------------- ε–δ game ----------------
+  const f = x => x * x, a = 2, L = 4;
+  const LEVELS = [1, 0.5, 0.2, 0.05, 0.01];
+  let lvl = 0;
+  const dmax = e => Math.min(Math.sqrt(L + e) - a, a - Math.sqrt(L - e));
+  const ep = Plot(document.getElementById('edPlot'), { x: [0, 4], y: [0, 8], h: 360 });
+  const dSlider = document.getElementById('dSlider');
+  const delta = () => 2.2 * dmax(LEVELS[lvl]) * dSlider.value / 1000;
+  function drawED() {
+    const e = LEVELS[lvl], dm = dmax(e), d = delta();
+    const wx = Math.max(3.2 * dm, 0.02), wy = 2.6 * e;
+    ep.range([a - wx, a + wx], [L - wy, L + wy]);
+    const band = `<rect x="0" y="${ep.sy(L + e)}" width="${ep.W}" height="${ep.sy(L - e) - ep.sy(L + e)}" style="fill:var(--secant);opacity:.16"/>`;
+    const strip = `<rect x="${ep.sx(a - d)}" y="0" width="${ep.sx(a + d) - ep.sx(a - d)}" height="${ep.H}" style="fill:var(--u2);opacity:.14"/>`;
+    let pts = '', bad = false;
+    const n = 200;
+    let seg = [], segOk = null;
+    const flush = () => { if (seg.length > 1) pts += `<polyline class="${segOk ? 'c1' : 'c3'}" style="stroke-width:5" points="${seg.join(' ')}"/>`; seg = []; };
+    for (let i = 0; i <= n; i++) {
+      const x = a - d + 2 * d * i / n, ok = Math.abs(f(x) - L) < e;
+      if (!ok) bad = true;
+      if (segOk !== null && ok !== segOk) { const last = seg[seg.length - 1]; flush(); seg.push(last); }
+      segOk = ok;
+      seg.push(`${ep.sx(x).toFixed(1)},${ep.sy(f(x)).toFixed(1)}`);
+    }
+    flush();
+    ep.draw(band + strip + ep.fn(f, 'ghost') + pts + ep.seg(a - wx, L + e, a + wx, L + e, 'c2 thin') + ep.seg(a - wx, L - e, a + wx, L - e, 'c2 thin') +
+      ep.seg(a - d, L - wy, a - d, L + wy, 'c4 thin') + ep.seg(a + d, L - wy, a + d, L + wy, 'c4 thin') + ep.dot(a, L, 'c1', 5));
+    document.getElementById('dOut').textContent = d.toPrecision(3);
+    const c = document.getElementById('edChallenge');
+    c.innerHTML = `Challenge: \\( \\varepsilon = ${e} \\). Keep \\( x^2 \\) within \\( (${L - e},\\ ${L + e}) \\).`;
+    typeset(c);
+    document.getElementById('edLevel').textContent = `Challenge ${lvl + 1} of ${LEVELS.length}`;
+    return bad;
+  }
+  dSlider.addEventListener('input', () => { drawED(); const fb = document.getElementById('edFb'); fb.className = 'feedback'; fb.innerHTML = ''; });
+  document.getElementById('lock').addEventListener('click', () => {
+    const bad = drawED(), fb = document.getElementById('edFb'), d = delta(), dm = dmax(LEVELS[lvl]);
+    if (bad) { fb.className = 'feedback try'; fb.innerHTML = 'Some inputs in your strip escape the band (the red parts). Shrink δ.'; return; }
+    if (lvl < LEVELS.length - 1) {
+      fb.className = 'feedback good';
+      fb.innerHTML = `<b class="tag-good">δ = ${d.toPrecision(3)} works.</b> ${d < 0.5 * dm ? 'It works, though a wider strip would too. Any δ that works is acceptable. ' : ''}Next challenge: the skeptic tightens ε.`;
+      setTimeout(() => { lvl++; dSlider.value = 650; drawED(); fb.className = 'feedback'; fb.innerHTML = ''; }, 1600);
+    } else {
+      fb.className = 'feedback good';
+      fb.innerHTML = '<b class="tag-good">You beat every challenge.</b> Notice how δ had to shrink as ε shrank, and that a δ existed each time. That’s the definition in action.';
+    }
+  });
+  drawED();
+
+  worked(document.getElementById('wx1'), {
+    problem: 'Prove \\( \\displaystyle\\lim_{x\\to3} (4x - 5) = 7 \\) using the ε–δ definition.',
+    steps: [
+      { show: '<b>Scratch work:</b> we want \\( |(4x - 5) - 7| \\lt \\varepsilon \\).', why: 'Start from the output condition and work toward \\( |x - 3| \\).' },
+      { show: 'Simplify: \\( |4x - 12| = 4|x - 3| \\lt \\varepsilon \\iff |x - 3| \\lt \\dfrac{\\varepsilon}{4} \\).', why: 'Factor out the slope. Now the input condition is visible.' },
+      { show: '<b>Proof:</b> Let \\( \\varepsilon \\gt 0 \\). Choose \\( \\delta = \\dfrac{\\varepsilon}{4} \\).' },
+      { show: 'If \\( 0 \\lt |x - 3| \\lt \\delta \\), then \\( |(4x - 5) - 7| = 4|x - 3| \\lt 4\\delta = 4 \\cdot \\dfrac{\\varepsilon}{4} = \\varepsilon \\). ∎', why: 'The proof runs the scratch work in reverse: choose δ first, then show it works.' }
+    ]
+  });
+  worked(document.getElementById('wx2'), {
+    problem: 'For \\( \\displaystyle\\lim_{x\\to2} x^2 = 4 \\) with \\( \\varepsilon = 0.5 \\), find the largest δ that works.',
+    steps: [
+      { show: 'We need \\( 3.5 \\lt x^2 \\lt 4.5 \\), which means \\( \\sqrt{3.5} \\lt x \\lt \\sqrt{4.5} \\) (for x near 2).' },
+      { show: 'Right side: \\( \\sqrt{4.5} - 2 \\approx 0.1213 \\). Left side: \\( 2 - \\sqrt{3.5} \\approx 0.1292 \\).', why: 'The parabola is steeper to the right of 2, so the right side is tighter.' },
+      { show: 'Take the smaller: \\( \\delta = \\sqrt{4.5} - 2 \\approx 0.1213 \\).', why: 'A symmetric strip \\( (2 - \\delta, 2 + \\delta) \\) has to fit on the tighter side.' }
+    ]
+  });
+
+  practiceList(document.getElementById('practice'), [
+    { id: 'ed-linear', tag: 'Linear',
+      prompt: '<p>For \\( \\displaystyle\\lim_{x\\to2} (3x - 1) = 5 \\) and \\( \\varepsilon = 0.6 \\), what is the largest δ that works?</p>',
+      label: 'δ =', answer: { type: 'number', value: 0.2 },
+      rungs: [['Nudge', 'Write \\( |(3x - 1) - 5| \\) in terms of \\( |x - 2| \\).'], ['Hint', '\\( |3x - 6| = 3|x - 2| \\). You need that to be less than 0.6.'], ['Strategy', 'For a line, \\( \\delta = \\varepsilon / |m| \\).']],
+      mistakes: [{ value: 1.8, msg: 'You multiplied by the slope. A steep line needs a <i>narrower</i> strip, so divide.' }, { value: 0.6, msg: 'That would only work if the slope were 1. How much does the output move per unit of input here?' }],
+      success: 'A slope of 3 magnifies input wiggles 3×, so δ must be ε/3.' },
+    { id: 'ed-k', tag: 'Linear',
+      prompt: '<p>For \\( \\displaystyle\\lim_{x\\to1} (5 - 2x) = 3 \\), the proof uses \\( \\delta = k\\,\\varepsilon \\). What is k?</p>',
+      label: 'k =', answer: { type: 'number', value: 0.5 },
+      rungs: [['Nudge', 'Simplify \\( |(5 - 2x) - 3| \\).'], ['Hint', '\\( |2 - 2x| = 2|x - 1| \\). The negative slope disappears inside the absolute value.'], ['Strategy', 'Solve \\( 2|x - 1| \\lt \\varepsilon \\) for \\( |x - 1| \\).']],
+      mistakes: [{ value: -0.5, msg: 'δ must be positive. The absolute value takes care of the negative slope.' }, { value: 2, msg: 'Divide by the slope’s size, don’t multiply.' }],
+      success: 'Only the size of the slope matters: \\( \\delta = \\varepsilon / |m| \\).' },
+    { id: 'ed-sqrt', tag: 'Curve',
+      prompt: '<p>For \\( \\displaystyle\\lim_{x\\to4} \\sqrt{x} = 2 \\) and \\( \\varepsilon = 0.1 \\), find the largest δ that works.</p>',
+      label: 'δ =', answer: { type: 'number', value: 0.39 },
+      rungs: [['Nudge', 'You need \\( 1.9 \\lt \\sqrt{x} \\lt 2.1 \\). Square everything to get an interval for x.'], ['Hint', 'That gives \\( 3.61 \\lt x \\lt 4.41 \\). How far is each end from 4?'], ['Strategy', 'δ must work on both sides, so take the smaller of the two distances.']],
+      mistakes: [{ value: 0.41, msg: 'That’s the right-side distance. On the left, x can only go down to 3.61. Is 0.41 safe there?' }, { value: 0.1, msg: 'That’s ε. You need the matching distance in x.' }],
+      success: 'Square root curves are steeper on the left of 4, so the left side decides δ.' },
+    { id: 'ed-steep', tag: 'Linear',
+      prompt: '<p>For \\( \\displaystyle\\lim_{x\\to-1} (7x + 2) = -5 \\) and \\( \\varepsilon = 0.01 \\), find the largest δ that works. An exact fraction is fine.</p>',
+      label: 'δ =', answer: { type: 'number', value: 0.01 / 7 },
+      rungs: [['Nudge', 'Same pattern as before: what’s the slope?'], ['Hint', '\\( |(7x + 2) - (-5)| = |7x + 7| = 7|x + 1| \\).'], ['Strategy', '\\( \\delta = \\varepsilon / 7 \\).']],
+      mistakes: [{ value: 0.07, msg: 'Divide by the slope, don’t multiply.' }],
+      success: 'Tiny ε and steep slope mean a very narrow strip, but it still exists.' }
+  ]);
+
+  quiz(document.getElementById('quiz'), [
+    { q: 'In the ε–δ definition, who chooses first?',
+      choices: [{ t: 'δ is chosen first, then ε', ok: false, why: 'If you picked δ first, the skeptic could just pick a tinier ε to beat you.' }, { t: 'ε is given first, then you find δ', ok: true, why: '“For every ε there is a δ.” Your δ can depend on ε.' }] },
+    { q: 'What does the \\( 0 \\lt |x - a| \\) part of the definition do?',
+      choices: [{ t: 'Excludes x = a itself', ok: true, why: 'Limits ignore the value at a, and this is where the definition says so.' }, { t: 'Makes x positive', ok: false, why: '\\( |x - a| \\gt 0 \\) just means \\( x \\ne a \\). x can be negative.' }, { t: 'Makes δ positive', ok: false, why: 'δ > 0 is stated separately.' }] },
+    { q: 'If δ = 0.3 works for some ε, does δ = 0.1 also work?',
+      choices: [{ t: 'Yes, a smaller strip is always safe', ok: true, why: 'Every x within 0.1 of a is also within 0.3 of a, so it already satisfies the condition.' }, { t: 'No, δ must be the largest possible', ok: false, why: 'The definition asks for <i>some</i> δ that works, not the best one.' }] }
+  ]);
+});
+</script>
+</body>
+</html>

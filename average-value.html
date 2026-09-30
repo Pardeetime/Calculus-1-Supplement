@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Average Value</title>
+<meta name="description" content="Calculus I Companion, Topic 6.2: the average value of a function, why it's an integral divided by length, and the Mean Value Theorem for integrals.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;1,6..72,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="lesson.css">
+<script src="site.js"></script>
+<script src="course.js"></script>
+</head>
+<body data-topic="average-value">
+<main class="wrap">
+
+<!-- ================= SEE IT ================= -->
+<section class="step" id="see" data-title="Level the water">
+  <div class="prose">
+    <p>Picture the region under a curve as water in a tank, sloshed into hills and valleys. When it settles flat, what height does it reach? Move the gold line until the water <b>above</b> it (the hills) exactly fills the gaps <b>below</b> it (the valleys).</p>
+  </div>
+  <div class="card widget">
+    <div class="seg" id="fBtns" role="group" aria-label="Choose a function" style="margin-bottom:12px"></div>
+    <div class="widget-grid">
+      <svg id="avPlot" role="img" aria-label="Curve with a horizontal leveling line and the areas above and below it"></svg>
+      <div>
+        <div class="display" id="avTex" style="font-size:18px"></div>
+        <div class="ctls"><div class="ctl"><label for="hS">Water level</label><input id="hS" type="range" min="0" max="1000" value="700"><output id="hO"></output></div></div>
+        <div class="readout" id="avRead" aria-live="polite"></div>
+        <div class="feedback" id="avFb" aria-live="polite"></div>
+      </div>
+    </div>
+  </div>
+  <div class="callout idea"><b>What you found</b>
+    <p>The level height makes a <b>rectangle with the same area</b> as the region under the curve. So height × width = area, and the level is \( \dfrac{\text{area}}{b - a} \). That height is the <b>average value</b> of f.</p>
+  </div>
+</section>
+
+<!-- ================= BUILD IT ================= -->
+<section class="step" id="build" data-title="Averaging infinitely many values">
+  <div class="prose">
+    <p>To average n sample values, add them and divide by n. Sample f at n evenly spaced points on \( [a, b] \), where \( \Delta x = \frac{b-a}{n} \):</p>
+    <div class="display">\[ \frac{f(x_1) + \cdots + f(x_n)}{n} = \frac{1}{b - a}\sum_{i=1}^{n} f(x_i)\,\Delta x \;\xrightarrow{\;n\to\infty\;}\; \frac{1}{b - a}\int_a^b f(x)\,dx. \]</div>
+  </div>
+  <div class="callout idea"><b>Average value</b>
+    <div class="display">\[ f_{\text{avg}} = \frac{1}{b - a}\int_a^b f(x)\,dx \]</div>
+  </div>
+  <div class="callout idea"><b>Mean Value Theorem for Integrals</b>
+    <p>If f is continuous on \( [a, b] \), there is some c in \( [a, b] \) with \( f(c) = f_{\text{avg}} \). The function actually <i>reaches</i> its average somewhere. It’s the IVT (Topic 1.7) applied to the average.</p>
+  </div>
+  <div id="wx1"></div>
+  <div class="callout calc"><b>It all connects</b>
+    <p>The average value of a velocity is \( \frac{1}{b - a}\int_a^b v\,dt = \frac{\text{displacement}}{\text{time}} \), the ordinary average velocity from Topic 1.1. The course started by asking how to get from average rates to instantaneous ones, and it ends by going the other way.</p>
+  </div>
+</section>
+
+<!-- ================= TRY IT ================= -->
+<section class="step" id="try" data-title="Your turn">
+  <div class="practice-list" id="practice"></div>
+</section>
+
+<!-- ================= CHECK ================= -->
+<section class="step" id="check" data-title="Before you move on">
+  <div class="tf" id="tf"></div>
+  <div class="callout idea" style="margin-top:24px"><b>You’ve reached the end of the course</b>
+    <p>That’s all of Calculus I, from functions to the Fundamental Theorem and beyond. The dashboard’s ratings show which topics to review before the final. Topics you marked “Shaky” are the ones to revisit first.</p>
+  </div>
+</section>
+
+</main>
+
+<script src="lesson.js"></script>
+<script>
+Lesson.ready(() => {
+  const { Plot, practiceList, worked, trueFalse, typeset } = Lesson;
+
+  const FNS = [
+    { lbl: 'sin x on [0, π]', tex: 'f(x) = \\sin x,\\ \\ [0, \\pi]', f: Math.sin, a: 0, b: Math.PI, y: [-0.2, 1.3], avg: 2 / Math.PI, avgTex: '\\tfrac{2}{\\pi}' },
+    { lbl: 'x² on [0, 2]', tex: 'f(x) = x^2,\\ \\ [0, 2]', f: x => x * x, a: 0, b: 2, y: [-0.3, 4.3], avg: 4 / 3, avgTex: '\\tfrac43' },
+    { lbl: '1 + cos x on [0, 2π]', tex: 'f(x) = 1 + \\cos x,\\ \\ [0, 2\\pi]', f: x => 1 + Math.cos(x), a: 0, b: 2 * Math.PI, y: [-0.2, 2.3], avg: 1, avgTex: '1' }
+  ];
+  const ap = Plot(document.getElementById('avPlot'), { x: [-0.3, 3.5], y: [-0.2, 1.3], h: 320 });
+  const hS = document.getElementById('hS');
+  let cur = 0;
+  document.getElementById('fBtns').innerHTML = FNS.map((F, i) => `<button type="button" data-i="${i}">${F.lbl}</button>`).join('');
+  function drawAV() {
+    const F = FNS[cur], hmax = F.y[1] - 0.3, h = hmax * hS.value / 1000;
+    ap.range([F.a - 0.3, F.b + 0.3], F.y);
+    let s = '', above = 0, below = 0;
+    const n = 300, dx = (F.b - F.a) / n;
+    for (let i = 0; i < n; i++) {
+      const x = F.a + (i + 0.5) * dx, v = F.f(x), px = ap.sx(F.a + i * dx), w = ap.sx(F.a + (i + 1) * dx) - px + 0.4;
+      s += `<rect x="${px}" y="${ap.sy(Math.min(v, h))}" width="${w}" height="${ap.sy(0) - ap.sy(Math.min(v, h))}" style="fill:var(--u6);opacity:.3"/>`;
+      if (v > h) { above += (v - h) * dx; s += `<rect x="${px}" y="${ap.sy(v)}" width="${w}" height="${ap.sy(h) - ap.sy(v)}" style="fill:var(--good);opacity:.4"/>`; }
+      else { below += (h - v) * dx; s += `<rect x="${px}" y="${ap.sy(h)}" width="${w}" height="${ap.sy(v) - ap.sy(h)}" style="fill:var(--warn);opacity:.3"/>`; }
+    }
+    ap.draw(s + ap.fn(F.f, 'c1', { from: F.a, to: F.b }) + ap.seg(F.a, h, F.b, h, 'c2'));
+    document.getElementById('hO').textContent = h.toFixed(3);
+    const r = document.getElementById('avRead');
+    r.innerHTML = `<span style="color:var(--good)">Hills above the line: ${above.toFixed(4)}</span><br><span style="color:var(--warn)">Valleys below the line: ${below.toFixed(4)}</span>`;
+    typeset(r);
+    const fb = document.getElementById('avFb');
+    if (Math.abs(above - below) < 0.02 * (F.b - F.a)) { fb.className = 'feedback good'; fb.innerHTML = `<b class="tag-good">Level!</b> The water sits at height ≈ ${h.toFixed(3)}. The exact average is \\( ${F.avgTex} \\approx ${F.avg.toFixed(4)} \\).`; typeset(fb); }
+    else { fb.className = 'feedback'; fb.innerHTML = ''; }
+  }
+  function pick(i) {
+    cur = i;
+    document.querySelectorAll('#fBtns button').forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.i === i)));
+    const t = document.getElementById('avTex'); t.innerHTML = `\\[ ${FNS[i].tex} \\]`; typeset(t);
+    drawAV();
+  }
+  document.getElementById('fBtns').addEventListener('click', e => { const b = e.target.closest('button'); if (b) pick(+b.dataset.i); });
+  hS.addEventListener('input', drawAV);
+  pick(0);
+
+  worked(document.getElementById('wx1'), {
+    problem: 'Find the average value of \\( f(x) = x^2 \\) on \\( [0, 2] \\), and a c where \\( f(c) = f_{\\text{avg}} \\).',
+    steps: [
+      { show: '\\( \\displaystyle f_{\\text{avg}} = \\frac{1}{2 - 0}\\int_0^2 x^2\\,dx = \\frac12\\cdot\\frac83 = \\frac43 \\).', why: 'Don’t forget to divide by the length of the interval.' },
+      { show: 'Solve \\( c^2 = \\tfrac43 \\): \\( c = \\tfrac{2}{\\sqrt3} \\approx 1.155 \\), which is in \\( [0, 2] \\). ✓', why: 'The MVT for integrals guaranteed such a c exists. Here we found it exactly.' }
+    ]
+  });
+
+  practiceList(document.getElementById('practice'), [
+    { id: 'av-x2', tag: 'Average', prompt: '<p>Find the average value of \\( f(x) = x^2 \\) on \\( [0, 3] \\).</p>', label: 'f_avg',
+      answer: { type: 'number', value: 3 },
+      rungs: [['Nudge', '\\( \\frac{1}{b - a}\\int_a^b f \\).'], ['Hint', '\\( \\int_0^3 x^2\\,dx = 9 \\).'], ['Strategy', 'Divide by the length, 3.']],
+      mistakes: [{ value: 9, msg: 'That’s the integral. Divide by the length of the interval.' }, { value: 4.5, msg: 'Averaging the endpoint values f(0) and f(3) doesn’t give the average of a curve. Use the integral.' }] },
+    { id: 'av-sin', tag: 'Average', prompt: '<p>Find the average value of \\( \\sin x \\) on \\( [0, \\pi] \\).</p>', label: 'f_avg',
+      answer: { type: 'number', value: 2 / Math.PI },
+      rungs: [['Nudge', 'You found \\( \\int_0^\\pi\\sin x\\,dx \\) in Topic 5.3.'], ['Hint', 'It’s 2.'], ['Strategy', 'Divide by π.']],
+      mistakes: [{ value: 2, msg: 'Divide by the length π.' }, { value: 0.5, msg: 'Not quite. The average of a sine arch isn’t half its peak. Compute the integral.' }],
+      success: 'About 0.637, a bit more than half the peak height.' },
+    { id: 'av-recip', tag: 'Average', prompt: '<p>Find the average value of \\( \\dfrac1x \\) on \\( [1, e] \\).</p>', label: 'f_avg',
+      answer: { type: 'number', value: 1 / (Math.E - 1) },
+      rungs: [['Nudge', '\\( \\int_1^e \\tfrac1x\\,dx = 1 \\).'], ['Hint', 'Length of the interval: \\( e - 1 \\).'], ['Strategy', 'Divide.']],
+      mistakes: [{ value: 1, msg: 'Divide by the length \\( e - 1 \\).' }] },
+    { id: 'av-c', tag: 'MVT for integrals', prompt: '<p>For \\( f(x) = x^2 \\) on \\( [0, 3] \\), find c with \\( f(c) = f_{\\text{avg}} \\).</p>', label: 'c =',
+      answer: { type: 'number', value: Math.sqrt(3) },
+      rungs: [['Nudge', 'You found \\( f_{\\text{avg}} = 3 \\) in Problem 1.'], ['Hint', 'Solve \\( c^2 = 3 \\).'], ['Strategy', 'Keep the solution inside [0, 3].']],
+      mistakes: [{ value: -Math.sqrt(3), msg: 'That’s outside [0, 3].' }, { value: 3, msg: 'That’s the average value. c is the <i>x</i> where f reaches it.' }] },
+    { id: 'av-temp', tag: 'Application', prompt: '<p>The temperature t hours after 6 a.m. is \\( T(t) = 60 + 10\\sin\\!\\left(\\dfrac{\\pi t}{12}\\right) \\) °F. Find the average temperature from 6 a.m. to 6 p.m. (\\( 0 \\le t \\le 12 \\)).</p>', label: '°F',
+      answer: { type: 'number', value: 60 + 20 / Math.PI, acceptDecimal: true },
+      rungs: [['Nudge', '\\( \\frac{1}{12}\\int_0^{12} T(t)\\,dt \\). Split into the constant part and the sine part.'], ['Hint', 'Substitute \\( u = \\frac{\\pi t}{12} \\): \\( \\int_0^{12}\\sin\\frac{\\pi t}{12}\\,dt = \\frac{12}{\\pi}\\int_0^{\\pi}\\sin u\\,du = \\frac{24}{\\pi} \\).'], ['Strategy', '\\( \\frac{1}{12}\\left(720 + 10\\cdot\\frac{24}{\\pi}\\right) \\).']],
+      mistakes: [{ value: 60, msg: 'The sine part is positive the whole time (it’s one arch), so the average is higher than 60.' }, { value: 65, msg: 'Averaging the low (60) and high (70) doesn’t give the average of a curve.' }],
+      success: 'About 66.4 °F. Substitution (5.5), the FTC (5.3) and average value all in one problem.' },
+    { id: 'av-vel', tag: 'Velocity', prompt: '<p>A car’s velocity is \\( v(t) = 3t^2 \\) m/s. Find its average velocity over \\( 0 \\le t \\le 2 \\).</p>', label: 'm/s',
+      answer: { type: 'number', value: 4 },
+      rungs: [['Nudge', 'Average value of v on [0, 2].'], ['Hint', '\\( \\int_0^2 3t^2\\,dt = 8 \\).'], ['Strategy', 'Divide by 2 s.']],
+      mistakes: [{ value: 6, msg: 'That’s the average of v(0) and v(2). A curve’s average needs the integral.' }, { value: 8, msg: 'That’s the displacement. Divide by the time.' }],
+      success: 'Displacement ÷ time: the same average velocity as in Topic 1.1.' }
+  ]);
+
+  trueFalse(document.getElementById('tf'), [
+    { s: 'The average value of f on \\( [a, b] \\) is \\( \\dfrac{f(a) + f(b)}{2} \\).', ok: false, why: 'That only works for straight lines. For \\( x^2 \\) on [0, 2] it gives 2, but the true average is 4/3.' },
+    { s: 'A continuous function always equals its average value somewhere on the interval.', ok: true, why: 'That’s the Mean Value Theorem for integrals.' },
+    { s: 'The average value can be negative.', ok: true, why: 'If more of the signed area is below the axis, the average is negative.' },
+    { s: '\\( f_{\\text{avg}}\\cdot(b - a) = \\displaystyle\\int_a^b f(x)\\,dx \\)', ok: true, why: 'The leveled rectangle has the same area as the region.' }
+  ]);
+});
+</script>
+</body>
+</html>

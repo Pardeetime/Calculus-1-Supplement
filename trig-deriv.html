@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Derivatives of Trig Functions</title>
+<meta name="description" content="Calculus I Companion, Topic 3.4: the derivatives of sine and cosine from the unit circle and from limits, the six trig derivatives, and the repeating cycle.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;1,6..72,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="lesson.css">
+<script src="site.js"></script>
+<script src="course.js"></script>
+</head>
+<body data-topic="trig-deriv">
+<main class="wrap">
+
+<!-- ================= SEE IT ================= -->
+<section class="step" id="see" data-title="Riding the unit circle">
+  <div class="prose">
+    <p>A point travels around the unit circle at a steady speed of 1 (in radians per second, θ = t). Its <b>height</b> is \( \sin t \) and its <b>horizontal position</b> is \( \cos t \). The arrow is its velocity, always tangent to the circle and always of length 1. How fast is the height changing? How fast is the horizontal position changing?</p>
+  </div>
+  <div class="card widget">
+    <div class="widget-grid">
+      <svg id="cPlot" role="img" aria-label="Unit circle with a moving point and its velocity arrow"></svg>
+      <div>
+        <div class="ctls"><div class="ctl"><label for="tS">Angle t</label><input id="tS" type="range" min="0" max="628" value="80"><output id="tO"></output></div></div>
+        <div class="row" style="margin-top:10px"><button class="btn" type="button" id="play">▶ Play</button></div>
+        <div class="readout" id="cRead" aria-live="polite"></div>
+        <p class="observe">The velocity arrow is the radius rotated 90°. Rotating \( (\cos t, \sin t) \) by 90° gives \( (-\sin t, \cos t) \).</p>
+      </div>
+    </div>
+  </div>
+  <div class="callout idea"><b>What the arrow shows</b>
+    <p>The <b>vertical</b> part of the velocity is how fast the height \( \sin t \) changes, and it equals \( \cos t \). The <b>horizontal</b> part is how fast \( \cos t \) changes, and it equals \( -\sin t \). So \( (\sin t)' = \cos t \) and \( (\cos t)' = -\sin t \).</p>
+  </div>
+</section>
+
+<!-- ================= BUILD IT ================= -->
+<section class="step" id="build" data-title="The six derivatives">
+  <div id="wx1"></div>
+  <div class="table-wrap"><table class="ref">
+    <tr><th>\( f(x) \)</th><th>\( f'(x) \)</th><th>\( f(x) \)</th><th>\( f'(x) \)</th></tr>
+    <tr><td>\( \sin x \)</td><td>\( \cos x \)</td><td>\( \cos x \)</td><td>\( -\sin x \)</td></tr>
+    <tr><td>\( \tan x \)</td><td>\( \sec^2 x \)</td><td>\( \cot x \)</td><td>\( -\csc^2 x \)</td></tr>
+    <tr><td>\( \sec x \)</td><td>\( \sec x \tan x \)</td><td>\( \csc x \)</td><td>\( -\csc x \cot x \)</td></tr>
+  </table></div>
+  <div class="prose"><p><b>Pattern:</b> the right column is the “co-” version of the left column, with co-swaps throughout and a minus sign. Every co-function’s derivative is negative.</p></div>
+  <div id="wx2"></div>
+  <div class="callout calc"><b>The four-step cycle</b>
+    <p>\( \sin \to \cos \to -\sin \to -\cos \to \sin \). Differentiating sine four times brings you back to sine. To find the 27th derivative, use 27 = 4·6 + 3, so it’s the same as the 3rd.</p>
+  </div>
+  <div class="callout warn"><b>Radians only</b>
+    <p>Every formula here assumes x is in radians, because they all rest on \( \frac{\sin h}{h} \to 1 \) (Topic 1.5).</p>
+  </div>
+</section>
+
+<!-- ================= TRY IT ================= -->
+<section class="step" id="try" data-title="Your turn">
+  <div id="drill"></div>
+  <div class="practice-list" id="practice" style="margin-top:18px"></div>
+</section>
+
+<!-- ================= CHECK ================= -->
+<section class="step" id="check" data-title="Before you move on">
+  <div class="tf" id="tf"></div>
+</section>
+
+</main>
+
+<script src="lesson.js"></script>
+<script>
+Lesson.ready(() => {
+  const { Plot, practiceList, worked, trueFalse, drill, typeset } = Lesson;
+
+  const cp = Plot(document.getElementById('cPlot'), { x: [-1.8, 1.8], y: [-1.8, 1.8], w: 360, h: 360, ticks: false });
+  const tS = document.getElementById('tS');
+  let timer = null;
+  function drawC() {
+    const t = tS.value / 100, c = Math.cos(t), s = Math.sin(t), vx = -s, vy = c;
+    const ax = c + vx * 0.8, ay = s + vy * 0.8;
+    cp.draw(cp.param(Math.cos, Math.sin, 0, 2 * Math.PI, 'ghost') + cp.seg(0, 0, c, s, 'ghost') +
+      cp.seg(c, s, c + vx * 0.8, s, 'c2') + cp.seg(c + vx * 0.8, s, ax, ay, 'c3') + cp.seg(c, s, ax, ay, 'c1') +
+      `<circle cx="${cp.sx(ax)}" cy="${cp.sy(ay)}" r="5" style="fill:var(--curve)"/>` + cp.dot(c, s, 'c1 solid', 7));
+    document.getElementById('tO').textContent = t.toFixed(2);
+    const r = document.getElementById('cRead');
+    r.innerHTML = `<span style="color:var(--tangent)">vertical velocity</span> \\( = ${vy.toFixed(3)} \\) &nbsp;and&nbsp; \\( \\cos t = ${c.toFixed(3)} \\)<br><span style="color:var(--secant)">horizontal velocity</span> \\( = ${vx.toFixed(3)} \\) &nbsp;and&nbsp; \\( -\\sin t = ${(-s).toFixed(3)} \\)`;
+    typeset(r);
+  }
+  tS.addEventListener('input', drawC);
+  cp.onDrag((h, pt) => { let a = Math.atan2(pt.y, pt.x); if (a < 0) a += 2 * Math.PI; tS.value = Math.round(a * 100); drawC(); }, { anywhere: 'p' });
+  document.getElementById('play').addEventListener('click', e => {
+    if (timer) { clearInterval(timer); timer = null; e.currentTarget.textContent = '▶ Play'; return; }
+    e.currentTarget.textContent = '❚❚ Pause';
+    timer = setInterval(() => { tS.value = (+tS.value + 3) % 629; drawC(); }, 40);
+  });
+  drawC();
+
+  worked(document.getElementById('wx1'), {
+    problem: 'Prove \\( \\frac{d}{dx}\\sin x = \\cos x \\) from the definition.',
+    steps: [
+      { show: 'Angle addition: \\( \\sin(x + h) = \\sin x\\cos h + \\cos x\\sin h \\).' },
+      { show: '\\[ \\frac{\\sin(x+h) - \\sin x}{h} = \\sin x\\cdot\\frac{\\cos h - 1}{h} + \\cos x\\cdot\\frac{\\sin h}{h} \\]', why: 'Group the terms so each part is a limit you already know.' },
+      { show: 'As \\( h \\to 0 \\): \\( \\dfrac{\\sin h}{h} \\to 1 \\) (Topic 1.5) and \\( \\dfrac{\\cos h - 1}{h} \\to 0 \\).', why: 'The second limit follows from the first by multiplying by the conjugate \\( \\cos h + 1 \\).' },
+      { show: 'So \\( (\\sin x)\' = \\sin x \\cdot 0 + \\cos x \\cdot 1 = \\cos x \\). ∎' }
+    ]
+  });
+  worked(document.getElementById('wx2'), {
+    problem: 'Derive \\( \\frac{d}{dx}\\tan x \\) with the quotient rule.',
+    steps: [
+      { show: '\\( \\tan x = \\dfrac{\\sin x}{\\cos x} \\). High = sin, d-high = cos; low = cos, d-low = −sin.' },
+      { show: '\\[ \\frac{\\cos x\\cos x - \\sin x(-\\sin x)}{\\cos^2 x} = \\frac{\\cos^2 x + \\sin^2 x}{\\cos^2 x} \\]' },
+      { show: 'Pythagorean identity: the top is 1. So \\( (\\tan x)\' = \\dfrac{1}{\\cos^2 x} = \\sec^2 x \\).', why: 'The other three (sec, csc, cot) come out the same way.' }
+    ]
+  });
+
+  const ri = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+  const T = [
+    { t: '\\sin x', f: Math.sin, d: Math.cos }, { t: '\\cos x', f: Math.cos, d: x => -Math.sin(x) },
+    { t: '\\tan x', f: Math.tan, d: x => 1 / Math.cos(x) ** 2 }, { t: '\\sec x', f: x => 1 / Math.cos(x), d: x => Math.tan(x) / Math.cos(x) }
+  ];
+  const Q = [{ t: 'x', f: x => x, d: () => 1 }, { t: 'x^{2}', f: x => x * x, d: x => 2 * x }, { t: 'e^{x}', f: Math.exp, d: Math.exp }];
+  drill(document.getElementById('drill'), {
+    title: 'Trig derivatives', label: 'dy/dx', format: 'Type sin(x), cos(x), tan(x), sec(x). For sec²x type sec(x)^2.',
+    make() {
+      const kind = ri(0, 2), a = T[ri(0, 3)], c = ri(2, 5);
+      if (kind === 0) {
+        const b = T.filter(x => x !== a)[ri(0, 2)];
+        return { q: `y = ${c}${a.t} - ${b.t}`, d: x => c * a.d(x) - b.d(x), domain: [-1.2, 1.2],
+          hints: ['Look up each derivative in the table. Co-functions pick up a minus sign.', 'Constant multiples come along for the ride.'] };
+      }
+      const q = Q[ri(0, 2)];
+      if (kind === 1) return { q: `y = ${q.t}\\,${a.t}`, d: x => q.d(x) * a.f(x) + q.f(x) * a.d(x), domain: [-1.2, 1.2],
+        hints: ['This is a product, so use the product rule.', '\\( f\'g + fg\' \\) with the trig derivative from the table.'], mistakes: [{ fn: x => q.d(x) * a.d(x), msg: 'Product rule, not product of derivatives.' }] };
+      return { q: `y = \\dfrac{${a.t}}{${q.t}}`, d: x => (a.d(x) * q.f(x) - a.f(x) * q.d(x)) / q.f(x) ** 2, domain: [0.3, 1.2],
+        hints: ['Quotient rule: low d-high minus high d-low, over low squared.'] };
+    }
+  });
+
+  practiceList(document.getElementById('practice'), [
+    { id: 'td-basic', tag: 'Basic', prompt: '<p>Find \\( \\dfrac{d}{dx}\\left(3\\sin x - 2\\cos x\\right) \\).</p>', label: 'dy/dx',
+      answer: { type: 'expr', vars: ['x'], fn: x => 3 * Math.cos(x) + 2 * Math.sin(x) },
+      rungs: [['Nudge', 'Term by term, using the table.'], ['Hint', '\\( (\\cos x)\' = -\\sin x \\), so \\( -2\\cos x \\to -2(-\\sin x) \\).'], ['Strategy', 'Watch the double negative.']],
+      mistakes: [{ fn: x => 3 * Math.cos(x) - 2 * Math.sin(x), msg: 'The derivative of cos is <i>negative</i> sin, so the minus signs combine.' }] },
+    { id: 'td-prod', tag: 'Product', prompt: '<p>Find \\( \\dfrac{d}{dx}\\left(x^2 \\sin x\\right) \\).</p>', label: 'dy/dx',
+      answer: { type: 'expr', vars: ['x'], fn: x => 2 * x * Math.sin(x) + x * x * Math.cos(x) },
+      rungs: [['Nudge', 'Product of x² and sin x.'], ['Hint', '\\( f\' = 2x \\), \\( g\' = \\cos x \\).'], ['Strategy', '\\( f\'g + fg\' \\).']],
+      mistakes: [{ fn: x => 2 * x * Math.cos(x), msg: 'That’s the product of the derivatives. Use the product rule.' }] },
+    { id: 'td-sec', tag: 'Derive it', prompt: '<p>Use the quotient rule on \\( \\sec x = \\dfrac{1}{\\cos x} \\) to find \\( \\dfrac{d}{dx}\\sec x \\).</p>', label: 'dy/dx',
+      answer: { type: 'expr', vars: ['x'], fn: x => Math.tan(x) / Math.cos(x), domain: [-1.2, 1.2] },
+      rungs: [['Nudge', 'High = 1, so d-high = 0.'], ['Hint', '\\( \\dfrac{\\cos x \\cdot 0 - 1\\cdot(-\\sin x)}{\\cos^2 x} = \\dfrac{\\sin x}{\\cos^2 x} \\).'], ['Strategy', 'That form is accepted, or split it into sec·tan.']],
+      mistakes: [{ fn: x => -Math.tan(x) / Math.cos(x), msg: 'Check the signs: \\( -1 \\cdot (-\\sin x) = +\\sin x \\).' }] },
+    { id: 'td-simplify', tag: 'Quotient', prompt: '<p>Find and simplify \\( \\dfrac{d}{dx}\\,\\dfrac{\\sin x}{1 + \\cos x} \\).</p>', label: 'dy/dx',
+      answer: { type: 'expr', vars: ['x'], fn: x => 1 / (1 + Math.cos(x)), domain: [-2, 2] },
+      rungs: [['Nudge', 'Quotient rule: high = sin x, low = 1 + cos x.'], ['Hint', 'Numerator: \\( (1 + \\cos x)\\cos x - \\sin x(-\\sin x) = \\cos x + \\cos^2 x + \\sin^2 x \\).'], ['Strategy', 'Use \\( \\sin^2 + \\cos^2 = 1 \\), then the numerator matches the base of the denominator.']],
+      success: 'The Pythagorean identity makes a messy numerator collapse. Watch for it.' },
+    { id: 'td-cycle', tag: 'Cycle', prompt: '<p>Find \\( \\dfrac{d^{27}}{dx^{27}}\\,\\cos x \\).</p>', label: 'Result',
+      answer: { type: 'expr', vars: ['x'], fn: x => Math.sin(x) },
+      rungs: [['Nudge', 'The derivatives of cos repeat every 4 steps.'], ['Hint', 'List them: \\( \\cos \\to -\\sin \\to -\\cos \\to \\sin \\to \\cos \\).'], ['Strategy', '27 divided by 4 leaves a remainder of 3. Which is the 3rd derivative in the list?']],
+      mistakes: [{ fn: x => -Math.sin(x), msg: 'That’s the 1st (or 25th) derivative. The remainder when 27 is divided by 4 is 3.' }, { fn: x => -Math.cos(x), msg: 'That’s the 2nd derivative in the cycle.' }] },
+    { id: 'td-tangent', tag: 'Tangent line', prompt: '<p>Find the tangent line to \\( y = \\cos x \\) at \\( x = \\tfrac{\\pi}{2} \\).</p>', label: 'y =',
+      answer: { type: 'expr', vars: ['x'], fn: x => -x + Math.PI / 2 },
+      rungs: [['Nudge', 'Point: \\( (\\tfrac{\\pi}{2}, \\cos\\tfrac{\\pi}{2}) \\). Slope: \\( -\\sin\\tfrac{\\pi}{2} \\).'], ['Hint', 'The point is \\( (\\tfrac{\\pi}{2}, 0) \\) and the slope is −1.'], ['Strategy', '\\( y = 0 - 1\\cdot(x - \\tfrac{\\pi}{2}) \\).']],
+      mistakes: [{ fn: x => x - Math.PI / 2, msg: 'The slope is \\( -\\sin(\\pi/2) = -1 \\).' }] }
+  ]);
+
+  trueFalse(document.getElementById('tf'), [
+    { s: '\\( \\dfrac{d}{dx}\\cos x = \\sin x \\)', ok: false, why: 'It’s \\( -\\sin x \\). Just after x = 0, cos is falling, so its slope must be negative.' },
+    { s: 'The 4th derivative of \\( \\sin x \\) is \\( \\sin x \\).', ok: true, why: 'sin → cos → −sin → −cos → sin.' },
+    { s: '\\( \\dfrac{d}{dx}\\tan x = \\sec^2 x \\), which is never negative.', ok: true, why: 'tan x is increasing on every piece of its graph.' },
+    { s: 'These formulas work the same way in degrees.', ok: false, why: 'In degrees, \\( \\frac{d}{dx}\\sin x = \\tfrac{\\pi}{180}\\cos x \\). Radians make the constant 1.' }
+  ]);
+});
+</script>
+</body>
+</html>

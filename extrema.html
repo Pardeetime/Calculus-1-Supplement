@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Maximum and Minimum Values</title>
+<meta name="description" content="Calculus I Companion, Topic 4.1: absolute and local extrema, the Extreme Value Theorem, critical numbers and the Closed Interval Method.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;1,6..72,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="lesson.css">
+<script src="site.js"></script>
+<script src="course.js"></script>
+</head>
+<body data-topic="extrema">
+<main class="wrap">
+
+<!-- ================= SEE IT ================= -->
+<section class="step" id="see" data-title="Where can the highest point be?">
+  <div class="prose">
+    <p>Here’s \( f(x) = x^3 - 6x^2 + 9x + 1 \), looked at only on an interval \( [a, b] \) that you choose. The highest and lowest points of that piece are marked. Move the endpoints around. Where do the extremes show up? Only in a few kinds of places.</p>
+  </div>
+  <div class="card widget">
+    <div class="widget-grid">
+      <svg id="exPlot" role="img" aria-label="A cubic on an adjustable interval with its highest and lowest points marked"></svg>
+      <div>
+        <div class="ctls">
+          <div class="ctl"><label for="aS">Left end a</label><input id="aS" type="range" min="-100" max="450" value="0"><output id="aO"></output></div>
+          <div class="ctl"><label for="bS">Right end b</label><input id="bS" type="range" min="-50" max="500" value="450"><output id="bO"></output></div>
+        </div>
+        <div class="readout" id="exRead" aria-live="polite"></div>
+        <ol class="observe">
+          <li>Can you make the highest point land at an endpoint? At an interior point?</li>
+          <li>When an extreme is <i>inside</i> the interval, what does the tangent line look like there?</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+  <div class="callout idea"><b>What you found</b>
+    <p>Absolute extremes on a closed interval happen at only two kinds of places: the <b>endpoints</b>, or <b>interior points where the tangent is flat</b> (or where there’s a corner). That short list is what makes them findable.</p>
+  </div>
+</section>
+
+<!-- ================= BUILD IT ================= -->
+<section class="step" id="build" data-title="Candidates, then compare">
+  <div class="table-wrap"><table class="ref">
+    <tr><th>Term</th><th>Meaning</th></tr>
+    <tr><td><b>Absolute max</b> at c</td><td>\( f(c) \ge f(x) \) for <i>every</i> x in the domain, the highest point overall</td></tr>
+    <tr><td><b>Local max</b> at c</td><td>\( f(c) \ge f(x) \) for x <i>near</i> c, a hilltop</td></tr>
+    <tr><td><b>Critical number</b></td><td>A c in the domain with \( f'(c) = 0 \) or \( f'(c) \) undefined</td></tr>
+  </table></div>
+  <div class="callout idea"><b>Extreme Value Theorem</b>
+    <p>If f is <b>continuous</b> on a <b>closed</b> interval \( [a, b] \), then f has an absolute max and an absolute min there. Remove either condition and it can fail: \( \tfrac1x \) on \( (0, 1] \) has no max, and a function with a jump can skip over its would-be peak.</p>
+  </div>
+  <div class="callout idea"><b>Fermat’s Theorem</b>
+    <p>If f has a local max or min at an interior point c, then c is a critical number. The converse is false: \( x^3 \) has \( f'(0) = 0 \) with no max or min there. Critical numbers are <b>candidates</b>, not guarantees.</p>
+  </div>
+  <h3>The Closed Interval Method</h3>
+  <div class="prose">
+    <ol>
+      <li>Find the critical numbers of f inside \( (a, b) \).</li>
+      <li>Evaluate f at each of them and at both endpoints.</li>
+      <li>The largest value is the absolute max, and the smallest is the absolute min.</li>
+    </ol>
+  </div>
+  <div id="wx1"></div>
+  <div class="callout warn"><b>Common mistakes</b>
+    <p>Forgetting to check the endpoints. Including critical numbers that lie <i>outside</i> the interval. Missing points where \( f' \) is undefined, like the corner of \( |x| \) or the cusp of \( x^{2/3} \). And answering with the x-value when the question asks for the max <i>value</i> (a y-value), or the other way around.</p>
+  </div>
+</section>
+
+<!-- ================= TRY IT ================= -->
+<section class="step" id="try" data-title="Your turn">
+  <div class="practice-list" id="practice"></div>
+</section>
+
+<!-- ================= CHECK ================= -->
+<section class="step" id="check" data-title="Before you move on">
+  <div class="quiz" id="quiz"></div>
+</section>
+
+</main>
+
+<script src="lesson.js"></script>
+<script>
+Lesson.ready(() => {
+  const { Plot, practiceList, worked, quiz, typeset } = Lesson;
+
+  const f = x => x ** 3 - 6 * x * x + 9 * x + 1;
+  const ep = Plot(document.getElementById('exPlot'), { x: [-1.3, 5.3], y: [-6, 22], h: 360 });
+  const aS = document.getElementById('aS'), bS = document.getElementById('bS');
+  function drawEx() {
+    let a = aS.value / 100, b = bS.value / 100;
+    if (b < a + 0.3) { b = a + 0.3; bS.value = Math.round(b * 100); }
+    const cands = [{ x: a, k: 'endpoint' }, { x: b, k: 'endpoint' }];
+    [1, 3].forEach(c => { if (c > a && c < b) cands.push({ x: c, k: 'critical' }); });
+    cands.forEach(c => { c.y = f(c.x); });
+    const max = cands.reduce((p, q) => (q.y > p.y ? q : p)), min = cands.reduce((p, q) => (q.y < p.y ? q : p));
+    ep.draw(ep.fn(f, 'ghost') + ep.fn(f, 'c1', { from: a, to: b }) + ep.dot(a, f(a), 'c1 solid', 5) + ep.dot(b, f(b), 'c1 solid', 5) +
+      cands.filter(c => c.k === 'critical').map(c => ep.seg(c.x - 0.6, c.y, c.x + 0.6, c.y, 'c3 thin')).join('') +
+      ep.dot(max.x, max.y, 'c2 solid', 8) + ep.dot(min.x, min.y, 'c4 solid', 8) +
+      ep.text(max.x, max.y, 'max', 'lbl', 0, -12, 'middle') + ep.text(min.x, min.y, 'min', 'lbl', 0, 22, 'middle'));
+    document.getElementById('aO').textContent = a.toFixed(2);
+    document.getElementById('bO').textContent = b.toFixed(2);
+    const r = document.getElementById('exRead');
+    r.innerHTML = 'Candidates: ' + cands.map(c => `\\( f(${+c.x.toFixed(2)}) = ${c.y.toFixed(2)} \\) <span class="muted">(${c.k})</span>`).join(', ') +
+      `<br><b>Absolute max</b> at \\( x = ${+max.x.toFixed(2)} \\) (${max.k}), <b>absolute min</b> at \\( x = ${+min.x.toFixed(2)} \\) (${min.k}).`;
+    typeset(r);
+  }
+  aS.addEventListener('input', drawEx); bS.addEventListener('input', drawEx);
+  drawEx();
+
+  worked(document.getElementById('wx1'), {
+    problem: 'Find the absolute max and min of \\( f(x) = x^3 - 3x^2 + 1 \\) on \\( [-\\tfrac12, 4] \\).',
+    steps: [
+      { show: '\\( f\'(x) = 3x^2 - 6x = 3x(x - 2) \\). Critical numbers: \\( x = 0 \\) and \\( x = 2 \\), both inside the interval.', why: 'A polynomial’s derivative is never undefined, so only the zeros count.' },
+      { show: 'Evaluate: \\( f(-\\tfrac12) = \\tfrac38 \\), \\( f(0) = 1 \\), \\( f(2) = -3 \\), \\( f(4) = 17 \\).', why: 'Endpoints and critical numbers go in the same list.' },
+      { show: 'Absolute max: \\( 17 \\) at \\( x = 4 \\) (an endpoint). Absolute min: \\( -3 \\) at \\( x = 2 \\).', why: 'The local max at x = 0 isn’t the absolute max, because the endpoint at 4 is higher.' }
+    ]
+  });
+
+  practiceList(document.getElementById('practice'), [
+    { id: 'ex-crit', tag: 'Critical numbers', prompt: '<p>Find all critical numbers of \\( f(x) = x^3 - 3x^2 - 9x + 1 \\).</p>', label: 'x =',
+      answer: { type: 'set', values: [3, -1] }, format: 'List the x-values separated by commas.',
+      rungs: [['Nudge', 'Set \\( f\'(x) = 0 \\).'], ['Hint', '\\( f\'(x) = 3x^2 - 6x - 9 = 3(x^2 - 2x - 3) \\).'], ['Strategy', 'Factor the quadratic.']],
+      mistakes: [{ values: [-3, 1], msg: 'Check your factoring signs: \\( x^2 - 2x - 3 = (x - 3)(x + 1) \\).' }] },
+    { id: 'ex-crit-dne', tag: 'Critical numbers', prompt: '<p>Find all critical numbers of \\( f(x) = x^{2/3}(x - 5) \\).</p>', label: 'x =',
+      answer: { type: 'set', values: [0, 2] }, format: 'List the x-values separated by commas.',
+      rungs: [['Nudge', 'Expand first: \\( f(x) = x^{5/3} - 5x^{2/3} \\).'], ['Hint', '\\( f\'(x) = \\tfrac53 x^{2/3} - \\tfrac{10}{3}x^{-1/3} = \\dfrac{5x - 10}{3x^{1/3}} \\).'], ['Strategy', 'Critical numbers: where the numerator is 0, <b>and</b> where the derivative is undefined but f is defined.']],
+      mistakes: [{ values: [2], msg: 'Where is \\( f\' \\) undefined? f is defined there, so it counts as a critical number too.' }] },
+    { id: 'ex-abs-max', tag: 'Closed interval', prompt: '<p>Find the absolute maximum <b>value</b> of \\( f(x) = x^3 - 3x^2 + 1 \\) on \\( [-1, 4] \\).</p>', label: 'Max value',
+      answer: { type: 'number', value: 17 },
+      rungs: [['Nudge', 'Critical numbers first, then list all candidates.'], ['Hint', 'Candidates: \\( x = -1, 0, 2, 4 \\).'], ['Strategy', 'Evaluate f at all four and pick the largest.']],
+      mistakes: [{ value: 4, msg: 'That’s where the max happens. The question asks for the max <i>value</i>, f(4).' }, { value: 1, msg: 'That’s only a local max. Check the endpoints too.' }] },
+    { id: 'ex-abs-min', tag: 'Closed interval', prompt: '<p>Same function and interval. Find the absolute minimum <b>value</b>.</p>', label: 'Min value',
+      answer: { type: 'number', value: -3 },
+      rungs: [['Nudge', 'Use the same candidate list.'], ['Hint', 'Two candidates tie. Does that matter?'], ['Strategy', 'The min value is the smallest number in the list, even if two x-values reach it.']],
+      success: 'It happens at both \\( x = -1 \\) and \\( x = 2 \\). The value is the same.' },
+    { id: 'ex-trig', tag: 'Closed interval', prompt: '<p>Find the absolute minimum value of \\( f(x) = x - 2\\sin x \\) on \\( [0, \\pi] \\).</p>', label: 'Min value',
+      answer: { type: 'number', value: Math.PI / 3 - Math.sqrt(3) },
+      rungs: [['Nudge', '\\( f\'(x) = 1 - 2\\cos x \\).'], ['Hint', '\\( \\cos x = \\tfrac12 \\) on \\( [0, \\pi] \\) at \\( x = \\tfrac{\\pi}{3} \\).'], ['Strategy', 'Compare \\( f(0) \\), \\( f(\\tfrac{\\pi}{3}) \\), \\( f(\\pi) \\).']],
+      mistakes: [{ value: 0, msg: 'Check the interior critical number. \\( f(\\tfrac{\\pi}{3}) = \\tfrac{\\pi}{3} - \\sqrt3 \\) is negative.' }] },
+    { id: 'ex-xex', tag: 'Location', prompt: '<p>At what x-value does \\( f(x) = xe^{-x} \\) reach its absolute maximum on \\( [0, 3] \\)?</p>', label: 'x =',
+      answer: { type: 'number', value: 1 },
+      rungs: [['Nudge', 'Product rule for \\( f\' \\).'], ['Hint', '\\( f\'(x) = e^{-x} - xe^{-x} = e^{-x}(1 - x) \\).'], ['Strategy', 'Compare f at the critical number and at both endpoints.']],
+      mistakes: [{ value: 1 / Math.E, msg: 'That’s the maximum <i>value</i>. The question asks for the x-value.' }] }
+  ]);
+
+  quiz(document.getElementById('quiz'), [
+    { q: '\\( f\'(c) = 0 \\). Must f have a local max or min at c?',
+      choices: [{ t: 'Yes', ok: false, why: '\\( x^3 \\) at 0: flat, but it keeps rising.' }, { t: 'No', ok: true, why: 'Critical numbers are only candidates. Topic 4.3 gives tests to decide.' }] },
+    { q: 'Which is guaranteed to have an absolute maximum?',
+      choices: [{ t: '\\( f(x) = x^2 \\) on \\( (-1, 2) \\)', ok: false, why: 'Open interval: the values approach 4 but never reach it.' }, { t: '\\( f(x) = \\sin x \\) on \\( [0, 10] \\)', ok: true, why: 'Continuous on a closed interval, so the EVT applies.' }, { t: '\\( f(x) = \\tfrac1x \\) on \\( [-1, 1] \\)', ok: false, why: 'Not continuous at 0, and it blows up there.' }] },
+    { q: 'Is \\( x = 0 \\) a critical number of \\( f(x) = |x| \\)?',
+      choices: [{ t: 'Yes, \\( f\'(0) \\) doesn’t exist', ok: true, why: 'Corners count, and here it’s the absolute min.' }, { t: 'No, \\( f\'(x) \\) is never 0', ok: false, why: 'Critical numbers also include points where \\( f\' \\) is undefined.' }] }
+  ]);
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Indefinite Integrals and Net Change</title>
+<meta name="description" content="Calculus I Companion, Topic 5.4: indefinite integral notation, the table of basic integrals, the Net Change Theorem, and displacement versus total distance.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;1,6..72,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="lesson.css">
+<script src="site.js"></script>
+<script src="course.js"></script>
+</head>
+<body data-topic="indefinite">
+<main class="wrap">
+
+<!-- ================= SEE IT ================= -->
+<section class="step" id="see" data-title="Where did it end up vs. how far did it go?">
+  <div class="prose">
+    <p>A particle moves along a line with velocity \( v(t) = t^2 - 4t + 3 \) m/s for \( 0 \le t \le 5 \). It goes forward, turns around, and goes forward again. Press play and track two different totals: <b>where it ends up</b> compared with where it started, and <b>how far it actually traveled</b>.</p>
+  </div>
+  <div class="card widget">
+    <svg id="track" role="img" aria-label="A particle moving back and forth along a line"></svg>
+    <div class="widget-grid" style="margin-top:10px">
+      <svg id="vPlot" role="img" aria-label="Velocity graph with signed area shaded up to the current time"></svg>
+      <div>
+        <div class="row"><button class="btn primary" type="button" id="play">▶ Play</button></div>
+        <div class="ctls"><div class="ctl"><label for="tS">Time t (s)</label><input id="tS" type="range" min="0" max="500" value="0"><output id="tO"></output></div></div>
+        <div class="readout" id="pRead" aria-live="polite"></div>
+      </div>
+    </div>
+  </div>
+  <div class="callout idea"><b>Two different questions</b>
+    <p><b>Displacement</b> (net change in position) is \( \int v\,dt \), where backward motion cancels forward motion. <b>Total distance</b> is \( \int |v|\,dt \), where every meter counts. They match only if the particle never reverses.</p>
+  </div>
+</section>
+
+<!-- ================= BUILD IT ================= -->
+<section class="step" id="build" data-title="Notation and the Net Change Theorem">
+  <div class="prose">
+    <p>Because of the FTC, antiderivatives get integral notation. The <b>indefinite integral</b></p>
+    <div class="display">\[ \int f(x)\,dx = F(x) + C \quad\text{means}\quad F'(x) = f(x). \]</div>
+    <p>A <b>definite</b> integral \( \int_a^b \) is a <b>number</b>. An <b>indefinite</b> integral \( \int \) is a <b>family of functions</b>.</p>
+  </div>
+  <div class="table-wrap"><table class="ref">
+    <tr><th>Integral</th><th>Result</th><th>Integral</th><th>Result</th></tr>
+    <tr><td>\( \int x^n\,dx \ (n\ne-1) \)</td><td>\( \frac{x^{n+1}}{n+1} + C \)</td><td>\( \int \frac1x\,dx \)</td><td>\( \ln|x| + C \)</td></tr>
+    <tr><td>\( \int e^x\,dx \)</td><td>\( e^x + C \)</td><td>\( \int b^x\,dx \)</td><td>\( \frac{b^x}{\ln b} + C \)</td></tr>
+    <tr><td>\( \int \cos x\,dx \)</td><td>\( \sin x + C \)</td><td>\( \int \sin x\,dx \)</td><td>\( -\cos x + C \)</td></tr>
+    <tr><td>\( \int \sec^2 x\,dx \)</td><td>\( \tan x + C \)</td><td>\( \int \sec x\tan x\,dx \)</td><td>\( \sec x + C \)</td></tr>
+    <tr><td>\( \int \frac{1}{1+x^2}\,dx \)</td><td>\( \arctan x + C \)</td><td>\( \int \frac{1}{\sqrt{1-x^2}}\,dx \)</td><td>\( \arcsin x + C \)</td></tr>
+  </table></div>
+  <div class="callout idea"><b>Net Change Theorem</b>
+    <div class="display">\[ \int_a^b F'(x)\,dx = F(b) - F(a) \]</div>
+    <p>The integral of a <b>rate of change</b> is the <b>total change</b>. Water flow rate → change in volume. Growth rate → change in population. Velocity → change in position.</p>
+  </div>
+  <div id="wx1"></div>
+</section>
+
+<!-- ================= TRY IT ================= -->
+<section class="step" id="try" data-title="Your turn">
+  <div id="drill"></div>
+  <div class="practice-list" id="practice" style="margin-top:18px"></div>
+</section>
+
+<!-- ================= CHECK ================= -->
+<section class="step" id="check" data-title="Before you move on">
+  <div class="quiz" id="quiz"></div>
+</section>
+
+</main>
+
+<script src="lesson.js"></script>
+<script>
+Lesson.ready(() => {
+  const { Plot, practiceList, worked, quiz, drill, typeset } = Lesson;
+
+  const v = t => t * t - 4 * t + 3, s = t => t ** 3 / 3 - 2 * t * t + 3 * t;
+  const track = document.getElementById('track'); track.setAttribute('viewBox', '0 0 640 90'); track.classList.add('plot');
+  const vp = Plot(document.getElementById('vPlot'), { x: [-0.2, 5.2], y: [-1.5, 8.5], h: 280 });
+  const tS = document.getElementById('tS');
+  const X = p => 60 + (p + 1) / 9 * 540;
+  let timer = null;
+  function dist(t) { let d = 0; const n = 400; for (let i = 0; i < n; i++) d += Math.abs(v(t * (i + 0.5) / n)) * t / n; return d; }
+  function drawP() {
+    const t = tS.value / 100, p = s(t);
+    let trail = '';
+    for (let k = 0; k <= 60; k++) { const u = t * k / 60; trail += (k ? 'L' : 'M') + X(s(u)).toFixed(1) + ' ' + (60 - 30 * k / 60).toFixed(1); }
+    let ticks = '';
+    for (let q = -1; q <= 8; q++) ticks += `<line x1="${X(q)}" y1="66" x2="${X(q)}" y2="72" class="axis"/><text class="tick" x="${X(q)}" y="86" text-anchor="middle">${q}</text>`;
+    track.innerHTML = `<line x1="40" y1="66" x2="620" y2="66" class="axis"/>${ticks}<path d="${trail}" style="fill:none;stroke:var(--secant);stroke-width:2;opacity:.7"/>` +
+      `<circle cx="${X(0)}" cy="66" r="5" style="fill:var(--ink-3)"/><circle cx="${X(p)}" cy="66" r="9" style="fill:var(--tangent);stroke:var(--surface);stroke-width:2"/>`;
+    let sh = '';
+    const n = 120;
+    for (let i = 0; i < n; i++) { const u = t * i / n, h = t / n, vv = v(u + h / 2); sh += `<rect x="${vp.sx(u)}" y="${Math.min(vp.sy(0), vp.sy(vv))}" width="${vp.sx(u + h) - vp.sx(u) + 0.4}" height="${Math.abs(vp.sy(vv) - vp.sy(0))}" style="fill:${vv >= 0 ? 'var(--good)' : 'var(--warn)'};opacity:.35"/>`; }
+    vp.draw(sh + vp.fn(v, 'c1', { from: 0, to: 5 }) + vp.dot(t, v(t), 'c3 solid', 5) + vp.text(0.1, 8, 'v(t)', 'tick'));
+    document.getElementById('tO').textContent = t.toFixed(2);
+    const r = document.getElementById('pRead');
+    r.innerHTML = `velocity \\( v = ${v(t).toFixed(2) } \\) m/s ${v(t) < 0 ? '(moving backward)' : ''}<br>Displacement \\( \\int_0^{t} v\\,dt = ${p.toFixed(3)} \\) m<br>Distance traveled \\( \\int_0^{t} |v|\\,dt = ${dist(t).toFixed(3)} \\) m`;
+    typeset(r);
+  }
+  const stop = () => { clearInterval(timer); timer = null; document.getElementById('play').textContent = '▶ Play'; };
+  document.getElementById('play').addEventListener('click', () => {
+    if (timer) return stop();
+    if (+tS.value >= 500) tS.value = 0;
+    document.getElementById('play').textContent = '❚❚ Pause';
+    timer = setInterval(() => { tS.value = Math.min(500, +tS.value + 4); drawP(); if (+tS.value >= 500) stop(); }, 40);
+  });
+  tS.addEventListener('input', drawP);
+  drawP();
+
+  worked(document.getElementById('wx1'), {
+    problem: 'For \\( v(t) = t^2 - 4t + 3 \\) on \\( [0, 5] \\), find the displacement and the total distance.',
+    steps: [
+      { show: 'Displacement: \\( \\displaystyle\\int_0^5 v\\,dt = \\Big[\\tfrac{t^3}{3} - 2t^2 + 3t\\Big]_0^5 = \\tfrac{125}{3} - 50 + 15 = \\tfrac{20}{3} \\) m.' },
+      { show: 'For distance, find where v changes sign: \\( t^2 - 4t + 3 = (t - 1)(t - 3) \\). Negative on \\( (1, 3) \\).' },
+      { show: 'Split: \\( \\int_0^1 v = \\tfrac43 \\), \\( \\int_1^3 v = -\\tfrac43 \\), \\( \\int_3^5 v = \\tfrac{20}{3} \\).', why: 'Integrate each piece separately, then take absolute values.' },
+      { show: 'Total distance \\( = \\tfrac43 + \\tfrac43 + \\tfrac{20}{3} = \\tfrac{28}{3} \\) m.', why: 'Compare with the readouts in the explorer at t = 5.' }
+    ]
+  });
+
+  const ri = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+  const T = [
+    () => { const n = ri(2, 5), c = n + 1; return { t: `${c}x^{${n}}`, F: x => x ** (n + 1) }; },
+    () => { const c = ri(2, 6); return { t: `\\frac{${c}}{x^{2}}`, F: x => -c / x, pos: true }; },
+    () => ({ t: '\\sqrt{x}', F: x => (2 / 3) * x ** 1.5, pos: true }),
+    () => ({ t: '\\sec x\\tan x', F: x => 1 / Math.cos(x) }),
+    () => ({ t: '\\frac{1}{1 + x^{2}}', F: Math.atan }),
+    () => { const c = ri(2, 5); return { t: `${c}\\sin x`, F: x => -c * Math.cos(x) }; },
+    () => ({ t: '2^{x}', F: x => 2 ** x / Math.log(2) }),
+    () => { const c = ri(2, 9); return { t: `${c}`, F: x => c * x }; }
+  ];
+  drill(document.getElementById('drill'), {
+    title: 'Indefinite integrals', label: '∫ f dx', antideriv: true,
+    intro: 'Integrate term by term, and remember + C.',
+    make() {
+      const picks = [...T].sort(() => Math.random() - 0.5).slice(0, ri(2, 3)).map(g => g());
+      return { q: `\\int \\left(${picks.map(p => p.t).join(' + ')}\\right)dx`, d: x => picks.reduce((s, p) => s + p.F(x), 0), domain: picks.some(p => p.pos) ? [0.4, 1.3] : [-1.2, 1.2],
+        hints: ['Use the table above, one term at a time.', '\\( \\frac{c}{x^2} = c\\,x^{-2} \\to -c\\,x^{-1} \\). \\( \\sqrt x = x^{1/2} \\to \\tfrac23 x^{3/2} \\).', 'Check by differentiating your answer.'] };
+    }
+  });
+
+  practiceList(document.getElementById('practice'), [
+    { id: 'in-power', tag: 'Indefinite', prompt: '<p>Find \\( \\displaystyle\\int \\left(x^3 - \\frac{2}{x^2}\\right)dx \\).</p>', label: '∫ =',
+      answer: { type: 'antideriv', fn: x => x ** 4 / 4 + 2 / x, domain: [0.5, 3] },
+      rungs: [['Nudge', 'Rewrite \\( \\frac{2}{x^2} = 2x^{-2} \\).'], ['Hint', '\\( \\int 2x^{-2}dx = 2\\cdot\\dfrac{x^{-1}}{-1} = -\\dfrac2x \\).'], ['Strategy', 'Subtracting that gives \\( +\\dfrac2x \\). Add + C.']],
+      mistakes: [{ fn: x => x ** 4 / 4 - 2 / x, noC: true, msg: 'Sign: \\( -\\int 2x^{-2}\\,dx = -(-2x^{-1}) = +2x^{-1} \\).' }] },
+    { id: 'in-root', tag: 'Indefinite', prompt: '<p>Find \\( \\displaystyle\\int \\left(\\sqrt{x} + 3\\right)dx \\).</p>', label: '∫ =',
+      answer: { type: 'antideriv', fn: x => (2 / 3) * x ** 1.5 + 3 * x, domain: [0.3, 3] },
+      rungs: [['Nudge', '\\( \\sqrt x = x^{1/2} \\).'], ['Hint', '\\( \\dfrac{x^{3/2}}{3/2} = \\tfrac23 x^{3/2} \\).'], ['Strategy', 'The constant 3 integrates to 3x.']],
+      mistakes: [{ fn: x => 1.5 * x ** 1.5 + 3 * x, noC: true, msg: 'Dividing by \\( \\tfrac32 \\) means multiplying by \\( \\tfrac23 \\).' }] },
+    { id: 'in-trig', tag: 'Indefinite', prompt: '<p>Find \\( \\displaystyle\\int \\left(\\sec^2 x - \\sin x\\right)dx \\).</p>', label: '∫ =',
+      answer: { type: 'antideriv', fn: x => Math.tan(x) + Math.cos(x) },
+      rungs: [['Nudge', 'Both are in the table.'], ['Hint', '\\( \\int \\sin x\\,dx = -\\cos x \\).'], ['Strategy', 'Subtracting \\( -\\cos x \\) gives \\( +\\cos x \\).']],
+      mistakes: [{ fn: x => Math.tan(x) - Math.cos(x), noC: true, msg: 'Double negative: \\( -\\int\\sin x\\,dx = -(-\\cos x) \\).' }] },
+    { id: 'in-disp', tag: 'Displacement', prompt: '<p>A particle has \\( v(t) = 3t^2 - 6t \\) m/s. Find its displacement from \\( t = 0 \\) to \\( t = 3 \\).</p>', label: 'm',
+      answer: { type: 'number', value: 0 },
+      rungs: [['Nudge', 'Displacement is \\( \\int_0^3 v\\,dt \\).'], ['Hint', 'Antiderivative: \\( t^3 - 3t^2 \\).'], ['Strategy', 'Evaluate from 0 to 3.']],
+      mistakes: [{ value: 8, msg: 'That’s total distance. Displacement lets backward motion cancel.' }],
+      success: 'It ends exactly where it started, but it did move. See the next problem.' },
+    { id: 'in-dist', tag: 'Total distance', prompt: '<p>Same particle. Find the <b>total distance</b> traveled from \\( t = 0 \\) to \\( t = 3 \\).</p>', label: 'm',
+      answer: { type: 'number', value: 8 },
+      rungs: [['Nudge', 'Where does v change sign on [0, 3]?'], ['Hint', '\\( 3t(t - 2) \\): negative on (0, 2), positive on (2, 3).'], ['Strategy', '\\( \\left|\\int_0^2 v\\right| + \\left|\\int_2^3 v\\right| \\).']],
+      mistakes: [{ value: 0, msg: 'That’s displacement. For distance, split where v = 0 and add absolute values.' }] },
+    { id: 'in-tank', tag: 'Net change', prompt: '<p>Water flows into a tank at \\( r(t) = 20 - t \\) liters/min for \\( 0 \\le t \\le 10 \\). The tank holds 100 L at t = 0. How much water is in it at t = 10?</p>', label: 'liters',
+      answer: { type: 'number', value: 250 },
+      rungs: [['Nudge', 'Change in volume = \\( \\int_0^{10} r(t)\\,dt \\).'], ['Hint', '\\( \\Big[20t - \\tfrac{t^2}{2}\\Big]_0^{10} = 150 \\).'], ['Strategy', 'Add the change to the starting amount.']],
+      mistakes: [{ value: 150, msg: 'That’s the <i>change</i>. Add the 100 L that was already there.' }],
+      success: 'The Net Change Theorem: integrating a rate gives the amount that accumulated.' }
+  ]);
+
+  quiz(document.getElementById('quiz'), [
+    { q: '\\( \\displaystyle\\int_0^2 x\\,dx \\) and \\( \\displaystyle\\int x\\,dx \\) are…',
+      choices: [{ t: 'the same thing', ok: false, why: 'One is a number and the other is a family of functions.' }, { t: 'a number (2) and a family of functions \\( \\tfrac{x^2}{2} + C \\)', ok: true, why: 'Definite gives a number, indefinite gives F + C.' }] },
+    { q: 'If \\( r(t) \\) is the rate a population grows (people/year), \\( \\int_0^{10} r(t)\\,dt \\) is…',
+      choices: [{ t: 'the population at t = 10', ok: false, why: 'It’s the <i>change</i>. You’d add the starting population.' }, { t: 'the change in population over 10 years', ok: true, why: 'Net Change Theorem.' }] },
+    { q: 'When are displacement and total distance equal?',
+      choices: [{ t: 'Always', ok: false, why: 'The explorer showed they differ once the particle reverses.' }, { t: 'When velocity never changes sign', ok: true, why: 'Then |v| = v (or −v) throughout.' }] }
+  ]);
+});
+</script>
+</body>
+</html>

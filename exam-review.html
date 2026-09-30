@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Exam Review</title>
+<meta name="description" content="Calculus I Companion: a review list built from your confidence ratings, plus mixed practice sets for each exam and the final.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;1,6..72,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="lesson.css">
+<script src="site.js"></script>
+<script src="course.js"></script>
+<style>
+  .rv-cols { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+  .rv-col { padding: 16px; }
+  .rv-col h3 { margin: 0 0 8px; font-size: 18px; display: flex; justify-content: space-between; }
+  .rv-col h3 span { font: 500 13px var(--font-mono); color: var(--ink-3); }
+  .rv-col ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; max-height: 340px; overflow: auto; }
+  .rv-col li a { display: block; text-decoration: none; color: var(--ink); font-size: 14px; padding: 6px 8px; border-radius: 8px; background: var(--surface-2); }
+  .rv-col li a:hover { background: var(--accent-soft); }
+  .rv-col li small { display: block; color: var(--ink-3); font-size: 12px; }
+  .rv-col .empty { font-size: 14px; color: var(--ink-3); }
+  .ex-head { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  h2.sec { font-size: clamp(24px, 3vw, 30px); margin: 40px 0 6px; }
+</style>
+</head>
+<body data-tool="Exam review" data-sub="A review list based on your confidence ratings, plus mixed practice sets for each exam.">
+<main class="wrap">
+
+  <h2 class="sec">1. Your review list</h2>
+  <p class="muted" style="margin:0 0 14px">Built from the confidence ratings you gave at the end of each lesson (or on the dashboard). Start with the red column.</p>
+  <div class="rv-cols" id="review"></div>
+
+  <h2 class="sec">2. Mixed practice</h2>
+  <p class="muted" style="margin:0 0 14px">On an exam, nobody tells you which technique to use, so these sets mix topics. Deciding the approach is part of the practice. Hints are there if you need them, but try each problem cold first. <b>The unit groupings are a typical split, so your instructor’s exams may cover different units.</b></p>
+  <div class="card widget" style="max-width:52em">
+    <div class="ex-head">
+      <div class="seg" id="exBtns" role="group" aria-label="Choose an exam"></div>
+      <span class="chip" id="exScore"></span>
+    </div>
+    <p class="prompt" id="exDesc" style="margin:0"></p>
+  </div>
+  <div id="sets" style="margin-top:16px"></div>
+</main>
+
+<script src="lesson.js"></script>
+<script>
+Lesson.ready(() => {
+  const { esc, practice, typeset } = Lesson;
+
+  // ---------------- Review list ----------------
+  function renderReview() {
+    const groups = { 1: [], 2: [], 0: [], 3: [] };
+    UNITS.forEach(u => u.topics.forEach((t, i) => groups[Calc.Progress.get(t.id)].push({ u, t, i })));
+    const COLS = [[1, 'Shaky', 'var(--warn)', 'Review these first.'], [2, 'Getting there', 'var(--gold)', 'One more pass without hints.'], [0, 'Not rated yet', 'var(--ink-3)', 'Open the lesson and rate yourself at the end.'], [3, 'Got it', 'var(--good)', 'Keep these fresh with the mixed sets below.']];
+    document.getElementById('review').innerHTML = COLS.map(([lvl, name, color, tip]) => `
+      <div class="card rv-col" style="border-top:4px solid ${color}">
+        <h3>${name}<span>${groups[lvl].length}</span></h3>
+        ${groups[lvl].length ? `<ul>${groups[lvl].map(({ u, t, i }) => `<li><a href="${t.href || 'index.html#' + u.id}"><small>${u.num}.${i + 1} · Unit ${u.num}</small>${esc(t.title)}</a></li>`).join('')}</ul>` : `<p class="empty">${lvl === 1 ? 'Nothing marked shaky. 🎉' : 'None.'}</p>`}
+        <p class="empty" style="margin:8px 0 0">${tip}</p>
+      </div>`).join('');
+  }
+  renderReview();
+
+  // ---------------- Mixed practice sets ----------------
+  const R = (label, text) => [label, text];
+  const SETS = [
+    { id: 'e1', name: 'Exam 1', desc: 'Units 0–1: functions, exponentials and logs, limits, continuity.', probs: [
+      { id: 'x1-domain', tag: 'Domain', prompt: '<p>Find the domain of \\( f(x) = \\dfrac{\\sqrt{x + 1}}{x - 3} \\).</p>', answer: { type: 'interval', value: '[-1,3)U(3,inf)' },
+        rungs: [R('Nudge', 'Two restrictions: the root and the denominator.'), R('Hint', '\\( x + 1 \\ge 0 \\) and \\( x \\ne 3 \\).'), R('Strategy', 'Combine on a number line.')] },
+      { id: 'x1-exp', tag: 'Solve', prompt: '<p>Solve \\( e^{2x - 1} = 5 \\) exactly.</p>', label: 'x =', answer: { type: 'number', value: (Math.log(5) + 1) / 2 },
+        rungs: [R('Nudge', 'Take ln of both sides.'), R('Hint', '\\( 2x - 1 = \\ln 5 \\).'), R('Strategy', 'Add 1, then divide by 2.')],
+        mistakes: [{ value: Math.log(5) / 2 + 1, msg: 'Order of operations: add 1 <i>before</i> dividing by 2.' }] },
+      { id: 'x1-factor', tag: 'Limit', prompt: '<p>Find \\( \\displaystyle\\lim_{x\\to3}\\frac{x^2 - 9}{x^2 - x - 6} \\).</p>', answer: { type: 'limit', value: 1.2 },
+        rungs: [R('Nudge', 'What form does substitution give?'), R('Hint', 'Factor both: \\( (x-3)(x+3) \\) and \\( (x-3)(x+2) \\).'), R('Strategy', 'Cancel, then substitute.')] },
+      { id: 'x1-inf', tag: 'Limit at ∞', prompt: '<p>Find \\( \\displaystyle\\lim_{x\\to\\infty}\\frac{3x^3 - x}{1 - 2x^3} \\).</p>', answer: { type: 'limit', value: -1.5 },
+        rungs: [R('Nudge', 'Compare the highest powers.'), R('Hint', 'Divide top and bottom by \\( x^3 \\).'), R('Strategy', 'Ratio of the leading coefficients, with signs.')],
+        mistakes: [{ value: 1.5, msg: 'The leading coefficient on the bottom is −2.' }] },
+      { id: 'x1-trig', tag: 'Limit', prompt: '<p>Find \\( \\displaystyle\\lim_{x\\to0}\\frac{\\sin 5x}{2x} \\).</p>', answer: { type: 'limit', value: 2.5 },
+        rungs: [R('Nudge', 'Match the angle and the denominator.'), R('Hint', '\\( \\dfrac{\\sin 5x}{2x} = \\dfrac52\\cdot\\dfrac{\\sin 5x}{5x} \\).'), R('Strategy', 'The fraction goes to 1.')] },
+      { id: 'x1-onesided', tag: 'One-sided', prompt: '<p>Find \\( \\displaystyle\\lim_{x\\to4^-}\\frac{x + 1}{x - 4} \\).</p>', answer: { type: 'limit', value: -Infinity },
+        rungs: [R('Nudge', 'Nonzero over zero: which sign?'), R('Hint', 'The numerator is near 5. For x just below 4, the denominator is a tiny negative.'), R('Strategy', 'Positive ÷ tiny negative.')],
+        mistakes: [{ value: Infinity, msg: 'Check the sign of \\( x - 4 \\) when x is slightly less than 4.' }] },
+      { id: 'x1-cont', tag: 'Continuity', prompt: '<p>Find k so that \\( f(x) = \\begin{cases} x^2 + k, &amp; x \\lt 1 \\\\ 3x - 1, &amp; x \\ge 1 \\end{cases} \\) is continuous.</p>', label: 'k =', answer: { type: 'number', value: 1 },
+        rungs: [R('Nudge', 'The pieces must meet at x = 1.'), R('Hint', '\\( 1 + k = 3 - 1 \\).'), R('Strategy', 'Solve for k.')] }
+    ] },
+    { id: 'e2', name: 'Exam 2', desc: 'Units 2–3: the derivative and every differentiation rule, implicit, related rates, linearization.', probs: [
+      { id: 'x2-prod', tag: 'Product', prompt: '<p>Differentiate \\( y = x^3\\sin x \\).</p>', label: "y′ =", answer: { type: 'expr', vars: ['x'], fn: x => 3 * x * x * Math.sin(x) + x ** 3 * Math.cos(x) },
+        rungs: [R('Nudge', 'Which rule applies?'), R('Hint', 'Product rule.'), R('Strategy', '\\( (x^3)\'\\sin x + x^3(\\sin x)\' \\).')] },
+      { id: 'x2-mix', tag: 'Product + chain', prompt: '<p>Differentiate \\( y = e^{x^2}\\tan x \\).</p>', label: "y′ =", answer: { type: 'expr', vars: ['x'], fn: x => 2 * x * Math.exp(x * x) * Math.tan(x) + Math.exp(x * x) / Math.cos(x) ** 2, domain: [-1, 1] },
+        rungs: [R('Nudge', 'Product of two factors, and the first needs the chain rule.'), R('Hint', '\\( (e^{x^2})\' = 2xe^{x^2} \\), \\( (\\tan x)\' = \\sec^2 x \\).'), R('Strategy', 'Assemble f′g + fg′.')] },
+      { id: 'x2-log', tag: 'Log', prompt: '<p>Differentiate \\( y = \\ln\\sqrt{x^2 + 1} \\).</p>', label: "y′ =", answer: { type: 'expr', vars: ['x'], fn: x => x / (x * x + 1) },
+        rungs: [R('Nudge', 'Use a log law first.'), R('Hint', '\\( \\ln\\sqrt{u} = \\tfrac12\\ln u \\).'), R('Strategy', '\\( \\tfrac12\\cdot\\dfrac{2x}{x^2 + 1} \\).')] },
+      { id: 'x2-implicit', tag: 'Implicit', prompt: '<p>For \\( x^3 + y^3 = 9 \\), find \\( \\frac{dy}{dx} \\) at \\( (1, 2) \\).</p>', answer: { type: 'number', value: -0.25 },
+        rungs: [R('Nudge', 'Differentiate both sides. The y-terms get a y′.'), R('Hint', '\\( 3x^2 + 3y^2y\' = 0 \\).'), R('Strategy', '\\( y\' = -x^2/y^2 \\) at (1, 2).')] },
+      { id: 'x2-tangent', tag: 'Tangent line', prompt: '<p>Find the tangent line to \\( y = xe^x \\) at \\( x = 0 \\).</p>', label: 'y =', answer: { type: 'expr', vars: ['x'], fn: x => x },
+        rungs: [R('Nudge', 'Point and slope at x = 0.'), R('Hint', '\\( y(0) = 0 \\), \\( y\' = e^x + xe^x \\).'), R('Strategy', 'Slope 1 through the origin.')] },
+      { id: 'x2-rates', tag: 'Related rates', prompt: '<p>A circle’s area grows at \\( 10\\pi \\) cm²/s. How fast is its radius growing when r = 5 cm?</p>', label: 'cm/s', answer: { type: 'number', value: 1 },
+        rungs: [R('Nudge', '\\( A = \\pi r^2 \\).'), R('Hint', '\\( \\dot A = 2\\pi r\\dot r \\).'), R('Strategy', '\\( 10\\pi = 2\\pi(5)\\dot r \\).')] },
+      { id: 'x2-linear', tag: 'Linearization', prompt: '<p>Use a linearization at a = 16 to estimate \\( \\sqrt{16.2} \\).</p>', answer: { type: 'number', value: 4.025, acceptDecimal: true, tol: 0.00003 }, format: 'An exact fraction, or a decimal to at least 5 places.',
+        rungs: [R('Nudge', '\\( L(x) = f(16) + f\'(16)(x - 16) \\).'), R('Hint', '\\( f\'(16) = \\tfrac{1}{8} \\).'), R('Strategy', '\\( 4 + \\tfrac18(0.2) \\).')],
+        mistakes: [{ value: Math.sqrt(16.2), tol: 0.00003, msg: 'That’s the calculator value. Use the linear estimate.' }] }
+    ] },
+    { id: 'e3', name: 'Exam 3', desc: 'Unit 4: extrema, MVT, graph shape, L’Hôpital, optimization, antiderivatives.', probs: [
+      { id: 'x3-crit', tag: 'Critical numbers', prompt: '<p>Find all critical numbers of \\( f(x) = x^4 - 2x^2 \\).</p>', label: 'x =', answer: { type: 'set', values: [0, 1, -1] }, format: 'List x-values separated by commas.',
+        rungs: [R('Nudge', 'Set f′ = 0.'), R('Hint', '\\( 4x^3 - 4x = 4x(x^2 - 1) \\).'), R('Strategy', 'Three factors, three zeros.')] },
+      { id: 'x3-absmax', tag: 'Closed interval', prompt: '<p>Find the absolute maximum value of \\( f(x) = x^3 - 3x \\) on \\( [0, 2] \\).</p>', answer: { type: 'number', value: 2 },
+        rungs: [R('Nudge', 'Candidates: endpoints and critical numbers inside.'), R('Hint', 'Critical number in (0, 2): x = 1.'), R('Strategy', 'Compare f(0), f(1), f(2).')],
+        mistakes: [{ value: -2, msg: 'That’s the minimum.' }] },
+      { id: 'x3-lh', tag: 'L’Hôpital', prompt: '<p>Find \\( \\displaystyle\\lim_{x\\to0}\\frac{e^{2x} - 1 - 2x}{x^2} \\).</p>', answer: { type: 'limit', value: 2 },
+        rungs: [R('Nudge', '0/0, so apply L’Hôpital.'), R('Hint', '\\( \\dfrac{2e^{2x} - 2}{2x} \\) is still 0/0.'), R('Strategy', 'Apply again: \\( \\dfrac{4e^{2x}}{2} \\).')] },
+      { id: 'x3-infl', tag: 'Inflection', prompt: '<p>Find the x-coordinate of the inflection point of \\( f(x) = x^3 - 6x^2 + 5 \\).</p>', label: 'x =', answer: { type: 'number', value: 2 },
+        rungs: [R('Nudge', 'Where does f″ change sign?'), R('Hint', '\\( f\'\'(x) = 6x - 12 \\).'), R('Strategy', 'Solve f″ = 0 and confirm the sign changes.')],
+        mistakes: [{ value: 4, msg: 'That’s a critical number (f′ = 0). Inflection points come from f″.' }] },
+      { id: 'x3-opt', tag: 'Optimization', prompt: '<p>What is the largest area of a rectangle with perimeter 24?</p>', answer: { type: 'number', value: 36 },
+        rungs: [R('Nudge', 'Constraint: 2x + 2y = 24.'), R('Hint', '\\( A = x(12 - x) \\).'), R('Strategy', 'Maximize, then compute A.')], mistakes: [{ value: 6, msg: 'That’s the side length.' }] },
+      { id: 'x3-mvt', tag: 'MVT', prompt: '<p>Find the c guaranteed by the MVT for \\( f(x) = x^2 - x \\) on \\( [0, 2] \\).</p>', label: 'c =', answer: { type: 'number', value: 1 },
+        rungs: [R('Nudge', 'Average slope first.'), R('Hint', '\\( \\tfrac{f(2) - f(0)}{2} = 1 \\).'), R('Strategy', 'Solve \\( 2c - 1 = 1 \\).')] },
+      { id: 'x3-anti', tag: 'Antiderivative', prompt: '<p>Find the most general antiderivative of \\( 6x^2 - \\sin x \\).</p>', label: '∫ =', answer: { type: 'antideriv', fn: x => 2 * x ** 3 + Math.cos(x) },
+        rungs: [R('Nudge', 'Term by term.'), R('Hint', '\\( \\int \\sin x = -\\cos x \\), so subtracting it gives +cos x.'), R('Strategy', 'Add + C.')],
+        mistakes: [{ fn: x => 2 * x ** 3 - Math.cos(x), noC: true, msg: 'Sign: \\( -\\int\\sin x\\,dx = +\\cos x \\).' }] }
+    ] },
+    { id: 'fin', name: 'Final', desc: 'Everything, with extra weight on integration (Units 5–6).', probs: [
+      { id: 'xf-def', tag: 'Definite integral', prompt: '<p>Evaluate \\( \\displaystyle\\int_0^1 (3x^2 + 2x)\\,dx \\).</p>', answer: { type: 'number', value: 2 },
+        rungs: [R('Nudge', 'Antiderivative, then F(1) − F(0).'), R('Hint', '\\( F(x) = x^3 + x^2 \\).'), R('Strategy', 'Evaluate.')] },
+      { id: 'xf-sub', tag: 'Substitution', prompt: '<p>Find \\( \\displaystyle\\int x\\cos(x^2)\\,dx \\).</p>', label: '∫ =', answer: { type: 'antideriv', fn: x => Math.sin(x * x) / 2 },
+        rungs: [R('Nudge', 'Let u be the inside of the cosine.'), R('Hint', '\\( du = 2x\\,dx \\), so \\( x\\,dx = \\tfrac12du \\).'), R('Strategy', '\\( \\tfrac12\\sin u + C \\).')],
+        mistakes: [{ fn: x => Math.sin(x * x), noC: true, msg: 'Adjust for the constant: \\( x\\,dx \\) is only half of du.' }] },
+      { id: 'xf-ftc', tag: 'FTC', prompt: '<p>Find \\( \\dfrac{d}{dx}\\displaystyle\\int_0^{x^2} e^{t}\\,dt \\).</p>', label: 'Derivative', answer: { type: 'expr', vars: ['x'], fn: x => 2 * x * Math.exp(x * x) },
+        rungs: [R('Nudge', 'FTC Part 1 with a chain.'), R('Hint', 'Plug the upper limit into the integrand, then multiply by its derivative.'), R('Strategy', '\\( e^{x^2}\\cdot 2x \\).')],
+        mistakes: [{ fn: x => Math.exp(x * x), msg: 'Multiply by the derivative of the upper limit.' }] },
+      { id: 'xf-area', tag: 'Area between', prompt: '<p>Find the area between \\( y = x \\) and \\( y = x^2 \\).</p>', answer: { type: 'number', value: 1 / 6 },
+        rungs: [R('Nudge', 'Intersections: x = 0 and 1.'), R('Hint', 'On (0, 1), \\( x \\ge x^2 \\).'), R('Strategy', '\\( \\int_0^1 (x - x^2)\\,dx \\).')] },
+      { id: 'xf-avg', tag: 'Average value', prompt: '<p>Find the average value of \\( f(x) = 2x \\) on \\( [1, 3] \\).</p>', answer: { type: 'number', value: 4 },
+        rungs: [R('Nudge', '\\( \\frac{1}{b - a}\\int_a^b f \\).'), R('Hint', '\\( \\int_1^3 2x\\,dx = 8 \\).'), R('Strategy', 'Divide by 2.')], mistakes: [{ value: 8, msg: 'Divide by the length of the interval.' }] },
+      { id: 'xf-lim', tag: 'Limit', prompt: '<p>Find \\( \\displaystyle\\lim_{x\\to0}\\frac{1 - \\cos 2x}{x^2} \\).</p>', answer: { type: 'limit', value: 2 },
+        rungs: [R('Nudge', '0/0. L’Hôpital or a trig identity.'), R('Hint', 'L’Hôpital: \\( \\dfrac{2\\sin 2x}{2x} \\).'), R('Strategy', 'Use \\( \\tfrac{\\sin 2x}{2x} \\to 1 \\), or apply the rule again.')] },
+      { id: 'xf-atan', tag: 'Derivative', prompt: '<p>Differentiate \\( y = \\arctan(2x) \\).</p>', label: "y′ =", answer: { type: 'expr', vars: ['x'], fn: x => 2 / (1 + 4 * x * x) },
+        rungs: [R('Nudge', 'arctan of an inside function.'), R('Hint', '\\( \\dfrac{1}{1 + (2x)^2}\\cdot 2 \\).'), R('Strategy', 'Simplify the square.')] },
+      { id: 'xf-subdef', tag: 'Substitution', prompt: '<p>Evaluate \\( \\displaystyle\\int_0^{\\pi/2}\\cos x\\,\\sin^3 x\\,dx \\).</p>', answer: { type: 'number', value: 0.25 },
+        rungs: [R('Nudge', 'Let u = sin x.'), R('Hint', 'The limits become 0 and 1.'), R('Strategy', '\\( \\int_0^1 u^3\\,du \\).')] }
+    ] }
+  ];
+
+  const host = document.getElementById('sets');
+  SETS.forEach(S => {
+    const wrap = document.createElement('div');
+    wrap.className = 'practice-list'; wrap.id = 'set-' + S.id; wrap.hidden = true;
+    host.appendChild(wrap);
+    S.probs.forEach((p, i) => practice(wrap, Object.assign({ n: i + 1 }, p)));
+  });
+  let cur = 'e1';
+  document.getElementById('exBtns').innerHTML = SETS.map(S => `<button type="button" data-s="${S.id}">${S.name}</button>`).join('');
+  function score() {
+    const S = SETS.find(s => s.id === cur), done = S.probs.filter(p => Calc.Solved.has(p.id)).length;
+    document.getElementById('exScore').textContent = `${done} of ${S.probs.length} solved`;
+  }
+  function show(id) {
+    cur = id;
+    SETS.forEach(S => { document.getElementById('set-' + S.id).hidden = S.id !== id; });
+    document.querySelectorAll('#exBtns button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.s === id)));
+    document.getElementById('exDesc').textContent = SETS.find(s => s.id === id).desc;
+    score();
+  }
+  document.getElementById('exBtns').addEventListener('click', e => { const b = e.target.closest('button'); if (b) show(b.dataset.s); });
+  host.addEventListener('submit', () => setTimeout(score, 0));
+  show('e1');
+});
+</script>
+</body>
+</html>

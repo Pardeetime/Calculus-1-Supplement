@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Linear Approximation</title>
+<meta name="description" content="Calculus I Companion, Topic 3.10: using tangent lines to approximate function values, differentials, and estimating measurement error.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;1,6..72,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="lesson.css">
+<script src="site.js"></script>
+<script src="course.js"></script>
+</head>
+<body data-topic="linearization">
+<main class="wrap">
+
+<!-- ================= SEE IT ================= -->
+<section class="step" id="see" data-title="Tangent lines as calculators">
+  <div class="prose">
+    <p>Close to the point of tangency, a curve and its tangent line are nearly the same (Topic 2.1). Lines are easy to evaluate and curves often aren’t. So use the line to <b>estimate</b> the curve. How close do you have to stay for the estimate to be good?</p>
+  </div>
+  <div class="card widget">
+    <div class="seg" id="fBtns" role="group" aria-label="Choose a function" style="margin-bottom:12px"></div>
+    <div class="widget-grid">
+      <svg id="laPlot" role="img" aria-label="A curve, its tangent line, and the gap between them at a movable x"></svg>
+      <div>
+        <div class="display" id="fTex" style="font-size:18px"></div>
+        <div class="ctls"><div class="ctl"><label for="xS">Estimate at x</label><input id="xS" type="range" min="0" max="1000" value="560"><output id="xO"></output></div></div>
+        <div class="readout" id="laRead" aria-live="polite"></div>
+      </div>
+    </div>
+  </div>
+  <div class="callout idea"><b>What you see</b>
+    <p>Near the base point the error is tiny, and it grows the farther you go. Whether the line lands above or below the curve depends on which way the curve bends.</p>
+  </div>
+</section>
+
+<!-- ================= BUILD IT ================= -->
+<section class="step" id="build" data-title="Linearization and differentials">
+  <div class="callout idea"><b>Linearization of f at a</b>
+    <div class="display">\[ L(x) = f(a) + f'(a)(x - a), \qquad f(x) \approx L(x) \text{ for } x \text{ near } a. \]</div>
+    <p>Choose a base point a that’s <b>close to x</b> and where f and \( f' \) are <b>easy to compute exactly</b>. For \( \sqrt{4.1} \), use \( a = 4 \).</p>
+  </div>
+  <div id="wx1"></div>
+  <div class="table-wrap"><table class="ref">
+    <tr><th>Near 0</th><th>Approximation</th><th>Used in</th></tr>
+    <tr><td>\( \sin x \)</td><td>\( \approx x \)</td><td>Pendulum physics (“small-angle approximation”)</td></tr>
+    <tr><td>\( e^x \)</td><td>\( \approx 1 + x \)</td><td>Quick interest and growth estimates</td></tr>
+    <tr><td>\( (1 + x)^k \)</td><td>\( \approx 1 + kx \)</td><td>Relativity, finance, engineering</td></tr>
+    <tr><td>\( \ln(1 + x) \)</td><td>\( \approx x \)</td><td>Percent changes</td></tr>
+  </table></div>
+
+  <h3>Differentials</h3>
+  <div class="prose">
+    <p>The same idea in different notation. If x changes by a small amount \( dx \), the true change in y is \( \Delta y \), and the tangent line’s prediction is the <b>differential</b></p>
+    <div class="display">\[ dy = f'(x)\,dx \approx \Delta y. \]</div>
+    <p>Differentials are great for <b>error estimates</b>. If a measurement is off by \( dx \), a computed result is off by about \( dy \).</p>
+  </div>
+  <div id="wx2"></div>
+  <div class="callout calc"><b>Over or under?</b>
+    <p>If f is <b>concave up</b> (bending up, \( f'' \gt 0 \)), the tangent line lies below the curve, so L <b>underestimates</b>. If it’s <b>concave down</b>, L <b>overestimates</b>. \( \sqrt x \) is concave down, so \( L \) gave a slightly high estimate for \( \sqrt{4.1} \).</p>
+  </div>
+</section>
+
+<!-- ================= TRY IT ================= -->
+<section class="step" id="try" data-title="Your turn">
+  <div class="prose"><p>No calculator needed for the setups. Exact fractions or decimals are both fine for estimates.</p></div>
+  <div class="practice-list" id="practice"></div>
+</section>
+
+<!-- ================= CHECK ================= -->
+<section class="step" id="check" data-title="Before you move on">
+  <div class="quiz" id="quiz"></div>
+</section>
+
+</main>
+
+<script src="lesson.js"></script>
+<script>
+Lesson.ready(() => {
+  const { Plot, practiceList, worked, quiz, typeset } = Lesson;
+
+  const FNS = [
+    { lbl: '√x at 4', tex: 'f(x) = \\sqrt x,\\ \\ L(x) = 2 + \\tfrac14(x - 4)', f: Math.sqrt, a: 4, fa: 2, m: 0.25, x: [0, 12], y: [-0.5, 4.5], lo: 0 },
+    { lbl: 'sin x at 0', tex: 'f(x) = \\sin x,\\ \\ L(x) = x', f: Math.sin, a: 0, fa: 0, m: 1, x: [-3, 3], y: [-2, 2], lo: -3 },
+    { lbl: 'eˣ at 0', tex: 'f(x) = e^x,\\ \\ L(x) = 1 + x', f: Math.exp, a: 0, fa: 1, m: 1, x: [-2.5, 2.5], y: [-1, 8], lo: -2.5 },
+    { lbl: 'ln x at 1', tex: 'f(x) = \\ln x,\\ \\ L(x) = x - 1', f: Math.log, a: 1, fa: 0, m: 1, x: [0.05, 4], y: [-3, 2.5], lo: 0.05 }
+  ];
+  const lp = Plot(document.getElementById('laPlot'), { x: [0, 12], y: [-0.5, 4.5], h: 340 });
+  const xS = document.getElementById('xS');
+  let cur = 0;
+  document.getElementById('fBtns').innerHTML = FNS.map((F, i) => `<button type="button" data-i="${i}">${F.lbl}</button>`).join('');
+  function drawLA() {
+    const F = FNS[cur], x = F.x[0] + (F.x[1] - F.x[0]) * xS.value / 1000, fx = F.f(x), L = F.fa + F.m * (x - F.a);
+    lp.range(F.x, F.y);
+    lp.draw(lp.fn(F.f, 'c1', { from: F.lo }) + lp.fn(t => F.fa + F.m * (t - F.a), 'c3') + lp.dot(F.a, F.fa, 'c3 solid', 5) +
+      lp.seg(x, fx, x, L, 'c2') + lp.dot(x, fx, 'c1 solid', 5) + lp.dot(x, L, 'c3', 5));
+    document.getElementById('xO').textContent = x.toFixed(2);
+    const err = L - fx, r = document.getElementById('laRead');
+    r.innerHTML = `True \\( f(${x.toFixed(2)}) = ${fx.toFixed(5)} \\)<br>Estimate \\( L(${x.toFixed(2)}) = ${L.toFixed(5)} \\)<br>Error \\( = ${err.toFixed(5)} \\) (${Math.abs(err) < 1e-5 ? 'exact' : err > 0 ? 'overestimate' : 'underestimate'}; ${fx !== 0 ? (100 * Math.abs(err / fx)).toFixed(2) + '% off' : ''})`;
+    typeset(r);
+  }
+  function pick(i) {
+    cur = i; xS.value = i === 0 ? 350 : 560;
+    document.querySelectorAll('#fBtns button').forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.i === i)));
+    const t = document.getElementById('fTex'); t.innerHTML = `\\[ ${FNS[i].tex} \\]`; typeset(t);
+    drawLA();
+  }
+  document.getElementById('fBtns').addEventListener('click', e => { const b = e.target.closest('button'); if (b) pick(+b.dataset.i); });
+  xS.addEventListener('input', drawLA);
+  pick(0);
+
+  worked(document.getElementById('wx1'), {
+    problem: 'Estimate \\( \\sqrt{4.1} \\) without a calculator.',
+    steps: [
+      { show: '\\( f(x) = \\sqrt x \\), base point \\( a = 4 \\) (close to 4.1, and \\( \\sqrt 4 = 2 \\) is exact).' },
+      { show: '\\( f\'(x) = \\dfrac{1}{2\\sqrt x} \\), so \\( f\'(4) = \\tfrac14 \\).' },
+      { show: '\\( L(x) = 2 + \\tfrac14(x - 4) \\).' },
+      { show: '\\( \\sqrt{4.1} \\approx L(4.1) = 2 + \\tfrac14(0.1) = 2.025 \\).', why: 'The true value is 2.02485…, so the error is about 0.00015.' }
+    ]
+  });
+  worked(document.getElementById('wx2'), {
+    problem: 'A sphere’s radius is measured as 10 cm, with a possible error of ±0.1 cm. Estimate the maximum error in the computed volume.',
+    steps: [
+      { show: '\\( V = \\tfrac43\\pi r^3 \\), so \\( dV = 4\\pi r^2\\,dr \\).' },
+      { show: 'With \\( r = 10 \\) and \\( dr = 0.1 \\): \\( dV = 4\\pi(100)(0.1) = 40\\pi \\approx 126 \\) cm³.' },
+      { show: 'Relative error: \\( \\dfrac{dV}{V} = \\dfrac{40\\pi}{\\frac43\\pi(1000)} = 0.03 = 3\\% \\).', why: 'A 1% error in the radius became a 3% error in the volume, because volume depends on \\( r^3 \\).' }
+    ]
+  });
+
+  practiceList(document.getElementById('practice'), [
+    { id: 'la-L', tag: 'Linearization', prompt: '<p>Find the linearization of \\( f(x) = \\sqrt x \\) at \\( a = 9 \\).</p>', label: 'L(x) =',
+      answer: { type: 'expr', vars: ['x'], fn: x => 3 + (x - 9) / 6 },
+      rungs: [['Nudge', 'You need \\( f(9) \\) and \\( f\'(9) \\).'], ['Hint', '\\( f(9) = 3 \\), \\( f\'(9) = \\dfrac{1}{2\\cdot3} \\).'], ['Strategy', '\\( L(x) = f(9) + f\'(9)(x - 9) \\).']],
+      mistakes: [{ fn: x => 3 + (x - 9) / 3, msg: '\\( f\'(9) = \\dfrac{1}{2\\sqrt9} \\), so remember the 2.' }, { fn: x => 3 + x / 6, msg: 'It’s \\( (x - 9) \\), not x.' }] },
+    { id: 'la-est', tag: 'Estimate', prompt: '<p>Use your linearization to estimate \\( \\sqrt{9.2} \\).</p>', label: '≈',
+      answer: { type: 'number', value: 3 + 0.2 / 6, acceptDecimal: true, tol: 0.00005 }, format: 'An exact fraction, or a decimal to at least 5 places.',
+      rungs: [['Nudge', 'Evaluate L(9.2).'], ['Hint', '\\( 3 + \\tfrac16(0.2) \\).'], ['Strategy', '\\( \\tfrac{0.2}{6} = \\tfrac{1}{30} \\).']],
+      mistakes: [{ value: Math.sqrt(9.2), tol: 0.00005, msg: 'That’s the calculator value. The question asks for the linear estimate.' }],
+      success: 'The true value is 3.03315…, so the estimate is off by less than 0.0002.' },
+    { id: 'la-power', tag: 'Binomial', prompt: '<p>Estimate \\( (1.02)^{10} \\) using the linearization of \\( f(x) = x^{10} \\) at \\( a = 1 \\).</p>', label: '≈',
+      answer: { type: 'number', value: 1.2, acceptDecimal: true },
+      rungs: [['Nudge', '\\( f(1) = 1 \\) and \\( f\'(1) = 10 \\).'], ['Hint', '\\( L(x) = 1 + 10(x - 1) \\).'], ['Strategy', 'Substitute x = 1.02.']],
+      mistakes: [{ value: 1.02 ** 10, msg: 'That’s the calculator value. Use the linearization.' }],
+      success: 'True value ≈ 1.2190. That’s the \\( (1 + x)^k \\approx 1 + kx \\) rule.' },
+    { id: 'la-sin', tag: 'Small angle', prompt: '<p>Find the linearization of \\( \\sin x \\) at \\( a = 0 \\).</p>', label: 'L(x) =',
+      answer: { type: 'expr', vars: ['x'], fn: x => x },
+      rungs: [['Nudge', '\\( \\sin 0 = 0 \\), and \\( \\cos 0 = ? \\)'], ['Hint', 'Slope 1, through the origin.'], ['Strategy', '\\( L(x) = 0 + 1\\cdot(x - 0) \\).']],
+      success: 'That’s why \\( \\sin\\theta \\approx \\theta \\) for small angles, and why \\( \\frac{\\sin\\theta}{\\theta} \\to 1 \\).' },
+    { id: 'la-dy', tag: 'Differential', prompt: '<p>For \\( y = x^3 \\), find the differential \\( dy \\) when \\( x = 2 \\) and \\( dx = 0.1 \\).</p>', label: 'dy =',
+      answer: { type: 'number', value: 1.2, acceptDecimal: true },
+      rungs: [['Nudge', '\\( dy = f\'(x)\\,dx \\).'], ['Hint', '\\( f\'(2) = 3(2)^2 = 12 \\).'], ['Strategy', 'Multiply by dx.']],
+      mistakes: [{ value: 2.1 ** 3 - 8, msg: 'That’s the true change Δy. The differential uses the tangent line: \\( f\'(x)dx \\).' }],
+      success: 'The true change is Δy = 1.261, and dy is a close, simpler estimate.' },
+    { id: 'la-error', tag: 'Error estimate', prompt: '<p>A sphere’s radius is measured as 5 cm, with possible error ±0.1 cm. Estimate the maximum error in its volume (cm³).</p>', label: 'dV ≈',
+      answer: { type: 'number', value: 10 * Math.PI, acceptDecimal: true },
+      rungs: [['Nudge', '\\( dV = 4\\pi r^2\\,dr \\).'], ['Hint', 'r = 5, dr = 0.1.'], ['Strategy', '\\( 4\\pi(25)(0.1) \\).']],
+      mistakes: [{ value: 100 * Math.PI, msg: 'Multiply by dr = 0.1.' }] }
+  ]);
+
+  quiz(document.getElementById('quiz'), [
+    { q: 'Using \\( L(x) \\) for \\( e^x \\) at 0 to estimate \\( e^{0.1} \\) gives 1.1. Is that an over- or underestimate?',
+      choices: [{ t: 'Overestimate', ok: false, why: '\\( e^x \\) is concave up, so its tangent lies <i>below</i> it.' }, { t: 'Underestimate', ok: true, why: 'Concave up means the tangent line is below the curve. (True: 1.10517…)' }] },
+    { q: 'To estimate \\( \\sqrt[3]{27.3} \\), the best base point is…',
+      choices: [{ t: 'a = 27', ok: true, why: 'It’s close to 27.3, and \\( \\sqrt[3]{27} = 3 \\) is exact.' }, { t: 'a = 0', ok: false, why: 'Too far away, and \\( \\sqrt[3]{x} \\) has a vertical tangent at 0.' }, { t: 'a = 27.3', ok: false, why: 'Then you’d need \\( \\sqrt[3]{27.3} \\) to build L, which is the thing you’re trying to find.' }] },
+    { q: 'The differential dy is…',
+      choices: [{ t: 'the exact change in y', ok: false, why: 'That’s Δy.' }, { t: 'the tangent line’s prediction of the change', ok: true, why: '\\( dy = f\'(x)\\,dx \\approx \\Delta y \\).' }] }
+  ]);
+});
+</script>
+</body>
+</html>

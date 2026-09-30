@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Definite Integral</title>
+<meta name="description" content="Calculus I Companion, Topic 5.2: the definite integral as a limit of Riemann sums, net signed area, properties of integrals, and evaluating integrals with geometry.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;1,6..72,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="lesson.css">
+<script src="site.js"></script>
+<script src="course.js"></script>
+</head>
+<body data-topic="definite-integral">
+<main class="wrap">
+
+<!-- ================= SEE IT ================= -->
+<section class="step" id="see" data-title="Area can be negative">
+  <div class="prose">
+    <p>When a function dips below the x-axis, its Riemann-sum rectangles have <b>negative</b> heights. So the integral counts area above the axis as positive and area below as negative. Move the limits a and b. Can you make the total come out to exactly zero?</p>
+  </div>
+  <div class="card widget">
+    <div class="seg" id="fBtns" role="group" aria-label="Choose a function" style="margin-bottom:12px"></div>
+    <div class="widget-grid">
+      <svg id="saPlot" role="img" aria-label="Signed area between a curve and the x-axis"></svg>
+      <div>
+        <div class="display" id="saTex" style="font-size:18px"></div>
+        <div class="ctls">
+          <div class="ctl"><label for="aS">a</label><input id="aS" type="range" min="-300" max="300" value="-150"><output id="aO"></output></div>
+          <div class="ctl"><label for="bS">b</label><input id="bS" type="range" min="-300" max="600" value="250"><output id="bO"></output></div>
+        </div>
+        <div class="readout" id="saRead" aria-live="polite"></div>
+        <div class="feedback" id="saFb" aria-live="polite"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= BUILD IT ================= -->
+<section class="step" id="build" data-title="Definition and properties">
+  <div class="callout idea"><b>Definition</b>
+    <div class="display">\[ \int_a^b f(x)\,dx = \lim_{n\to\infty} \sum_{i=1}^{n} f(x_i^*)\,\Delta x \]</div>
+    <p>It’s a <b>number</b>, the net signed area between f and the x-axis from a to b. The \( \int \) is a stretched S (for “sum”), and \( dx \) is what \( \Delta x \) becomes in the limit. Every continuous function on \( [a, b] \) is integrable.</p>
+  </div>
+  <div class="table-wrap"><table class="ref">
+    <tr><th>Property</th><th>Why it makes sense</th></tr>
+    <tr><td>\( \int_a^a f = 0 \)</td><td>A region with no width has no area</td></tr>
+    <tr><td>\( \int_b^a f = -\int_a^b f \)</td><td>Going right to left makes \( \Delta x \) negative</td></tr>
+    <tr><td>\( \int_a^b c\,f = c\int_a^b f \)</td><td>Stretching heights stretches the area</td></tr>
+    <tr><td>\( \int_a^b (f \pm g) = \int_a^b f \pm \int_a^b g \)</td><td>Heights add, so areas add</td></tr>
+    <tr><td>\( \int_a^c f + \int_c^b f = \int_a^b f \)</td><td>Areas of adjacent pieces add</td></tr>
+    <tr><td>\( \int_a^b c\,dx = c(b - a) \)</td><td>The area of a rectangle</td></tr>
+    <tr><td>If \( f \le g \) then \( \int_a^b f \le \int_a^b g \)</td><td>A lower curve has less area</td></tr>
+  </table></div>
+
+  <h3>Evaluating with geometry</h3>
+  <div class="prose"><p>Until the Fundamental Theorem (next lesson), you can evaluate integrals of lines and circles by recognizing the shapes.</p></div>
+  <div id="wx1"></div>
+  <div class="callout calc"><b>Symmetry shortcut</b>
+    <p>If f is <b>odd</b>, then \( \int_{-a}^{a} f = 0 \) (the areas cancel). If f is <b>even</b>, then \( \int_{-a}^{a} f = 2\int_0^a f \).</p>
+  </div>
+</section>
+
+<!-- ================= TRY IT ================= -->
+<section class="step" id="try" data-title="Your turn">
+  <div class="prose"><p>Use geometry and properties. No antiderivatives needed yet.</p></div>
+  <div class="practice-list" id="practice"></div>
+</section>
+
+<!-- ================= CHECK ================= -->
+<section class="step" id="check" data-title="Before you move on">
+  <div class="tf" id="tf"></div>
+</section>
+
+</main>
+
+<script src="lesson.js"></script>
+<script>
+Lesson.ready(() => {
+  const { Plot, practiceList, worked, trueFalse, typeset } = Lesson;
+
+  const FNS = [
+    { lbl: 'sin x', tex: 'f(x) = \\sin x', f: Math.sin, x: [-3.5, 6.5], y: [-1.5, 1.5] },
+    { lbl: 'x³ − x', tex: 'f(x) = x^3 - x', f: x => x ** 3 - x, x: [-2, 2.2], y: [-3, 3] },
+    { lbl: 'x − 1', tex: 'f(x) = x - 1', f: x => x - 1, x: [-2.5, 4], y: [-3, 3] }
+  ];
+  const sp = Plot(document.getElementById('saPlot'), { x: [-3.5, 6.5], y: [-1.5, 1.5], h: 320 });
+  const aS = document.getElementById('aS'), bS = document.getElementById('bS');
+  let cur = 0;
+  document.getElementById('fBtns').innerHTML = FNS.map((F, i) => `<button type="button" data-i="${i}">${F.lbl}</button>`).join('');
+  const integ = (f, a, b, n = 2000) => { const h = (b - a) / n; let s = 0; for (let i = 0; i < n; i++) s += f(a + (i + 0.5) * h); return s * h; };
+  function drawSA() {
+    const F = FNS[cur], [lo, hi] = F.x;
+    const a = lo + (hi - lo) * (+aS.value + 300) / 900 * 0.99, b = lo + (hi - lo) * (+bS.value + 300) / 900 * 0.99 + 0.01;
+    sp.range(F.x, F.y);
+    let s = '', pos = 0, neg = 0;
+    const n = 300, h = (b - a) / n;
+    for (let i = 0; i < n; i++) {
+      const x = a + i * h, v = F.f(x + h / 2);
+      s += `<rect x="${Math.min(sp.sx(x), sp.sx(x + h))}" y="${Math.min(sp.sy(0), sp.sy(v))}" width="${Math.abs(sp.sx(x + h) - sp.sx(x)) + 0.4}" height="${Math.abs(sp.sy(v) - sp.sy(0))}" style="fill:${v >= 0 ? 'var(--good)' : 'var(--warn)'};opacity:.35"/>`;
+      if (v >= 0) pos += v * Math.abs(h); else neg -= v * Math.abs(h);
+    }
+    sp.draw(s + sp.fn(F.f, 'c1') + sp.seg(a, F.y[0], a, F.y[1], 'mirror') + sp.seg(b, F.y[0], b, F.y[1], 'mirror') + sp.text(a, F.y[1], 'a', 'lbl', 4, 14) + sp.text(b, F.y[1], 'b', 'lbl', 4, 14));
+    document.getElementById('aO').textContent = a.toFixed(2); document.getElementById('bO').textContent = b.toFixed(2);
+    const I = integ(F.f, a, b), r = document.getElementById('saRead');
+    r.innerHTML = `<span style="color:var(--good)">Above: ${(b > a ? pos : -pos).toFixed(3)}</span> &nbsp; <span style="color:var(--warn)">Below: ${(b > a ? neg : -neg).toFixed(3)}</span><br>\\( \\displaystyle\\int_{${a.toFixed(2)}}^{${b.toFixed(2)}} f(x)\\,dx = ${I.toFixed(4)} \\)` + (b < a ? '<br><span class="muted">b < a: the limits are reversed, so the sign flips.</span>' : '');
+    typeset(r);
+    const fb = document.getElementById('saFb');
+    if (Math.abs(I) < 0.01 && Math.abs(b - a) > 0.3) { fb.className = 'feedback good'; fb.innerHTML = '<b class="tag-good">Zero!</b> The green area and the red area cancel exactly. The integral is 0 even though plenty of area is shaded.'; }
+    else { fb.className = 'feedback'; fb.innerHTML = ''; }
+  }
+  function pick(i) {
+    cur = i;
+    document.querySelectorAll('#fBtns button').forEach(x => x.setAttribute('aria-pressed', String(+x.dataset.i === i)));
+    const t = document.getElementById('saTex'); t.innerHTML = `\\[ ${FNS[i].tex} \\]`; typeset(t);
+    drawSA();
+  }
+  document.getElementById('fBtns').addEventListener('click', e => { const x = e.target.closest('button'); if (x) pick(+x.dataset.i); });
+  aS.addEventListener('input', drawSA); bS.addEventListener('input', drawSA);
+  pick(0);
+
+  worked(document.getElementById('wx1'), {
+    problem: 'Evaluate \\( \\displaystyle\\int_0^3 (x - 1)\\,dx \\) and \\( \\displaystyle\\int_{-2}^{2}\\sqrt{4 - x^2}\\,dx \\) with geometry.',
+    steps: [
+      { show: '\\( y = x - 1 \\) on \\( [0, 3] \\): a triangle below the axis from 0 to 1 (area ½), and a triangle above from 1 to 3 (area \\( \\tfrac12\\cdot2\\cdot2 = 2 \\)).' },
+      { show: 'Net: \\( \\displaystyle\\int_0^3 (x - 1)\\,dx = -\\tfrac12 + 2 = \\tfrac32 \\).', why: 'Below-axis area counts as negative.' },
+      { show: '\\( y = \\sqrt{4 - x^2} \\) is the top half of the circle \\( x^2 + y^2 = 4 \\), radius 2.' },
+      { show: 'Half the circle’s area: \\( \\tfrac12\\pi(2)^2 = 2\\pi \\).' }
+    ]
+  });
+
+  practiceList(document.getElementById('practice'), [
+    { id: 'di-tri', tag: 'Geometry', prompt: '<p>Evaluate \\( \\displaystyle\\int_0^4 2x\\,dx \\).</p>', answer: { type: 'number', value: 16 },
+      rungs: [['Nudge', 'Sketch \\( y = 2x \\) from 0 to 4. What shape is the region?'], ['Hint', 'A triangle with base 4 and height f(4) = 8.'], ['Strategy', '\\( \\tfrac12 \\cdot \\text{base} \\cdot \\text{height} \\).']],
+      mistakes: [{ value: 32, msg: 'A triangle is half of base × height.' }, { value: 8, msg: 'That’s the height at x = 4. You want the area.' }] },
+    { id: 'di-circle', tag: 'Geometry', prompt: '<p>Evaluate \\( \\displaystyle\\int_{-3}^{3}\\sqrt{9 - x^2}\\,dx \\).</p>', answer: { type: 'number', value: 4.5 * Math.PI },
+      rungs: [['Nudge', 'What curve is \\( y = \\sqrt{9 - x^2} \\)?'], ['Hint', 'The top half of a circle of radius 3.'], ['Strategy', '\\( \\tfrac12\\pi r^2 \\).']],
+      mistakes: [{ value: 9 * Math.PI, msg: 'Only the top half of the circle is under the curve.' }] },
+    { id: 'di-cancel', tag: 'Signed area', prompt: '<p>Evaluate \\( \\displaystyle\\int_0^2 (x - 1)\\,dx \\).</p>', answer: { type: 'number', value: 0 },
+      rungs: [['Nudge', 'Sketch it: part is below the axis, part above.'], ['Hint', 'Two triangles, each of area ½.'], ['Strategy', 'One counts as negative.']],
+      mistakes: [{ value: 1, msg: 'That’s the total (unsigned) area. The integral counts below-axis area as negative.' }] },
+    { id: 'di-split', tag: 'Additivity', prompt: '<p>If \\( \\displaystyle\\int_0^5 f = 7 \\) and \\( \\displaystyle\\int_0^2 f = 3 \\), find \\( \\displaystyle\\int_2^5 f \\).</p>', answer: { type: 'number', value: 4 },
+      rungs: [['Nudge', '\\( \\int_0^2 + \\int_2^5 = \\int_0^5 \\).'], ['Hint', '\\( 3 + \\,? = 7 \\).'], ['Strategy', 'Subtract.']],
+      mistakes: [{ value: 10, msg: 'The piece from 2 to 5 is part of 0 to 5, so subtract.' }] },
+    { id: 'di-reverse', tag: 'Reverse limits', prompt: '<p>If \\( \\displaystyle\\int_0^5 f = 7 \\), find \\( \\displaystyle\\int_5^0 f \\).</p>', answer: { type: 'number', value: -7 },
+      rungs: [['Nudge', 'The limits are swapped.'], ['Hint', 'Swapping limits flips the sign.'], ['Strategy', '\\( \\int_b^a = -\\int_a^b \\).']],
+      mistakes: [{ value: 7, msg: 'Reversing the limits of integration changes the sign.' }] },
+    { id: 'di-odd', tag: 'Symmetry', prompt: '<p>Evaluate \\( \\displaystyle\\int_{-1}^{1} x^3\\,dx \\).</p>', answer: { type: 'number', value: 0 },
+      rungs: [['Nudge', 'Is \\( x^3 \\) even or odd?'], ['Hint', 'Odd: the left half is the negative of the right half.'], ['Strategy', 'Equal and opposite areas.']] },
+    { id: 'di-linear', tag: 'Properties', prompt: '<p>If \\( \\displaystyle\\int_1^4 f(x)\\,dx = 5 \\), evaluate \\( \\displaystyle\\int_1^4 \\big(3f(x) + 2\\big)\\,dx \\).</p>', answer: { type: 'number', value: 21 },
+      rungs: [['Nudge', 'Split the sum and pull out the constant 3.'], ['Hint', '\\( 3\\int_1^4 f + \\int_1^4 2\\,dx \\).'], ['Strategy', '\\( \\int_1^4 2\\,dx \\) is a rectangle of height 2 and width 3.']],
+      mistakes: [{ value: 17, msg: '\\( \\int_1^4 2\\,dx \\) is 2 times the width (3), not just 2.' }, { value: 15, msg: 'Don’t forget the \\( \\int 2\\,dx \\) part.' }] }
+  ]);
+
+  trueFalse(document.getElementById('tf'), [
+    { s: '\\( \\displaystyle\\int_a^b f(x)\\,dx \\) is always the area between f and the x-axis.', ok: false, why: 'It’s the <i>net signed</i> area. Parts below the axis subtract.' },
+    { s: '\\( \\displaystyle\\int_2^2 e^{x^2}\\,dx = 0 \\)', ok: true, why: 'Equal limits give zero width. No computation needed.' },
+    { s: '\\( \\displaystyle\\int_{-\\pi}^{\\pi} \\sin x\\,dx = 0 \\)', ok: true, why: 'sin is odd, so the areas cancel.' },
+    { s: 'A definite integral is a function of x.', ok: false, why: 'It’s a number. The x inside is a placeholder (a “dummy variable”).' }
+  ]);
+});
+</script>
+</body>
+</html>

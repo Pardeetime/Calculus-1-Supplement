@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Inverse Trig Derivatives</title>
+<meta name="description" content="Calculus I Companion, Topic 3.8: the derivative of an inverse function, and the derivatives of arcsin, arccos and arctan.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;1,6..72,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="lesson.css">
+<script src="site.js"></script>
+<script src="course.js"></script>
+</head>
+<body data-topic="inv-trig">
+<main class="wrap">
+
+<!-- ================= SEE IT ================= -->
+<section class="step" id="see" data-title="Same mirror, new functions">
+  <div class="prose">
+    <p>You saw in Topic 3.7 that mirror images across \( y = x \) have reciprocal slopes. Now apply that to sine (restricted to \( [-\tfrac{\pi}{2}, \tfrac{\pi}{2}] \)) and its mirror image, arcsin. Watch what happens to the slope of arcsin near the ends.</p>
+  </div>
+  <div class="card widget">
+    <div class="seg" id="fBtns" role="group" aria-label="Choose a pair" style="margin-bottom:12px"><button type="button" data-i="0">sin & arcsin</button><button type="button" data-i="1">tan & arctan</button></div>
+    <div class="widget-grid">
+      <svg id="mPlot" role="img" aria-label="A trig function and its inverse mirrored across y equals x"></svg>
+      <div>
+        <div class="ctls"><div class="ctl"><label for="aS">Angle θ</label><input id="aS" type="range" min="-150" max="150" value="60"><output id="aO"></output></div></div>
+        <div class="readout" id="mRead" aria-live="polite"></div>
+        <p class="observe" id="mNote"></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= BUILD IT ================= -->
+<section class="step" id="build" data-title="Inverse functions, differentiated">
+  <div class="callout idea"><b>Derivative of an inverse</b>
+    <p>If f is one-to-one and differentiable, then</p>
+    <div class="display">\[ \left(f^{-1}\right)'(b) = \frac{1}{f'(a)} \quad\text{where } f(a) = b. \]</div>
+    <p>Reciprocal slope, evaluated at the <b>mirror point</b>.</p>
+  </div>
+  <div id="wx1"></div>
+  <h3>arcsin, arccos, arctan</h3>
+  <div id="wx2"></div>
+  <div class="table-wrap"><table class="ref">
+    <tr><th>Function</th><th>Derivative</th><th>Valid for</th></tr>
+    <tr><td>\( \arcsin x \)</td><td>\( \dfrac{1}{\sqrt{1 - x^2}} \)</td><td>\( -1 \lt x \lt 1 \)</td></tr>
+    <tr><td>\( \arccos x \)</td><td>\( -\dfrac{1}{\sqrt{1 - x^2}} \)</td><td>\( -1 \lt x \lt 1 \)</td></tr>
+    <tr><td>\( \arctan x \)</td><td>\( \dfrac{1}{1 + x^2} \)</td><td>all x</td></tr>
+  </table></div>
+  <div class="callout calc"><b>Why these matter</b>
+    <p>Notice there are no trig functions in the answers, only algebra. That’s why \( \frac{1}{1+x^2} \) and \( \frac{1}{\sqrt{1-x^2}} \) will reappear in integration: their antiderivatives are arctan and arcsin.</p>
+  </div>
+  <div class="callout warn"><b>Notation trap</b>
+    <p>\( \sin^{-1}x \) means arcsin x, <b>not</b> \( \dfrac{1}{\sin x} \) (which is \( \csc x \)). Their derivatives are completely different.</p>
+  </div>
+</section>
+
+<!-- ================= TRY IT ================= -->
+<section class="step" id="try" data-title="Your turn">
+  <div id="drill"></div>
+  <div class="practice-list" id="practice" style="margin-top:18px"></div>
+</section>
+
+<!-- ================= CHECK ================= -->
+<section class="step" id="check" data-title="Before you move on">
+  <div class="quiz" id="quiz"></div>
+</section>
+
+</main>
+
+<script src="lesson.js"></script>
+<script>
+Lesson.ready(() => {
+  const { Plot, practiceList, worked, quiz, drill, typeset } = Lesson;
+
+  const PAIRS = [
+    { f: Math.sin, fp: Math.cos, inv: Math.asin, lo: -Math.PI / 2, hi: Math.PI / 2, fn: 'sin', inn: 'arcsin', note: 'Near \\( \\theta = \\pm\\tfrac{\\pi}{2} \\), sine flattens (slope → 0), so arcsin gets steep (slope → ∞). That’s the \\( \\sqrt{1 - x^2} \\to 0 \\) in the denominator.' },
+    { f: Math.tan, fp: t => 1 / Math.cos(t) ** 2, inv: Math.atan, lo: -1.35, hi: 1.35, fn: 'tan', inn: 'arctan', note: 'tan gets steeper and steeper, so arctan gets flatter and flatter, leveling off toward its asymptotes \\( \\pm\\tfrac{\\pi}{2} \\).' }
+  ];
+  const mp = Plot(document.getElementById('mPlot'), { x: [-3, 3], y: [-3, 3], w: 400, h: 400 });
+  const aS = document.getElementById('aS');
+  let cur = 0;
+  // Tangent segment of fixed length 1.6 through (x, y) with slope m.
+  const tanSeg = (x, y, m, cls) => { const k = 0.8 / Math.hypot(1, m); return mp.seg(x - k, y - k * m, x + k, y + k * m, cls); };
+  function drawM() {
+    const P = PAIRS[cur], th = Math.max(P.lo + 0.02, Math.min(P.hi - 0.02, aS.value / 100 * (P.hi / 1.5))), v = P.f(th), m = P.fp(th);
+    mp.draw(mp.seg(-4, -4, 4, 4, 'mirror') + mp.fn(P.f, 'c1', { from: P.lo, to: P.hi }) + mp.param(t => P.f(t), t => t, P.lo, P.hi, 'c2') +
+      tanSeg(th, v, m, 'c1 thin') + tanSeg(v, th, 1 / m, 'c2 thin') +
+      mp.dot(th, v, 'c1 solid', 6) + mp.dot(v, th, 'c2 solid', 6));
+    document.getElementById('aO').textContent = th.toFixed(2);
+    const r = document.getElementById('mRead');
+    r.innerHTML = `On \\( \\${P.fn} \\): slope at \\( \\theta = ${th.toFixed(2)} \\) is \\( ${m.toFixed(3)} \\)<br>On \\( \\${P.inn} \\): slope at \\( x = ${v.toFixed(3)} \\) is \\( ${(1 / m).toFixed(3)} \\)` +
+      (cur === 0 ? `<br>Check: \\( \\dfrac{1}{\\sqrt{1 - x^2}} = ${(1 / Math.sqrt(1 - v * v)).toFixed(3)} \\)` : `<br>Check: \\( \\dfrac{1}{1 + x^2} = ${(1 / (1 + v * v)).toFixed(3)} \\)`);
+    typeset(r);
+    const n = document.getElementById('mNote'); n.innerHTML = P.note; typeset(n);
+    document.querySelectorAll('#fBtns button').forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.i === cur)));
+  }
+  document.getElementById('fBtns').addEventListener('click', e => { const b = e.target.closest('button'); if (b) { cur = +b.dataset.i; drawM(); } });
+  aS.addEventListener('input', drawM);
+  drawM();
+
+  worked(document.getElementById('wx1'), {
+    problem: 'Let \\( f(x) = x^3 + x \\). Find \\( (f^{-1})\'(2) \\) without finding a formula for \\( f^{-1} \\).',
+    steps: [
+      { show: 'Find the mirror point: which a has \\( f(a) = 2 \\)? Try \\( a = 1 \\): \\( 1 + 1 = 2 \\). ✓', why: 'This is the step people skip. The 2 is an <i>output</i> of f.' },
+      { show: '\\( f\'(x) = 3x^2 + 1 \\), so \\( f\'(1) = 4 \\).' },
+      { show: '\\( (f^{-1})\'(2) = \\dfrac{1}{f\'(1)} = \\dfrac14 \\).', why: 'Using \\( f\'(2) = 13 \\) would be the classic mistake.' }
+    ]
+  });
+  worked(document.getElementById('wx2'), {
+    problem: 'Derive \\( \\frac{d}{dx}\\arcsin x \\).',
+    steps: [
+      { show: 'Let \\( y = \\arcsin x \\), so \\( \\sin y = x \\) with \\( -\\tfrac{\\pi}{2} \\le y \\le \\tfrac{\\pi}{2} \\).' },
+      { show: 'Differentiate implicitly: \\( \\cos y \\cdot y\' = 1 \\), so \\( y\' = \\dfrac{1}{\\cos y} \\).' },
+      { show: 'Rewrite in terms of x: \\( \\cos y = \\sqrt{1 - \\sin^2 y} = \\sqrt{1 - x^2} \\).', why: 'Take the positive root, because \\( \\cos y \\ge 0 \\) on \\( [-\\tfrac{\\pi}{2}, \\tfrac{\\pi}{2}] \\). This is why the restricted domain matters.' },
+      { show: '\\( \\dfrac{d}{dx}\\arcsin x = \\dfrac{1}{\\sqrt{1 - x^2}} \\). ∎', why: 'arctan works the same way: \\( \\sec^2 y\\,y\' = 1 \\) and \\( \\sec^2 y = 1 + \\tan^2 y = 1 + x^2 \\).' }
+    ]
+  });
+
+  const ri = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+  drill(document.getElementById('drill'), {
+    title: 'Inverse trig', label: 'dy/dx', format: 'Type arcsin(x), arctan(x), sqrt( ).',
+    make() {
+      const a = ri(2, 5), kind = ri(0, 3);
+      const ins = [{ t: `${a}x`, f: x => a * x, d: () => a }, { t: 'x^{2}', f: x => x * x, d: x => 2 * x }, { t: '\\sqrt{x}', f: Math.sqrt, d: x => 0.5 / Math.sqrt(x) }][ri(0, 2)];
+      if (kind <= 1) return { q: `y = \\arctan\\left(${ins.t}\\right)`, d: x => ins.d(x) / (1 + ins.f(x) ** 2), domain: [0.1, 0.9],
+        hints: ['\\( \\frac{d}{dx}\\arctan u = \\dfrac{1}{1 + u^2} \\), times \\( u\' \\).', 'Chain Rule: square the <i>whole</i> inside in the denominator.'],
+        mistakes: [{ fn: x => 1 / (1 + ins.f(x) ** 2), msg: 'Chain Rule: multiply by the inside derivative.' }] };
+      if (kind === 2) { const s = 1 / (a + 1); return { q: `y = \\arcsin\\left(${ins.t}\\right)`, d: x => ins.d(x) / Math.sqrt(1 - ins.f(x) ** 2), domain: [0.05, ins.t === '\\sqrt{x}' ? 0.8 : s],
+        hints: ['\\( \\frac{d}{dx}\\arcsin u = \\dfrac{u\'}{\\sqrt{1 - u^2}} \\).'], mistakes: [{ fn: x => 1 / Math.sqrt(1 - ins.f(x) ** 2), msg: 'Chain Rule: multiply by the inside derivative.' }] }; }
+      return { q: `y = x\\arctan x`, d: x => Math.atan(x) + x / (1 + x * x), domain: [-2, 2], hints: ['Product rule.', '\\( 1\\cdot\\arctan x + x\\cdot\\dfrac{1}{1+x^2} \\).'] };
+    }
+  });
+
+  practiceList(document.getElementById('practice'), [
+    { id: 'it-atan3x', tag: 'Chain', prompt: '<p>Find \\( \\dfrac{d}{dx}\\arctan(3x) \\).</p>', label: 'dy/dx',
+      answer: { type: 'expr', vars: ['x'], fn: x => 3 / (1 + 9 * x * x) },
+      rungs: [['Nudge', 'arctan of an inside function.'], ['Hint', '\\( \\dfrac{1}{1 + (3x)^2}\\cdot 3 \\).'], ['Strategy', '\\( (3x)^2 = 9x^2 \\).']],
+      mistakes: [{ fn: x => 1 / (1 + 9 * x * x), msg: 'Multiply by the inside derivative, 3.' }, { fn: x => 3 / (1 + 3 * x * x), msg: 'Square the whole inside: \\( (3x)^2 = 9x^2 \\).' }] },
+    { id: 'it-asinx2', tag: 'Chain', prompt: '<p>Find \\( \\dfrac{d}{dx}\\arcsin(x^2) \\).</p>', label: 'dy/dx',
+      answer: { type: 'expr', vars: ['x'], fn: x => 2 * x / Math.sqrt(1 - x ** 4), domain: [-0.8, 0.8] },
+      rungs: [['Nudge', 'Inside: \\( x^2 \\).'], ['Hint', '\\( \\dfrac{1}{\\sqrt{1 - (x^2)^2}}\\cdot 2x \\).'], ['Strategy', '\\( (x^2)^2 = x^4 \\).']],
+      mistakes: [{ fn: x => 2 * x / Math.sqrt(1 - x * x), msg: 'Inside the root, square the inside function: \\( (x^2)^2 \\).' }] },
+    { id: 'it-prod', tag: 'Product', prompt: '<p>Find \\( \\dfrac{d}{dx}\\left(x\\arctan x\\right) \\).</p>', label: 'dy/dx',
+      answer: { type: 'expr', vars: ['x'], fn: x => Math.atan(x) + x / (1 + x * x) },
+      rungs: [['Nudge', 'Product rule.'], ['Hint', '\\( (x)\'\\arctan x + x(\\arctan x)\' \\).'], ['Strategy', '\\( \\arctan x + \\dfrac{x}{1 + x^2} \\).']] },
+    { id: 'it-inverse', tag: 'Inverse at a point', prompt: '<p>Let \\( f(x) = x^3 + x \\). Find \\( (f^{-1})\'(10) \\).</p>', label: 'Value',
+      answer: { type: 'number', value: 1 / 13 },
+      rungs: [['Nudge', 'First solve \\( f(a) = 10 \\) for a.'], ['Hint', 'Try small integers: \\( 2^3 + 2 = 10 \\), so a = 2.'], ['Strategy', '\\( \\dfrac{1}{f\'(2)} \\), with \\( f\'(x) = 3x^2 + 1 \\).']],
+      mistakes: [{ value: 1 / 301, msg: 'That’s \\( 1/f\'(10) \\). Evaluate \\( f\' \\) at the mirror point a = 2, where \\( f(a) = 10 \\).' }, { value: 13, msg: 'Reciprocal: the inverse’s slope is 1 over f’s slope.' }] },
+    { id: 'it-constant', tag: 'Surprise', prompt: '<p>Find \\( \\dfrac{d}{dx}\\left[\\arctan x + \\arctan\\!\\left(\\tfrac1x\\right)\\right] \\) for \\( x \\gt 0 \\).</p>', label: 'dy/dx',
+      answer: { type: 'expr', vars: ['x'], fn: () => 0, domain: [0.5, 3], constOk: true },
+      rungs: [['Nudge', 'Differentiate each term. The second needs the Chain Rule with inside \\( x^{-1} \\).'], ['Hint', '\\( \\dfrac{1}{1 + x^{-2}}\\cdot(-x^{-2}) \\). Multiply top and bottom by \\( x^2 \\).'], ['Strategy', 'Add it to \\( \\dfrac{1}{1 + x^2} \\). What do you get?']],
+      success: 'Derivative 0 means the sum is constant. It’s always \\( \\tfrac{\\pi}{2} \\), a nice identity.' },
+    { id: 'it-value', tag: 'Evaluate', prompt: '<p>Find the slope of \\( y = \\arcsin x \\) at \\( x = \\tfrac12 \\).</p>', label: 'Slope',
+      answer: { type: 'number', value: 2 / Math.sqrt(3) },
+      rungs: [['Nudge', 'Use the formula \\( \\dfrac{1}{\\sqrt{1 - x^2}} \\).'], ['Hint', '\\( 1 - \\tfrac14 = \\tfrac34 \\).'], ['Strategy', '\\( \\dfrac{1}{\\sqrt{3/4}} = \\dfrac{2}{\\sqrt 3} \\).']] }
+  ]);
+
+  quiz(document.getElementById('quiz'), [
+    { q: 'Why is \\( \\arcsin \\) not differentiable at \\( x = 1 \\)?',
+      choices: [{ t: 'It’s undefined at 1', ok: false, why: '\\( \\arcsin 1 = \\tfrac{\\pi}{2} \\), which is defined.' }, { t: 'Its tangent is vertical there', ok: true, why: 'sine is flat at \\( \\tfrac{\\pi}{2} \\), so its mirror image is vertical, and \\( 1/\\sqrt{1-x^2} \\) blows up.' }] },
+    { q: '\\( \\dfrac{d}{dx}\\sin^{-1}x = \\)',
+      choices: [{ t: '\\( -\\dfrac{\\cos x}{\\sin^2 x} \\)', ok: false, why: 'That’s the derivative of \\( 1/\\sin x = \\csc x \\). Here \\( \\sin^{-1} \\) means arcsin.' }, { t: '\\( \\dfrac{1}{\\sqrt{1 - x^2}} \\)', ok: true, why: 'Inverse sine, not reciprocal.' }] },
+    { q: 'If \\( f(3) = 7 \\) and \\( f\'(3) = 2 \\), then \\( (f^{-1})\'(7) = \\)',
+      choices: [{ t: '2', ok: false, why: 'Mirror images have reciprocal slopes.' }, { t: '\\( \\tfrac12 \\)', ok: true, why: 'The mirror point of (3, 7) is (7, 3), so the slope is \\( 1/f\'(3) \\).' }, { t: '\\( \\tfrac17 \\)', ok: false, why: '7 is a coordinate, not a slope.' }] }
+  ]);
+});
+</script>
+</body>
+</html>

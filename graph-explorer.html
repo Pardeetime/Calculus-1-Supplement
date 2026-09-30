@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Graph Explorer</title>
+<meta name="description" content="Calculus I Companion: plot any function with the shapes of its first and second derivatives, and see where it rises, falls and bends.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;1,6..72,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="lesson.css">
+<script src="site.js"></script>
+<script src="course.js"></script>
+<style>
+  .ge-grid { display: grid; gap: 20px; align-items: start; }
+  @media (min-width: 960px) { .ge-grid { grid-template-columns: 1.5fr 1fr; } }
+  .win { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 10px; }
+  .win label { font-size: 12px; color: var(--ink-3); display: grid; gap: 2px; }
+  .win input { width: 100%; font-family: var(--font-mono); padding: 6px 8px; font-size: 16px; }
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 14px; color: var(--ink-2); margin-top: 8px; }
+  .legend i { display: inline-block; width: 22px; height: 0; border-top: 3px solid; vertical-align: middle; margin-right: 6px; }
+  .toggles { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .strip-key { font-size: 13px; color: var(--ink-3); margin-top: 6px; }
+</style>
+</head>
+<body data-tool="Graph explorer" data-sub="Type any function and see how the shapes of f, f′ and f″ fit together.">
+<main class="wrap">
+  <div class="callout idea" style="margin-top:20px"><b>Shapes, not answers</b>
+    <p>This explorer draws the <i>graphs</i> of f′ and f″ and tells you whether f is rising or falling and which way it bends. It deliberately doesn’t show derivative formulas or values. Use it to check your intuition and your sign charts, then do the calculus yourself.</p>
+  </div>
+
+  <div class="card widget">
+    <div class="ge-grid">
+      <div>
+        <svg id="gePlot" role="img" aria-label="Graph of your function with its derivatives"></svg>
+        <div class="legend"><span><i style="border-color:var(--curve)"></i>f</span><span><i style="border-color:var(--secant);border-top-style:dashed"></i>f′ (shape)</span><span><i style="border-color:var(--u2);border-top-style:dotted"></i>f″ (shape)</span></div>
+        <p class="strip-key">Bottom strip: <span style="color:var(--good)">■</span> rising, <span style="color:var(--warn)">■</span> falling. Top strip: <span style="color:var(--u6)">■</span> concave up, <span style="color:var(--u2)">■</span> concave down.</p>
+      </div>
+      <div>
+        <form class="answer-row" id="fForm" autocomplete="off" style="margin-top:0">
+          <label for="fIn">f(x) =</label>
+          <input id="fIn" type="text" spellcheck="false" value="x^3 - 3x">
+          <button class="btn primary" type="submit">Plot</button>
+        </form>
+        <div class="p-preview" id="fPrev"></div>
+        <div class="feedback" id="fErr" aria-live="polite"></div>
+        <p style="margin:10px 0 6px;font-size:14px;color:var(--ink-3)">Try:</p>
+        <div class="row" id="presets"></div>
+        <div class="win">
+          <label>x min<input id="x0" type="text" value="-4"></label>
+          <label>x max<input id="x1" type="text" value="4"></label>
+          <label>y min<input id="y0" type="text" placeholder="auto"></label>
+          <label>y max<input id="y1" type="text" placeholder="auto"></label>
+        </div>
+        <div class="toggles">
+          <button class="btn" type="button" id="tD" aria-pressed="true">f′ shape</button>
+          <button class="btn" type="button" id="tD2" aria-pressed="false">f″ shape</button>
+          <button class="btn" type="button" id="tS" aria-pressed="true">Sign strips</button>
+        </div>
+        <div class="ctls"><div class="ctl"><label for="cS">Cursor</label><input id="cS" type="range" min="0" max="1000" value="300"><output id="cO"></output></div></div>
+        <div class="readout" id="geRead" aria-live="polite"></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script src="lesson.js"></script>
+<script>
+Lesson.ready(() => {
+  const { Plot, parse, evaluate, toTex, typeset } = Lesson;
+  const PRESETS = ['x^3 - 3x', 'x^4 - 4x^3', 'x e^(-x)', 'sin(x) + x/2', 'x^2/(x^2 - 1)', 'x^(2/3)', 'ln(x^2 + 1)', 'x/(x^2 + 1)'];
+  document.getElementById('presets').innerHTML = PRESETS.map(p => `<button class="btn" type="button" data-p="${p}" style="font-family:var(--font-mono);font-size:13px;padding:4px 10px">${p}</button>`).join('');
+  const gp = Plot(document.getElementById('gePlot'), { x: [-4, 4], y: [-5, 5], w: 640, h: 440 });
+  const cS = document.getElementById('cS');
+  let f = null, showD = true, showD2 = false, showS = true, X = [-4, 4], Y = [-5, 5];
+
+  const num = s => { try { const v = evaluate(parse(s), {}); return Number.isFinite(v) ? v : NaN; } catch (e) { return NaN; } };
+  const d1 = x => { const h = 1e-4 * Math.max(1, Math.abs(x)); return (f(x + h) - f(x - h)) / (2 * h); };
+  const d2 = x => { const h = 1e-3 * Math.max(1, Math.abs(x)); return (f(x + h) - 2 * f(x) + f(x - h)) / (h * h); };
+
+  function autoY() {
+    const vals = [];
+    for (let i = 0; i <= 400; i++) { const v = f(X[0] + (X[1] - X[0]) * i / 400); if (Number.isFinite(v)) vals.push(v); }
+    if (!vals.length) return [-5, 5];
+    vals.sort((a, b) => a - b);
+    let lo = vals[Math.floor(vals.length * 0.05)], hi = vals[Math.floor(vals.length * 0.95)];
+    if (hi - lo < 1e-6) { lo -= 1; hi += 1; }
+    const pad = (hi - lo) * 0.25;
+    return [Math.min(lo - pad, 0 - pad * 0.2), Math.max(hi + pad, pad * 0.2)];
+  }
+  function strip(g, top, pos, neg) {
+    const n = 320, h = 10, y = top ? 0 : gp.H - h; let s = '';
+    for (let i = 0; i < n; i++) {
+      const x = X[0] + (X[1] - X[0]) * (i + 0.5) / n, v = g(x);
+      if (!Number.isFinite(v) || Math.abs(v) > 1e6) continue;
+      s += `<rect x="${(i / n * gp.W).toFixed(1)}" y="${y}" width="${(gp.W / n + 0.6).toFixed(1)}" height="${h}" style="fill:${v > 0 ? pos : neg};opacity:${Math.abs(v) < 1e-6 ? 0.1 : 0.5}"/>`;
+    }
+    return s;
+  }
+  function draw() {
+    if (!f) return;
+    gp.range(X, Y);
+    const c = X[0] + (X[1] - X[0]) * cS.value / 1000, fc = f(c);
+    let s = (showS ? strip(d1, false, 'var(--good)', 'var(--warn)') + strip(d2, true, 'var(--u6)', 'var(--u2)') : '') + gp.seg(c, -1e6, c, 1e6, 'mirror');
+    if (showD2) s += gp.fn(d2, 'c4', { n: 500, attr: ' stroke-dasharray="2 5" style="stroke-width:2.5"' });
+    if (showD) s += gp.fn(d1, 'c2', { n: 500, attr: ' stroke-dasharray="8 5" style="stroke-width:2.5"' });
+    s += gp.fn(f, 'c1', { n: 800 });
+    if (Number.isFinite(fc)) s += gp.dot(c, fc, 'c1 solid', 6);
+    gp.draw(s);
+    document.getElementById('cO').textContent = c.toFixed(2);
+    const r = document.getElementById('geRead'), a = d1(c), b = d2(c);
+    const slope = !Number.isFinite(a) ? 'undefined here' : Math.abs(a) < 1e-3 ? '<b>flat</b> (horizontal tangent)' : a > 0 ? '<b style="color:var(--good)">rising</b>' : '<b style="color:var(--warn)">falling</b>';
+    const bend = !Number.isFinite(b) ? 'undefined here' : Math.abs(b) < 1e-3 ? '<b>not bending</b> (possible inflection)' : b > 0 ? '<b style="color:var(--u6)">concave up ∪</b>' : '<b style="color:var(--u2)">concave down ∩</b>';
+    r.innerHTML = Number.isFinite(fc) ? `\\( f(${c.toFixed(2)}) = ${fc.toFixed(4)} \\)<br>Here f is ${slope}, and ${bend}.` : `f is undefined at \\( x = ${c.toFixed(2)} \\).`;
+    typeset(r);
+  }
+  function plot() {
+    const raw = document.getElementById('fIn').value.trim(), err = document.getElementById('fErr');
+    try {
+      const ast = parse(raw);
+      evaluate(ast, { x: 0.37 });
+      f = x => { try { return evaluate(ast, { x }); } catch (e) { return NaN; } };
+      err.className = 'feedback'; err.innerHTML = '';
+    } catch (e) { err.className = 'feedback try'; err.textContent = e.message || 'I couldn’t read that function.'; return; }
+    const x0 = num(document.getElementById('x0').value), x1 = num(document.getElementById('x1').value);
+    X = Number.isFinite(x0) && Number.isFinite(x1) && x1 > x0 ? [x0, x1] : [-4, 4];
+    const y0 = num(document.getElementById('y0').value), y1 = num(document.getElementById('y1').value);
+    Y = Number.isFinite(y0) && Number.isFinite(y1) && y1 > y0 ? [y0, y1] : autoY();
+    draw();
+  }
+  document.getElementById('fIn').addEventListener('input', e => {
+    const p = document.getElementById('fPrev');
+    try { p.innerHTML = 'Reads as: <span></span>'; katex.render('f(x) = ' + toTex(parse(e.target.value)), p.querySelector('span')); } catch (err) { p.textContent = ''; }
+  });
+  document.getElementById('fForm').addEventListener('submit', e => { e.preventDefault(); plot(); });
+  ['x0', 'x1', 'y0', 'y1'].forEach(id => document.getElementById(id).addEventListener('change', plot));
+  document.getElementById('presets').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    const fIn = document.getElementById('fIn'); fIn.value = b.dataset.p; fIn.dispatchEvent(new Event('input'));
+    document.getElementById('y0').value = ''; document.getElementById('y1').value = '';
+    plot();
+  });
+  const tog = (id, set) => document.getElementById(id).addEventListener('click', e => { const on = e.currentTarget.getAttribute('aria-pressed') !== 'true'; e.currentTarget.setAttribute('aria-pressed', on); set(on); draw(); });
+  tog('tD', v => { showD = v; }); tog('tD2', v => { showD2 = v; }); tog('tS', v => { showS = v; });
+  cS.addEventListener('input', draw);
+  gp.onDrag((h, pt) => { cS.value = Math.round(Math.max(0, Math.min(1, (pt.x - X[0]) / (X[1] - X[0]))) * 1000); draw(); }, { anywhere: 'c' });
+  document.getElementById('fIn').dispatchEvent(new Event('input'));
+  plot();
+});
+</script>
+</body>
+</html>

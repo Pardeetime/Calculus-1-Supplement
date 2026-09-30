@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Optimization</title>
+<meta name="description" content="Calculus I Companion, Topic 4.6: setting up and solving optimization problems: objective, constraint, one variable, domain, and checking the answer.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;1,6..72,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="lesson.css">
+<script src="site.js"></script>
+<script src="course.js"></script>
+<style>
+  .steps-op { counter-reset: op; list-style: none; padding: 0; margin: 12px 0; display: grid; gap: 8px; max-width: 48em; }
+  .steps-op li { counter-increment: op; display: grid; grid-template-columns: 32px 1fr; gap: 10px; padding: 10px 14px; }
+  .steps-op li::before { content: counter(op); display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--uc); color: var(--bg); font-weight: 600; font-size: 13px; }
+  .two { display: grid; gap: 12px; }
+  @media (min-width: 640px) { .two { grid-template-columns: 1fr 1fr; } }
+</style>
+</head>
+<body data-topic="optimization">
+<main class="wrap">
+
+<!-- ================= SEE IT ================= -->
+<section class="step" id="see" data-title="The best box">
+  <div class="prose">
+    <p>Start with a 12 × 12 inch sheet of cardboard. Cut a square of side x from each corner and fold up the sides to make an open box. Cut too little and the box is flat. Cut too much and it’s a narrow tower. <b>What cut gives the most volume?</b> Search with the slider, and watch where the point sits on the volume graph when you find it.</p>
+  </div>
+  <div class="card widget">
+    <div class="two">
+      <svg id="net" role="img" aria-label="Cardboard sheet with corner squares cut out"></svg>
+      <svg id="vPlot" role="img" aria-label="Volume as a function of the cut size"></svg>
+    </div>
+    <div class="ctls"><div class="ctl"><label for="xS">Cut x (in)</label><input id="xS" type="range" min="5" max="595" value="100"><output id="xO"></output></div></div>
+    <div class="readout" id="boxRead" aria-live="polite"></div>
+    <div class="feedback" id="boxFb" aria-live="polite"></div>
+  </div>
+  <div class="callout idea"><b>The calculus way</b>
+    <p>\( V(x) = x(12 - 2x)^2 \) on \( 0 \lt x \lt 6 \). The best x is where the graph peaks, which is where \( V'(x) = 0 \). No slider needed: \( V'(x) = (12 - 2x)(12 - 6x) = 0 \) gives \( x = 2 \) (x = 6 is outside the domain).</p>
+  </div>
+</section>
+
+<!-- ================= BUILD IT ================= -->
+<section class="step" id="build" data-title="A method that always works">
+  <ol class="steps-op">
+    <li class="card"><span><b>Understand and draw.</b> What’s being maximized or minimized? What’s fixed?</span></li>
+    <li class="card"><span><b>Name variables</b> and write the <b>objective</b>, the quantity to optimize, like \( A = xy \).</span></li>
+    <li class="card"><span>Write the <b>constraint</b>, the equation linking the variables, like \( 2x + y = 2400 \).</span></li>
+    <li class="card"><span>Use the constraint to make the objective a function of <b>one variable</b>.</span></li>
+    <li class="card"><span>Find the <b>domain</b> that makes physical sense (lengths ≥ 0, and so on).</span></li>
+    <li class="card"><span><b>Calculus:</b> critical numbers, then compare with the endpoints (Closed Interval Method), or use the First/Second Derivative Test.</span></li>
+    <li class="card"><span><b>Answer the actual question</b>, with units. Does it ask for the dimensions, or for the maximum area?</span></li>
+  </ol>
+  <div id="wx1"></div>
+  <div id="wx2"></div>
+  <div class="callout warn"><b>Common mistakes</b>
+    <p>Differentiating before reducing to one variable. Forgetting to justify that a critical number is actually a max or min. Answering with x when the question asks for the area. Minimizing distance directly when minimizing distance² is much easier (it’s the same point).</p>
+  </div>
+</section>
+
+<!-- ================= TRY IT ================= -->
+<section class="step" id="try" data-title="Your turn">
+  <div class="prose"><p>Exact answers or decimals to three places are both accepted.</p></div>
+  <div class="practice-list" id="practice"></div>
+</section>
+
+<!-- ================= CHECK ================= -->
+<section class="step" id="check" data-title="Before you move on">
+  <div class="quiz" id="quiz"></div>
+</section>
+
+</main>
+
+<script src="lesson.js"></script>
+<script>
+Lesson.ready(() => {
+  const { Plot, practiceList, worked, quiz, typeset } = Lesson;
+
+  const V = x => x * (12 - 2 * x) ** 2;
+  const net = Plot(document.getElementById('net'), { x: [-0.5, 12.5], y: [-0.5, 12.5], w: 300, h: 300, ticks: false });
+  const vp = Plot(document.getElementById('vPlot'), { x: [-0.3, 6.3], y: [-10, 150], w: 300, h: 300 });
+  const xS = document.getElementById('xS');
+  let best = 0;
+  function drawBox() {
+    const x = xS.value / 100, v = V(x);
+    const R = (x0, y0, x1, y1, st) => `<rect x="${net.sx(x0)}" y="${net.sy(y1)}" width="${net.sx(x1) - net.sx(x0)}" height="${net.sy(y0) - net.sy(y1)}" style="${st}"/>`;
+    let s = R(0, 0, 12, 12, 'fill:var(--secant);opacity:.25;stroke:var(--ink-3)') + R(x, x, 12 - x, 12 - x, 'fill:var(--curve);opacity:.3');
+    [[0, 0], [12 - x, 0], [0, 12 - x], [12 - x, 12 - x]].forEach(([a, b]) => { s += R(a, b, a + x, b + x, 'fill:var(--bg);stroke:var(--tangent);stroke-dasharray:4 3'); });
+    s += net.text(6, 6, 'base', 'lbl', 0, 4, 'middle');
+    net.draw(s);
+    vp.draw(vp.fn(V, 'c1', { from: 0, to: 6 }) + vp.seg(x, 0, x, v, 'c2 thin') + vp.dot(x, v, 'c2 solid', 6) + vp.text(0.2, 142, 'V(x)', 'tick'));
+    document.getElementById('xO').textContent = x.toFixed(2);
+    const r = document.getElementById('boxRead');
+    r.innerHTML = `Box: \\( ${(12 - 2 * x).toFixed(2)} \\times ${(12 - 2 * x).toFixed(2)} \\times ${x.toFixed(2)} \\) in, volume \\( V = ${v.toFixed(2)} \\) in³`;
+    typeset(r);
+    best = Math.max(best, v);
+    const fb = document.getElementById('boxFb');
+    if (Math.abs(x - 2) < 0.03) { fb.className = 'feedback good'; fb.innerHTML = '<b class="tag-good">That’s the peak.</b> At x = 2 the graph is flat on top, with slope 0. That flat tangent is how calculus finds the answer without searching.'; }
+    else { fb.className = 'feedback'; fb.innerHTML = best > 100 ? `Best so far: ${best.toFixed(1)} in³. Can you do better?` : ''; }
+  }
+  xS.addEventListener('input', drawBox);
+  drawBox();
+
+  worked(document.getElementById('wx1'), {
+    problem: 'A farmer has 2400 ft of fence to enclose a rectangular field along a straight river (no fence needed on the river side). What is the largest possible area?',
+    steps: [
+      { show: 'Let x = each side perpendicular to the river, y = the side parallel to it. Objective: \\( A = xy \\).' },
+      { show: 'Constraint: \\( 2x + y = 2400 \\), so \\( y = 2400 - 2x \\).' },
+      { show: 'One variable: \\( A(x) = x(2400 - 2x) = 2400x - 2x^2 \\), with domain \\( 0 \\le x \\le 1200 \\).' },
+      { show: '\\( A\'(x) = 2400 - 4x = 0 \\), so \\( x = 600 \\). Endpoints give \\( A = 0 \\), so this is the max.', why: 'Closed Interval Method: compare A(0) = 0, A(600) = 720,000, A(1200) = 0.' },
+      { show: 'Dimensions 600 ft × 1200 ft, and the maximum area is <b>720,000 ft²</b>.' }
+    ]
+  });
+  worked(document.getElementById('wx2'), {
+    problem: 'Find the point on \\( y = \\sqrt x \\) closest to \\( (3, 0) \\).',
+    steps: [
+      { show: 'Distance² from \\( (x, \\sqrt x) \\) to \\( (3, 0) \\): \\( D(x) = (x - 3)^2 + (\\sqrt x)^2 = (x - 3)^2 + x \\).', why: 'Minimize distance squared. It has the same minimizer and no square root to deal with.' },
+      { show: '\\( D\'(x) = 2(x - 3) + 1 = 0 \\), so \\( x = \\tfrac52 \\).' },
+      { show: '\\( D\'\' = 2 \\gt 0 \\), so it’s a minimum. The point is \\( \\left(\\tfrac52, \\sqrt{\\tfrac52}\\right) \\).' }
+    ]
+  });
+
+  practiceList(document.getElementById('practice'), [
+    { id: 'op-product', tag: 'Numbers', prompt: '<p>Two positive numbers add to 20. What is the largest possible value of their product?</p>', label: 'Max product',
+      answer: { type: 'number', value: 100 },
+      rungs: [['Nudge', 'Numbers x and 20 − x. Objective: \\( P = x(20 - x) \\).'], ['Hint', '\\( P\'(x) = 20 - 2x \\).'], ['Strategy', 'Find x, then compute P.']],
+      mistakes: [{ value: 10, msg: 'That’s x. The question asks for the product.' }] },
+    { id: 'op-rect', tag: 'Area', prompt: '<p>A rectangle has perimeter 40 m. What is its largest possible area (m²)?</p>', label: 'Max area',
+      answer: { type: 'number', value: 100 },
+      rungs: [['Nudge', 'Constraint: \\( 2x + 2y = 40 \\).'], ['Hint', '\\( A = x(20 - x) \\).'], ['Strategy', 'Maximize, then compute the area.']],
+      success: 'A square. For a fixed perimeter, the square always wins.' },
+    { id: 'op-box', tag: 'Box', prompt: '<p>A 10 × 16 inch sheet has equal squares of side x cut from each corner to make an open box. What x maximizes the volume?</p>', label: 'x =',
+      answer: { type: 'number', value: 2 },
+      rungs: [['Nudge', '\\( V(x) = x(10 - 2x)(16 - 2x) \\), domain \\( 0 \\lt x \\lt 5 \\).'], ['Hint', 'Expand: \\( V = 4x^3 - 52x^2 + 160x \\), so \\( V\' = 12x^2 - 104x + 160 \\).'], ['Strategy', 'Divide by 4: \\( 3x^2 - 26x + 40 = 0 \\). Factor or use the quadratic formula, then check the domain.']],
+      mistakes: [{ value: 20 / 3, msg: 'That solution is outside the domain: the short side is only 10 inches, so x must be less than 5.' }],
+      success: 'Always check critical numbers against the physical domain.' },
+    { id: 'op-dist', tag: 'Distance', prompt: '<p>What is the minimum distance from the point \\( (0, 2) \\) to the parabola \\( y = x^2 \\)?</p>', label: 'Min distance',
+      answer: { type: 'number', value: Math.sqrt(7) / 2, acceptDecimal: true },
+      rungs: [['Nudge', 'Minimize \\( D = x^2 + (x^2 - 2)^2 \\) (distance squared).'], ['Hint', '\\( D\' = 2x + 4x(x^2 - 2) = 2x(2x^2 - 3) \\). Critical numbers: 0 and \\( x^2 = \\tfrac32 \\).'], ['Strategy', 'Compare D at the critical numbers, then take a square root at the end.']],
+      mistakes: [{ value: 7 / 4, msg: 'That’s distance <i>squared</i>. Take the square root.' }, { value: 2, msg: 'x = 0 is a critical number, but it’s a local <i>max</i> of D. Check the others.' }] },
+    { id: 'op-semi', tag: 'Inscribed', prompt: '<p>A rectangle is inscribed in a semicircle of radius 5, with its base on the diameter. What is the largest possible area?</p>', label: 'Max area',
+      answer: { type: 'number', value: 25 },
+      rungs: [['Nudge', 'Put the semicircle \\( y = \\sqrt{25 - x^2} \\) on the x-axis. The corner is \\( (x, \\sqrt{25 - x^2}) \\).'], ['Hint', 'Width 2x, height \\( \\sqrt{25 - x^2} \\): \\( A = 2x\\sqrt{25 - x^2} \\). (Or maximize \\( A^2 \\).)'], ['Strategy', 'The max occurs at \\( x = 5/\\sqrt2 \\).']],
+      mistakes: [{ value: 50, msg: 'Check the height: at \\( x = 5/\\sqrt2 \\), the height is also \\( 5/\\sqrt2 \\). Width is 2x.' }] },
+    { id: 'op-can', tag: 'Design', prompt: '<p>A cylindrical can must hold 1000 cm³. What radius minimizes the total surface area (top, bottom and side)?</p>', label: 'r =',
+      answer: { type: 'number', value: Math.cbrt(500 / Math.PI), acceptDecimal: true },
+      rungs: [['Nudge', 'Objective: \\( S = 2\\pi r^2 + 2\\pi r h \\). Constraint: \\( \\pi r^2 h = 1000 \\).'], ['Hint', 'Substitute \\( h = \\dfrac{1000}{\\pi r^2} \\): \\( S = 2\\pi r^2 + \\dfrac{2000}{r} \\).'], ['Strategy', '\\( S\' = 4\\pi r - \\dfrac{2000}{r^2} = 0 \\), so \\( r^3 = \\dfrac{500}{\\pi} \\).']],
+      success: 'About 5.42 cm. The optimal can has height equal to its diameter. Real cans are taller for other reasons, like labels and shipping.' }
+  ]);
+
+  quiz(document.getElementById('quiz'), [
+    { q: 'You find the only critical number on an open domain. How can you be sure it’s the max?',
+      choices: [{ t: 'Being the only one is enough', ok: false, why: 'It might be a min, or neither.' }, { t: 'Check the sign change of the derivative (or its second derivative)', ok: true, why: 'If f′ goes + to −, the single critical point is the absolute max on the interval.' }] },
+    { q: 'Why minimize distance² instead of distance?',
+      choices: [{ t: 'It gives a different, better answer', ok: false, why: 'Same minimizing point, since squaring preserves order for nonnegative numbers.' }, { t: 'Same answer, easier derivative', ok: true, why: 'No square root to differentiate.' }] }
+  ]);
+});
+</script>
+</body>
+</html>

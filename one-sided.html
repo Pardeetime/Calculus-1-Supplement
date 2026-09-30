@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>One-Sided and Infinite Limits</title>
+<meta name="description" content="Calculus I Companion, Topic 1.3: left- and right-hand limits, infinite limits, vertical asymptotes and sign analysis.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;1,6..72,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="lesson.css">
+<script src="site.js"></script>
+<script src="course.js"></script>
+</head>
+<body data-topic="one-sided">
+<main class="wrap">
+
+<!-- ================= SEE IT ================= -->
+<section class="step" id="see" data-title="Two walkers, one point">
+  <div class="prose">
+    <p>Two walkers approach \( x = 2 \), one from the <b style="color:var(--secant)">left</b> and one from the <b style="color:var(--u2)">right</b>. Move them closer and compare the heights they report. Do the two sides always agree? And do they always approach a <i>number</i>?</p>
+  </div>
+  <div class="card widget">
+    <div class="seg" id="fnBtns" role="group" aria-label="Choose a function" style="margin-bottom:12px"></div>
+    <div class="widget-grid">
+      <svg id="osPlot" role="img" aria-label="Graph with two points approaching x equals 2 from each side"></svg>
+      <div>
+        <div class="display" id="osTex" style="font-size:18px"></div>
+        <div class="ctls"><div class="ctl"><label for="dSlider">Distance from 2</label><input id="dSlider" type="range" min="0" max="1000" value="0"><output id="dOut"></output></div></div>
+        <div class="readout" id="osRead" aria-live="polite"></div>
+        <p class="observe" id="osNote"></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= BUILD IT ================= -->
+<section class="step" id="build" data-title="Left, right and infinite">
+  <h3 style="margin-top:0">One-sided limits</h3>
+  <div class="prose">
+    <div class="display">\[ \lim_{x\to a^-} f(x) = L \quad(\text{from the left: } x \lt a) \qquad \lim_{x\to a^+} f(x) = L \quad(\text{from the right: } x \gt a) \]</div>
+    <p>The little minus or plus sign tells you which side to approach from. It is <b>not</b> a negative number.</p>
+  </div>
+  <div class="callout idea"><b>The key theorem</b>
+    <p>\( \displaystyle\lim_{x\to a} f(x) = L \) if and only if <b>both</b> one-sided limits exist and <b>both equal L</b>. If the sides disagree, the two-sided limit does not exist.</p>
+  </div>
+
+  <h3>Infinite limits</h3>
+  <div class="prose">
+    <p>If \( f(x) \) grows without bound as \( x \to a \), we write \( \lim_{x\to a} f(x) = \infty \). The outputs aren’t approaching any number, so strictly speaking the limit <i>doesn’t exist</i>. But \( \infty \) tells you <b>how</b> it fails, and that’s more useful than just “DNE.”</p>
+    <ul>
+      <li>Both sides go to \( \infty \) (or both to \( -\infty \)): write \( \infty \) (or \( -\infty \)).</li>
+      <li>One side goes to \( \infty \) and the other to \( -\infty \): the two-sided limit is DNE, so describe each side separately.</li>
+    </ul>
+    <p>The line \( x = a \) is a <b>vertical asymptote</b> if <i>at least one</i> one-sided limit is \( \pm\infty \).</p>
+  </div>
+
+  <h3>Sign analysis: nonzero ÷ 0</h3>
+  <div class="prose"><p>If direct substitution gives a <b>nonzero number over 0</b>, the limit is infinite, or DNE. To decide which, find the sign of the numerator and the sign of the tiny denominator on each side.</p></div>
+  <div id="wx1"></div>
+  <div class="callout warn"><b>Two different situations</b>
+    <p>\( \dfrac{\text{nonzero}}{0} \) means a vertical asymptote: infinite or DNE. \( \dfrac{0}{0} \) means nothing yet. It could be a hole, an asymptote or anything else, so you need algebra (Topic 1.4). Don’t mix them up.</p>
+  </div>
+
+  <h3>Absolute values</h3>
+  <div class="prose">
+    <p>Split \( |x - a| \) into pieces: it equals \( x - a \) when \( x \gt a \) and \( -(x - a) \) when \( x \lt a \). One-sided limits are the natural tool because each side uses one piece.</p>
+  </div>
+</section>
+
+<!-- ================= TRY IT ================= -->
+<section class="step" id="try" data-title="Your turn">
+  <div class="prose"><p>Answer with a number, <span class="kbd">inf</span>, <span class="kbd">-inf</span> or <span class="kbd">DNE</span>.</p></div>
+  <div class="practice-list" id="practice"></div>
+</section>
+
+<!-- ================= CHECK ================= -->
+<section class="step" id="check" data-title="Before you move on">
+  <div class="tf" id="tf"></div>
+</section>
+
+</main>
+
+<script src="lesson.js"></script>
+<script>
+Lesson.ready(() => {
+  const { Plot, practiceList, worked, trueFalse, typeset } = Lesson;
+
+  const FNS = [
+    { lbl: 'Jump', tex: 'f(x) = \\begin{cases} \\tfrac12 x + 1, & x \\lt 2 \\\\ \\tfrac14 (x-2)^2 + 4, & x \\ge 2 \\end{cases}',
+      f: x => x < 2 ? 0.5 * x + 1 : 0.25 * (x - 2) ** 2 + 4, extra: p => p.dot(2, 2, 'c1', 5) + p.dot(2, 4, 'c1 solid', 5),
+      note: 'Left heads to 2 and right heads to 4. Both one-sided limits exist, but they disagree, so the two-sided limit does not exist.' },
+    { lbl: '1/(x−2)²', tex: 'f(x) = \\dfrac{1}{(x-2)^2}', f: x => 1 / (x - 2) ** 2, asym: true,
+      note: 'Both sides shoot up without bound. The square makes the denominator positive on both sides, so \\( \\lim_{x\\to2} f(x) = \\infty \\).' },
+    { lbl: '1/(x−2)', tex: 'f(x) = \\dfrac{1}{x-2}', f: x => 1 / (x - 2), asym: true,
+      note: 'Left dives to \\( -\\infty \\) (tiny negative denominator) and right shoots to \\( +\\infty \\). The sides disagree, so the two-sided limit does not exist.' },
+    { lbl: '(x²−4)/|x−2|', tex: 'f(x) = \\dfrac{x^2-4}{|x-2|}', f: x => (x * x - 4) / Math.abs(x - 2), extra: p => p.dot(2, -4, 'c1', 5) + p.dot(2, 4, 'c1', 5),
+      note: 'Factor: \\( \\dfrac{(x-2)(x+2)}{|x-2|} \\). On the right, \\( \\tfrac{x-2}{|x-2|} = 1 \\), so the limit is 4. On the left it’s −1, so the limit is −4.' }
+  ];
+  const op = Plot(document.getElementById('osPlot'), { x: [-1, 5], y: [-7, 9], h: 380 });
+  const dSlider = document.getElementById('dSlider');
+  let cur = 0;
+  document.getElementById('fnBtns').innerHTML = FNS.map((F, i) => `<button type="button" data-i="${i}">${F.lbl}</button>`).join('');
+  const fmt = v => Math.abs(v) >= 1e5 ? v.toExponential(2) : v.toFixed(5);
+  function drawOS() {
+    const F = FNS[cur], d = 1.5 * Math.pow(10, -4 * dSlider.value / 1000);
+    const yl = F.f(2 - d), yr = F.f(2 + d), clamp = y => Math.max(-6.8, Math.min(8.8, y));
+    op.draw((F.asym ? op.seg(2, -10, 2, 10, 'ghost') : '') + op.fn(F.f, 'c1', { n: 800 }) + (F.extra ? F.extra(op) : '') +
+      op.seg(2 - d, 0, 2 - d, clamp(yl), 'c2 thin') + op.seg(2 + d, 0, 2 + d, clamp(yr), 'c4 thin') +
+      op.dot(2 - d, clamp(yl), 'c2 solid', 6) + op.dot(2 + d, clamp(yr), 'c4 solid', 6));
+    document.getElementById('dOut').textContent = d < 0.001 ? d.toExponential(1) : d.toFixed(3);
+    const r = document.getElementById('osRead');
+    r.innerHTML = `<span style="color:var(--secant)">Left</span>: \\( f(${(2 - d).toPrecision(6)}) = ${fmt(yl)} \\)<br><span style="color:var(--u2)">Right</span>: \\( f(${(2 + d).toPrecision(6)}) = ${fmt(yr)} \\)`;
+    typeset(r);
+    const n = document.getElementById('osNote');
+    n.innerHTML = dSlider.value > 850 ? F.note : 'Keep moving the walkers closer…';
+    typeset(n);
+  }
+  function pick(i) {
+    cur = i;
+    document.querySelectorAll('#fnBtns button').forEach((b, k) => b.setAttribute('aria-pressed', String(k === i)));
+    const t = document.getElementById('osTex'); t.innerHTML = `\\[ ${FNS[i].tex} \\]`; typeset(t);
+    drawOS();
+  }
+  document.getElementById('fnBtns').addEventListener('click', e => { const b = e.target.closest('button'); if (b) pick(+b.dataset.i); });
+  dSlider.addEventListener('input', drawOS);
+  pick(0);
+
+  worked(document.getElementById('wx1'), {
+    problem: 'Find \\( \\displaystyle\\lim_{x\\to3^-} \\frac{x+1}{x-3} \\) and \\( \\displaystyle\\lim_{x\\to3^+} \\frac{x+1}{x-3} \\).',
+    steps: [
+      { show: 'Substitute: \\( \\dfrac{4}{0} \\). Nonzero over zero means the limit is infinite (or DNE).' },
+      { show: 'Numerator near 3: \\( x + 1 \\to 4 \\), which is <b>positive</b> on both sides.' },
+      { show: 'Denominator from the <b>left</b> (like \\( x = 2.99 \\)): \\( x - 3 = -0.01 \\), a tiny <b>negative</b>. So positive ÷ tiny negative gives \\( -\\infty \\).', why: 'Plug in a nearby number just to learn the sign.' },
+      { show: 'Denominator from the <b>right</b> (like \\( x = 3.01 \\)): tiny <b>positive</b>. So positive ÷ tiny positive gives \\( +\\infty \\).' },
+      { show: '\\( \\displaystyle\\lim_{x\\to3^-} = -\\infty \\) and \\( \\displaystyle\\lim_{x\\to3^+} = +\\infty \\). The two-sided limit does not exist, and \\( x = 3 \\) is a vertical asymptote.' }
+    ]
+  });
+
+  const pw = '\\( f(x) = \\begin{cases} x^2, &amp; x \\lt 1 \\\\ 3 - x, &amp; x \\ge 1 \\end{cases} \\)';
+  practiceList(document.getElementById('practice'), [
+    { id: 'os-left', tag: 'One-sided',
+      prompt: `<p>Let ${pw}. Find \\( \\displaystyle\\lim_{x\\to1^-} f(x) \\).</p>`,
+      answer: { type: 'limit', value: 1 },
+      rungs: [
+        ['Nudge', '\\( x \\to 1^- \\) means x is a little <i>less</i> than 1.'],
+        ['Hint', 'For \\( x \\lt 1 \\), which formula does \\( f \\) use?'],
+        ['Strategy', 'Use only that piece, and substitute \\( x = 1 \\) into it.']
+      ],
+      mistakes: [{ value: 2, msg: 'That uses the \\( x \\ge 1 \\) piece. From the left, x is less than 1.' }],
+      success: 'Each side uses only its own formula.' },
+    { id: 'os-right', tag: 'One-sided',
+      prompt: `<p>Same \\( f \\). Find \\( \\displaystyle\\lim_{x\\to1^+} f(x) \\).</p>`,
+      answer: { type: 'limit', value: 2 },
+      rungs: [
+        ['Nudge', '\\( x \\to 1^+ \\) means x is a little <i>more</i> than 1.'],
+        ['Hint', 'For \\( x \\gt 1 \\), \\( f(x) = 3 - x \\).'],
+        ['Strategy', 'Substitute \\( x = 1 \\) into that piece.']
+      ],
+      mistakes: [{ value: 1, msg: 'That’s the left piece. From the right, use \\( 3 - x \\).' }] },
+    { id: 'os-two', tag: 'Two-sided',
+      prompt: `<p>Same \\( f \\). Find \\( \\displaystyle\\lim_{x\\to1} f(x) \\).</p>`,
+      answer: { type: 'limit', value: 'dne' },
+      rungs: [
+        ['Nudge', 'Compare your two previous answers.'],
+        ['Hint', 'A two-sided limit exists only when both sides agree.'],
+        ['Strategy', 'Did they agree?']
+      ],
+      mistakes: [{ value: 1.5, msg: 'Limits don’t average the two sides. Do the sides agree?' }, { value: 2, msg: 'That’s \\( f(1) \\) and the right-hand limit. The left side disagrees.' }],
+      success: 'A jump means different one-sided limits, and so no two-sided limit.' },
+    { id: 'os-sign', tag: 'Infinite limit',
+      prompt: '<p>Find \\( \\displaystyle\\lim_{x\\to2^+} \\frac{x - 5}{x - 2} \\).</p>',
+      answer: { type: 'limit', value: -Infinity },
+      rungs: [
+        ['Nudge', 'Substitute first. Is it 0/0 or nonzero/0?'],
+        ['Hint', 'Near \\( x = 2 \\) the numerator is about \\( -3 \\). What’s the sign of \\( x - 2 \\) when x is just above 2?'],
+        ['Strategy', 'Negative ÷ tiny positive = ?']
+      ],
+      mistakes: [{ value: Infinity, msg: 'Check the sign of the numerator: \\( 2 - 5 \\) is negative.' }, { value: 'dne', msg: 'This is a one-sided limit, so only the right side matters. Does it grow without bound in one direction?' }],
+      success: 'Signs of top and bottom decide between \\( +\\infty \\) and \\( -\\infty \\).' },
+    { id: 'os-square', tag: 'Infinite limit',
+      prompt: '<p>Find \\( \\displaystyle\\lim_{x\\to-1} \\frac{1}{(x + 1)^2} \\).</p>',
+      answer: { type: 'limit', value: Infinity },
+      rungs: [
+        ['Nudge', 'This is two-sided, so check both sides.'],
+        ['Hint', 'What is the sign of \\( (x+1)^2 \\) when x is near \\( -1 \\), on either side?'],
+        ['Strategy', 'Positive ÷ tiny positive, from both sides.']
+      ],
+      mistakes: [{ value: 'dne', msg: 'It’s true there’s no finite limit, but both sides do the same thing. Describe it more precisely.' }, { value: -Infinity, msg: 'A square is never negative.' }],
+      success: 'Both sides agree on \\( +\\infty \\), just like \\( 1/(x-2)^2 \\) in the explorer.' },
+    { id: 'os-abs', tag: 'Absolute value',
+      prompt: '<p>Find \\( \\displaystyle\\lim_{x\\to0} \\frac{|x|}{x} \\).</p>',
+      answer: { type: 'limit', value: 'dne' },
+      rungs: [
+        ['Nudge', 'Split into the cases \\( x \\gt 0 \\) and \\( x \\lt 0 \\).'],
+        ['Hint', 'For \\( x \\gt 0 \\), \\( |x| = x \\). For \\( x \\lt 0 \\), \\( |x| = -x \\). Simplify each case.'],
+        ['Strategy', 'Find each one-sided limit, then compare.']
+      ],
+      mistakes: [{ value: 1, msg: 'That’s the right-hand limit. Try the left side, like \\( x = -0.01 \\).' }, { value: -1, msg: 'That’s the left-hand limit. What about the right?' }, { value: 0, msg: 'The function is ±1 everywhere except 0, so it never gets near 0.' }],
+      success: 'The function is −1 on the left and +1 on the right, a pure jump.' },
+    { id: 'os-va', tag: 'Asymptotes',
+      prompt: '<p>List every vertical asymptote of \\( f(x) = \\dfrac{x + 2}{x^2 - 4} \\) by giving its x-value.</p>',
+      label: 'x =', format: 'List the x-values separated by commas.',
+      answer: { type: 'set', values: [2] },
+      rungs: [
+        ['Nudge', 'Where is the denominator 0? Those are the <i>candidates</i>.'],
+        ['Hint', 'Factor the denominator: \\( (x-2)(x+2) \\). At each candidate, is the numerator 0 too?'],
+        ['Strategy', 'If a factor cancels, that point is a hole, not an asymptote. Simplify, then check what’s left.']
+      ],
+      mistakes: [{ values: [2, -2], msg: 'At \\( x = -2 \\) the numerator is also 0 (a 0/0 form). The factor \\( x + 2 \\) cancels, leaving a <b>hole</b>, not an asymptote.' }],
+      success: 'Denominator zeros are only candidates. Check the numerator before calling one an asymptote.' }
+  ]);
+
+  trueFalse(document.getElementById('tf'), [
+    { s: 'If \\( \\displaystyle\\lim_{x\\to a^-} f(x) = \\lim_{x\\to a^+} f(x) = 5 \\), then \\( \\displaystyle\\lim_{x\\to a} f(x) = 5 \\).', ok: true, why: 'That’s the key theorem: matching sides give the two-sided limit.' },
+    { s: 'If the denominator is 0 at \\( x = a \\), then \\( x = a \\) is a vertical asymptote.', ok: false, why: 'Only if the numerator isn’t also 0 there. With 0/0 it might be a hole, as in the asymptote problem.' },
+    { s: 'In \\( \\displaystyle\\lim_{x\\to3^-} \\), the minus sign means x is negative.', ok: false, why: 'It means x approaches 3 from values <i>below</i> 3, like 2.9 or 2.99, which are positive numbers.' },
+    { s: 'If \\( \\displaystyle\\lim_{x\\to a} f(x) = \\infty \\), the limit exists as a number.', ok: false, why: '\\( \\infty \\) isn’t a number. It describes unbounded growth, which is a specific way of not existing.' }
+  ]);
+});
+</script>
+</body>
+</html>

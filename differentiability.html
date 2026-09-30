@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Differentiability</title>
+<meta name="description" content="Calculus I Companion, Topic 2.3: when a derivative exists, corners, cusps, vertical tangents, one-sided derivatives, and why differentiable implies continuous.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;1,6..72,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="lesson.css">
+<script src="site.js"></script>
+<script src="course.js"></script>
+</head>
+<body data-topic="differentiability">
+<main class="wrap">
+
+<!-- ================= SEE IT ================= -->
+<section class="step" id="see" data-title="The zoom test">
+  <div class="prose">
+    <p>In Topic 2.1, zooming in made a smooth curve look like a straight line. <b>That doesn’t always happen.</b> Zoom in on the marked point of each graph and see what you get. Then classify it.</p>
+  </div>
+  <div class="card widget">
+    <div class="row" style="justify-content:space-between;margin-bottom:10px">
+      <div class="seg" id="gBtns" role="group" aria-label="Choose a graph"></div>
+      <span class="chip" id="gScore">0 of 6 classified</span>
+    </div>
+    <div class="widget-grid">
+      <svg id="dzPlot" role="img" aria-label="Zoomable graph around a marked point"></svg>
+      <div>
+        <div class="display" id="gTex"></div>
+        <div class="ctls"><div class="ctl"><label for="zSlider">Zoom in</label><input id="zSlider" type="range" min="0" max="100" value="0"><output id="zOut"></output></div></div>
+        <div class="readout" id="dzRead" aria-live="polite"></div>
+        <p style="margin:12px 0 8px;font-weight:500">At the marked point, f is…</p>
+        <div class="row" id="gChoices">
+          <button class="btn" type="button" data-t="diff">Differentiable</button>
+          <button class="btn" type="button" data-t="corner">Corner</button>
+          <button class="btn" type="button" data-t="cusp">Cusp</button>
+          <button class="btn" type="button" data-t="vert">Vertical tangent</button>
+          <button class="btn" type="button" data-t="disc">Discontinuous</button>
+        </div>
+        <div class="feedback" id="gFb" aria-live="polite"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= BUILD IT ================= -->
+<section class="step" id="build" data-title="When the derivative exists">
+  <div class="prose">
+    <p>f is <b>differentiable at a</b> if \( f'(a) \) exists, meaning the difference-quotient limit is a finite number. It’s differentiable on an open interval if that holds at every point in it.</p>
+    <p>The limit is two-sided, so it helps to look at each side separately. The <b>one-sided derivatives</b> are</p>
+    <div class="display">\[ f'_-(a) = \lim_{h\to0^-}\frac{f(a+h) - f(a)}{h}, \qquad f'_+(a) = \lim_{h\to0^+}\frac{f(a+h) - f(a)}{h}. \]</div>
+    <p>\( f'(a) \) exists exactly when both are finite and equal.</p>
+  </div>
+  <div class="table-wrap"><table class="ref">
+    <tr><th>Failure</th><th>What the one-sided slopes do</th><th>Example at 0</th></tr>
+    <tr><td><b>Corner</b></td><td>Both finite, but different</td><td>\( |x| \): −1 and +1</td></tr>
+    <tr><td><b>Cusp</b></td><td>\( \to -\infty \) on one side and \( +\infty \) on the other</td><td>\( x^{2/3} \)</td></tr>
+    <tr><td><b>Vertical tangent</b></td><td>Both \( \to +\infty \) (or both \( -\infty \))</td><td>\( \sqrt[3]{x} \)</td></tr>
+    <tr><td><b>Discontinuity</b></td><td>At least one blows up, because \( f(a+h) - f(a) \) doesn’t shrink</td><td>any jump or hole</td></tr>
+  </table></div>
+
+  <div class="callout idea"><b>Theorem: differentiable ⟹ continuous</b>
+    <p>If \( f'(a) \) exists, then f is continuous at a. <b>The converse is false:</b> \( |x| \) is continuous at 0 but not differentiable there.</p>
+  </div>
+  <div id="wx1"></div>
+
+  <h3>Smoothing a seam</h3>
+  <div class="prose"><p>In Topic 1.7 you made the pieces of a function <b>meet</b> (continuity). Differentiability also needs them to meet at the <b>same slope</b>, so there’s no corner. That gives two conditions, so you need two unknowns.</p></div>
+  <div class="card widget">
+    <p class="prompt">\( f(x) = \begin{cases} x^2, &amp; x \le 1 \\ mx + b, &amp; x \gt 1 \end{cases} \). Find the m and b that make f differentiable at 1.</p>
+    <div class="widget-grid">
+      <svg id="seamPlot" role="img" aria-label="A parabola joined to an adjustable line at x equals 1"></svg>
+      <div>
+        <div class="ctls">
+          <div class="ctl"><label for="mSlider">m (slope)</label><input id="mSlider" type="range" min="-20" max="50" value="5"><output id="mOut"></output></div>
+          <div class="ctl"><label for="bSlider">b</label><input id="bSlider" type="range" min="-40" max="30" value="10"><output id="bOut"></output></div>
+        </div>
+        <div class="readout" id="seamRead"></div>
+      </div>
+    </div>
+  </div>
+  <div class="prose"><p><b>Algebra:</b> continuity at 1 needs \( 1^2 = m + b \). Matching slopes needs the parabola’s slope at 1 (which is 2) to equal m. So \( m = 2 \), then \( b = -1 \). Always solve the slope equation first, since it usually involves only one unknown.</p></div>
+</section>
+
+<!-- ================= TRY IT ================= -->
+<section class="step" id="try" data-title="Your turn">
+  <div class="practice-list" id="practice"></div>
+</section>
+
+<!-- ================= CHECK ================= -->
+<section class="step" id="check" data-title="Before you move on">
+  <div class="quiz" id="quiz"></div>
+</section>
+
+</main>
+
+<script src="lesson.js"></script>
+<script>
+Lesson.ready(() => {
+  const { Plot, practiceList, worked, quiz, typeset } = Lesson;
+
+  // ---------------- Zoom test ----------------
+  const G = [
+    { t: 'diff', tex: 'f(x) = x^2 \\text{ at } x = 1', a: 1, f: x => x * x, why: 'It straightens into a line with slope 2. Both one-sided slopes agree.' },
+    { t: 'corner', tex: 'f(x) = |x| \\text{ at } x = 0', a: 0, f: Math.abs, why: 'It’s still a V at every zoom level. The left slope is −1, the right slope is +1, so they disagree.' },
+    { t: 'cusp', tex: 'f(x) = x^{2/3} \\text{ at } x = 0', a: 0, f: x => Math.cbrt(x * x), why: 'The sides get steeper and steeper, heading to −∞ on the left and +∞ on the right, and meet in a sharp point.' },
+    { t: 'vert', tex: 'f(x) = \\sqrt[3]{x} \\text{ at } x = 0', a: 0, f: Math.cbrt, why: 'It straightens into a <i>vertical</i> line. The slope heads to +∞ from both sides, and a vertical line has no finite slope.' },
+    { t: 'disc', tex: 'f(x) = \\begin{cases} x + 1, & x \\lt 0 \\\\ x, & x \\ge 0 \\end{cases} \\text{ at } x = 0', a: 0, f: x => x < 0 ? x + 1 : x, why: 'There’s a jump. Without continuity, differentiability is impossible.' },
+    { t: 'diff', tex: 'f(x) = \\begin{cases} x^2, & x \\lt 1 \\\\ 2x - 1, & x \\ge 1 \\end{cases} \\text{ at } x = 1', a: 1, f: x => x < 1 ? x * x : 2 * x - 1, why: 'Piecewise but smooth: the pieces meet at the same height <i>and</i> the same slope (2), so there’s no corner.' }
+  ];
+  const dz = Plot(document.getElementById('dzPlot'), { x: [-2, 2], y: [-1.4, 1.4], h: 360, ticks: false });
+  const zSlider = document.getElementById('zSlider');
+  let gi = 0;
+  const done = {};
+  document.getElementById('gBtns').innerHTML = G.map((g, i) => `<button type="button" data-i="${i}">${i + 1}</button>`).join('');
+  const fmt = v => !Number.isFinite(v) ? '∞' : Math.abs(v) >= 1e4 ? v.toExponential(2) : v.toFixed(4);
+  function drawZ() {
+    const g = G[gi], a = g.a, fa = g.f(a), w = 2 * Math.pow(10, -3 * zSlider.value / 100), hy = 0.7 * w;
+    dz.range([a - w, a + w], [fa - hy, fa + hy]);
+    dz.draw(dz.fn(g.f, 'c1', { n: 1200 }) + dz.dot(a, fa, 'c2 solid', 5));
+    const h = w / 2, L = (fa - g.f(a - h)) / h, R = (g.f(a + h) - fa) / h;
+    document.getElementById('zOut').textContent = `${Math.round(2 / w)}×`;
+    const r = document.getElementById('dzRead');
+    r.innerHTML = `With \\( h = ${h.toPrecision(2)} \\): slope from the left = <b class="mono">${fmt(L)}</b>, slope from the right = <b class="mono">${fmt(R)}</b>`;
+    typeset(r);
+  }
+  function pickG(i) {
+    gi = i; zSlider.value = 0;
+    document.querySelectorAll('#gBtns button').forEach((b, k) => b.setAttribute('aria-pressed', String(k === i)));
+    const t = document.getElementById('gTex'); t.innerHTML = `\\[ ${G[i].tex} \\]`; typeset(t);
+    const fb = document.getElementById('gFb'); fb.className = done[i] ? 'feedback good' : 'feedback'; fb.innerHTML = done[i] ? `Classified. ${G[i].why}` : '';
+    drawZ();
+  }
+  const HINTS = {
+    diff: 'Zoom in all the way. Does it become a line with a finite slope? Compare the two one-sided slopes.',
+    corner: 'Zoom in. Does the shape ever straighten? Are the two one-sided slopes finite?',
+    cusp: 'Watch the one-sided slopes as you zoom. Are they finite? Do they head the same way or opposite ways?',
+    vert: 'Watch the one-sided slopes as you zoom. They grow, but in which direction on each side?',
+    disc: 'Look at the graph right at the point before zooming. Does it even connect?'
+  };
+  document.getElementById('gChoices').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    const g = G[gi], fb = document.getElementById('gFb');
+    if (b.dataset.t === g.t) {
+      done[gi] = true; fb.className = 'feedback good'; fb.innerHTML = `<b class="tag-good">Right.</b> ${g.why}`;
+      document.getElementById('gScore').textContent = `${Object.keys(done).length} of 6 classified`;
+    } else { fb.className = 'feedback try'; fb.innerHTML = `<b class="tag-try">Not quite.</b> ${HINTS[g.t]}`; }
+  });
+  document.getElementById('gBtns').addEventListener('click', e => { const b = e.target.closest('button'); if (b) pickG(+b.dataset.i); });
+  zSlider.addEventListener('input', drawZ);
+  pickG(0);
+
+  worked(document.getElementById('wx1'), {
+    problem: 'Why does differentiable imply continuous? (A short proof.)',
+    steps: [
+      { show: 'Suppose \\( f\'(a) \\) exists. We want to show \\( f(a + h) \\to f(a) \\) as \\( h \\to 0 \\), which is continuity.' },
+      { show: 'For \\( h \\ne 0 \\), write \\( f(a+h) - f(a) = \\dfrac{f(a+h) - f(a)}{h} \\cdot h \\).', why: 'Multiplying and dividing by h makes the difference quotient appear.' },
+      { show: 'Take limits: \\( \\displaystyle\\lim_{h\\to0}\\big[f(a+h) - f(a)\\big] = f\'(a) \\cdot 0 = 0 \\).', why: 'The product law works here because both limits exist.' },
+      { show: 'So \\( f(a+h) \\to f(a) \\), and f is continuous at a. ∎', why: 'In the other direction, |x| is continuous but has a corner, so continuity alone isn’t enough.' }
+    ]
+  });
+
+  // ---------------- Seam smoother ----------------
+  const sp = Plot(document.getElementById('seamPlot'), { x: [-1, 3], y: [-2, 6], h: 300 });
+  const mS = document.getElementById('mSlider'), bS = document.getElementById('bSlider');
+  function drawSeam() {
+    const m = mS.value / 10, b = bS.value / 10, gapV = Math.abs(1 - (m + b)), gapS = Math.abs(2 - m);
+    sp.draw(sp.fn(x => x * x, 'c1', { to: 1 }) + sp.fn(x => m * x + b, 'c2', { from: 1 }) + sp.fn(x => 1 + 2 * (x - 1), 'ghost', { from: 1 }) + sp.dot(1, 1, 'c1 solid', 5) + sp.dot(1, m + b, 'c2', 5));
+    document.getElementById('mOut').textContent = m.toFixed(1);
+    document.getElementById('bOut').textContent = b.toFixed(1);
+    const r = document.getElementById('seamRead');
+    const ok = x => x < 0.001;
+    r.innerHTML = `Heights at 1: left \\( = 1 \\), right \\( = m + b = ${(m + b).toFixed(1)} \\) ${ok(gapV) ? '✓' : ''}<br>Slopes at 1: left \\( = 2 \\), right \\( = m = ${m.toFixed(1)} \\) ${ok(gapS) ? '✓' : ''}<br>` +
+      (ok(gapV) && ok(gapS) ? '<b style="color:var(--good)">Smooth. f is differentiable at 1.</b>' : ok(gapV) ? 'Continuous, but there’s a corner.' : 'The pieces don’t even meet.');
+    typeset(r);
+  }
+  mS.addEventListener('input', drawSeam); bS.addEventListener('input', drawSeam);
+  drawSeam();
+
+  const pw = '\\( f(x) = \\begin{cases} x^3, &amp; x \\le 2 \\\\ mx + b, &amp; x \\gt 2 \\end{cases} \\)';
+  practiceList(document.getElementById('practice'), [
+    { id: 'dd-abs', tag: 'Where it fails',
+      prompt: '<p>List every x where \\( f(x) = |x - 3| + |x + 1| \\) is <b>not</b> differentiable.</p>', label: 'x =',
+      answer: { type: 'set', values: [3, -1] }, format: 'List x-values separated by commas.',
+      rungs: [['Nudge', 'Each absolute value has a corner where its inside is 0.'], ['Hint', 'Solve \\( x - 3 = 0 \\) and \\( x + 1 = 0 \\).'], ['Strategy', 'Adding a smooth function doesn’t remove a corner, so each corner survives in the sum.']],
+      mistakes: [{ values: [3], msg: 'That’s one corner. The other absolute value has one too.' }, { values: [-3, 1], msg: 'Signs: \\( |x - 3| \\) has its corner where \\( x - 3 = 0 \\).' }],
+      success: 'Two corners. Between them the function is flat, and outside it’s a line.' },
+    { id: 'dd-m', tag: 'Smooth seam',
+      prompt: `<p>Let ${pw}. Find m so that f is differentiable at \\( x = 2 \\).</p>`, label: 'm =',
+      answer: { type: 'number', value: 12 },
+      rungs: [['Nudge', 'Differentiable means the slopes match at the seam.'], ['Hint', 'The slope of \\( x^3 \\) at x = 2 comes from the definition. You found the pattern \\( 3x^2 \\) in Topic 2.2.'], ['Strategy', 'Set m equal to the slope of the cubic at 2.']],
+      mistakes: [{ value: 8, msg: 'That’s the <i>height</i> of \\( x^3 \\) at 2. m must match its <i>slope</i>.' }, { value: 6, msg: 'The slope of \\( x^3 \\) is \\( 3x^2 \\), so evaluate at x = 2 carefully.' }],
+      success: 'The line’s slope must match the cubic’s slope at the join.' },
+    { id: 'dd-b', tag: 'Smooth seam',
+      prompt: '<p>Same f. With your m, find b.</p>', label: 'b =',
+      answer: { type: 'number', value: -16 },
+      rungs: [['Nudge', 'Now use continuity: the pieces must meet.'], ['Hint', '\\( 2^3 = m(2) + b \\).'], ['Strategy', 'Substitute your m and solve for b.']],
+      mistakes: [{ value: 16, msg: 'Check the sign: \\( 8 = 24 + b \\).' }, { value: 8, msg: 'You need \\( 8 = 2m + b \\) with m = 12.' }],
+      success: 'The line \\( y = 12x - 16 \\) is exactly the tangent line to \\( x^3 \\) at 2. That makes sense, because a smooth continuation must follow the tangent.' },
+    { id: 'dd-onesided', tag: 'One-sided derivative',
+      prompt: '<p>Find the <b>left-hand</b> derivative of \\( f(x) = |x^2 - 4| \\) at \\( x = 2 \\).</p>', label: "f′₋(2)",
+      answer: { type: 'number', value: -4 },
+      rungs: [['Nudge', 'For x a little less than 2, is \\( x^2 - 4 \\) positive or negative?'], ['Hint', 'Just left of 2, \\( x^2 - 4 \\lt 0 \\), so \\( f(x) = -(x^2 - 4) = 4 - x^2 \\).'], ['Strategy', 'Find the slope of \\( 4 - x^2 \\) at x = 2.']],
+      mistakes: [{ value: 4, msg: 'That’s the right-hand derivative, where the absolute value doesn’t flip anything.' }],
+      success: 'Left slope −4, right slope +4. It’s a corner, so f isn’t differentiable at 2.' },
+    { id: 'dd-mixed', tag: 'Where it fails',
+      prompt: '<p>List every x where \\( g(x) = \\sqrt[3]{x} + |x - 5| \\) is <b>not</b> differentiable.</p>', label: 'x =',
+      answer: { type: 'set', values: [0, 5] }, format: 'List x-values separated by commas.',
+      rungs: [['Nudge', 'Check each piece for trouble spots separately.'], ['Hint', 'One piece has a vertical tangent, and the other has a corner.'], ['Strategy', 'Cube root: where is its tangent vertical? Absolute value: where is its inside 0?']],
+      mistakes: [{ values: [5], msg: 'The cube root has a problem too. Look at the zoom test, graph 4.' }, { values: [0], msg: 'The absolute value part has a corner as well.' }],
+      success: 'A vertical tangent at 0 and a corner at 5.' }
+  ]);
+
+  quiz(document.getElementById('quiz'), [
+    { q: 'f is continuous at a. Must f be differentiable at a?',
+      choices: [{ t: 'Yes', ok: false, why: '\\( |x| \\) at 0 is continuous with a corner.' }, { t: 'No', ok: true, why: 'Continuity is necessary but not enough. The graph also needs to be smooth, with no corner, cusp or vertical tangent.' }] },
+    { q: 'f is differentiable at a. Must f be continuous at a?',
+      choices: [{ t: 'Yes', ok: true, why: 'That’s the theorem proved above.' }, { t: 'No', ok: false, why: 'Differentiable always implies continuous. See the worked proof.' }] },
+    { q: 'At a corner, the one-sided derivatives are…',
+      choices: [{ t: 'both infinite', ok: false, why: 'That’s a cusp or vertical tangent.' }, { t: 'finite but different', ok: true, why: 'Like |x|: −1 and +1.' }, { t: 'equal', ok: false, why: 'Equal finite one-sided derivatives mean f is differentiable there, with no corner.' }] }
+  ]);
+});
+</script>
+</body>
+</html>

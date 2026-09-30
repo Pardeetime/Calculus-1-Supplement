@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Substitution Rule</title>
+<meta name="description" content="Calculus I Companion, Topic 5.5: undoing the Chain Rule, choosing u, adjusting constants, and changing limits in definite integrals.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;1,6..72,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="lesson.css">
+<script src="site.js"></script>
+<script src="course.js"></script>
+</head>
+<body data-topic="substitution">
+<main class="wrap">
+
+<!-- ================= SEE IT ================= -->
+<section class="step" id="see" data-title="Spot the inside function">
+  <div class="prose">
+    <p>The Chain Rule says \( \frac{d}{dx}F(g(x)) = F'(g(x))\,g'(x) \). So an integrand shaped like <b>“some function of g(x), times g′(x)”</b> is a Chain Rule result, and we can run it backwards. The whole skill is choosing the right inside function, called <b>u</b>. Pick a u for each integral and see what happens.</p>
+  </div>
+  <div class="card widget">
+    <div class="row" style="justify-content:space-between;margin-bottom:10px">
+      <div class="seg" id="iBtns" role="group" aria-label="Choose an integral"></div>
+      <span class="chip" id="uScore">0 of 5 solved</span>
+    </div>
+    <div class="display" id="uTex" style="font-size:22px"></div>
+    <p style="margin:6px 0 8px;font-weight:500">Let u = …</p>
+    <div class="row" id="uChoices"></div>
+    <div class="feedback" id="uFb" aria-live="polite"></div>
+  </div>
+  <div class="callout idea"><b>What makes a good u</b>
+    <p>Choose u so that <b>its derivative, du, is also sitting in the integrand</b>, possibly off by a constant factor. Then every x disappears and you’re left with a basic integral in u. Good choices are usually the inside of a power, root, exponential or trig function, or a denominator.</p>
+  </div>
+</section>
+
+<!-- ================= BUILD IT ================= -->
+<section class="step" id="build" data-title="The rule and the routine">
+  <div class="callout idea"><b>Substitution Rule</b>
+    <div class="display">\[ \int f\big(g(x)\big)\,g'(x)\,dx = \int f(u)\,du \qquad\text{where } u = g(x),\ du = g'(x)\,dx. \]</div>
+  </div>
+  <div class="prose">
+    <ol>
+      <li>Choose u, and compute \( du = u'\,dx \).</li>
+      <li>Rewrite the <b>entire</b> integral in terms of u, with no x left over. Adjust constants if needed.</li>
+      <li>Integrate in u.</li>
+      <li>Substitute back \( u = g(x) \). (For definite integrals, see below.)</li>
+    </ol>
+  </div>
+  <div id="wx1"></div>
+  <h3>Definite integrals: change the limits</h3>
+  <div class="prose"><p>When you switch to u, switch the limits to u-values too: \( x = a \Rightarrow u = g(a) \). Then you never need to substitute back.</p></div>
+  <div id="wx2"></div>
+  <div class="callout warn"><b>Common mistakes</b>
+    <p>Leaving some x’s in the integral after substituting. Forgetting to convert dx into du. Only a <b>constant</b> factor can be fixed by adjusting, never a leftover x. Keeping the old x-limits after switching to u. And forgetting to substitute back in indefinite problems.</p>
+  </div>
+</section>
+
+<!-- ================= TRY IT ================= -->
+<section class="step" id="try" data-title="Your turn">
+  <div id="drill"></div>
+  <div class="practice-list" id="practice" style="margin-top:18px"></div>
+</section>
+
+<!-- ================= CHECK ================= -->
+<section class="step" id="check" data-title="Before you move on">
+  <div class="quiz" id="quiz"></div>
+</section>
+
+</main>
+
+<script src="lesson.js"></script>
+<script>
+Lesson.ready(() => {
+  const { practiceList, worked, quiz, drill, typeset } = Lesson;
+
+  // ---------------- Choose u ----------------
+  const ITEMS = [
+    { tex: '\\int 2x\\cos(x^2)\\,dx', opts: [
+      { u: 'x^2', ok: true, fb: '\\( du = 2x\\,dx \\), exactly what’s there. The integral becomes \\( \\int \\cos u\\,du = \\sin u + C = \\sin(x^2) + C \\).' },
+      { u: '\\cos(x^2)', fb: 'Then \\( du = -2x\\sin(x^2)\\,dx \\), and there’s no \\( \\sin(x^2) \\) in the integrand to match.' },
+      { u: '2x', fb: '\\( du = 2\\,dx \\), but then \\( \\cos(x^2) \\) still has x in it. Look for the inside of the cosine.' }] },
+    { tex: '\\int e^{3x}\\,dx', opts: [
+      { u: '3x', ok: true, fb: '\\( du = 3\\,dx \\), so \\( dx = \\tfrac13 du \\). You get \\( \\tfrac13\\int e^u\\,du = \\tfrac13 e^{3x} + C \\). A constant factor is easy to fix.' },
+      { u: 'e^{3x}', fb: '\\( du = 3e^{3x}dx \\). This one actually works (\\( \\int \\tfrac13 du \\)), but choosing the exponent is the more standard, reliable move.' }] },
+    { tex: '\\int x^2 (x^3 + 1)^4\\,dx', opts: [
+      { u: 'x^3 + 1', ok: true, fb: '\\( du = 3x^2dx \\), so \\( x^2dx = \\tfrac13du \\). You get \\( \\tfrac13\\int u^4\\,du = \\tfrac{1}{15}(x^3+1)^5 + C \\).' },
+      { u: 'x^2', fb: '\\( du = 2x\\,dx \\), but the integrand has no leftover x to match. And \\( (x^3 + 1) \\) can’t be written in u cleanly.' },
+      { u: '(x^3 + 1)^4', fb: 'The derivative of that is messy, and it doesn’t appear in the integrand. Choose the <i>inside</i> of the power.' }] },
+    { tex: '\\int \\frac{\\cos x}{1 + \\sin x}\\,dx', opts: [
+      { u: '1 + \\sin x', ok: true, fb: '\\( du = \\cos x\\,dx \\), which is the whole numerator. You get \\( \\int \\frac{du}{u} = \\ln|1 + \\sin x| + C \\).' },
+      { u: '\\cos x', fb: '\\( du = -\\sin x\\,dx \\), which doesn’t appear. Try the denominator.' }] },
+    { tex: '\\int \\tan x\\,dx = \\int \\frac{\\sin x}{\\cos x}\\,dx', opts: [
+      { u: '\\cos x', ok: true, fb: '\\( du = -\\sin x\\,dx \\), so \\( \\sin x\\,dx = -du \\). You get \\( -\\int \\frac{du}{u} = -\\ln|\\cos x| + C \\).' },
+      { u: '\\sin x', fb: '\\( du = \\cos x\\,dx \\), but cos x is in the denominator, not multiplying dx. Try the denominator as u.' }] }
+  ];
+  let ui = 0; const solved = new Set();
+  document.getElementById('iBtns').innerHTML = ITEMS.map((_, i) => `<button type="button" data-i="${i}">${i + 1}</button>`).join('');
+  function showU(i) {
+    ui = i;
+    document.querySelectorAll('#iBtns button').forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.i === i)));
+    const t = document.getElementById('uTex'); t.innerHTML = `\\[ ${ITEMS[i].tex} \\]`; typeset(t);
+    const c = document.getElementById('uChoices');
+    c.innerHTML = ITEMS[i].opts.map((o, k) => `<button class="btn" type="button" data-k="${k}">\\( ${o.u} \\)</button>`).join(''); typeset(c);
+    const fb = document.getElementById('uFb'); fb.className = 'feedback'; fb.innerHTML = '';
+  }
+  document.getElementById('uChoices').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    const o = ITEMS[ui].opts[+b.dataset.k], fb = document.getElementById('uFb');
+    fb.className = 'feedback ' + (o.ok ? 'good' : 'try');
+    fb.innerHTML = (o.ok ? '<b class="tag-good">Good choice.</b> ' : '<b class="tag-try">Try another.</b> ') + o.fb;
+    typeset(fb);
+    if (o.ok) { solved.add(ui); document.getElementById('uScore').textContent = `${solved.size} of 5 solved`; }
+  });
+  document.getElementById('iBtns').addEventListener('click', e => { const b = e.target.closest('button'); if (b) showU(+b.dataset.i); });
+  showU(0);
+
+  worked(document.getElementById('wx1'), {
+    problem: 'Find \\( \\displaystyle\\int x\\,e^{x^2}\\,dx \\).',
+    steps: [
+      { show: 'Let \\( u = x^2 \\). Then \\( du = 2x\\,dx \\), so \\( x\\,dx = \\tfrac12\\,du \\).', why: 'The integrand has \\( x\\,dx \\), not \\( 2x\\,dx \\). That’s off by a constant, which is fine.' },
+      { show: '\\( \\displaystyle\\int e^{x^2}\\,x\\,dx = \\int e^u\\cdot\\tfrac12\\,du = \\tfrac12 e^u + C \\).' },
+      { show: 'Substitute back: \\( \\tfrac12 e^{x^2} + C \\).', why: 'Check: \\( \\frac{d}{dx}\\tfrac12 e^{x^2} = \\tfrac12 e^{x^2}\\cdot 2x = x e^{x^2} \\). ✓' }
+    ]
+  });
+  worked(document.getElementById('wx2'), {
+    problem: 'Evaluate \\( \\displaystyle\\int_0^1 x(x^2 + 1)^3\\,dx \\).',
+    steps: [
+      { show: '\\( u = x^2 + 1 \\), \\( du = 2x\\,dx \\), so \\( x\\,dx = \\tfrac12du \\).' },
+      { show: 'New limits: \\( x = 0 \\Rightarrow u = 1 \\). \\( x = 1 \\Rightarrow u = 2 \\).' },
+      { show: '\\( \\displaystyle\\tfrac12\\int_1^2 u^3\\,du = \\tfrac12\\Big[\\tfrac{u^4}{4}\\Big]_1^2 = \\tfrac18(16 - 1) = \\tfrac{15}{8} \\).', why: 'With the limits already in u, you don’t substitute back.' }
+    ]
+  });
+
+  // ---------------- Substitution drill ----------------
+  const ri = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+  const INNERS = [
+    () => { const a = ri(2, 5), b = ri(1, 4); return { t: `${a}x + ${b}`, g: x => a * x + b, s: a, fac: '', fx: () => 1, dom: [0.1, 1.2] }; },
+    () => { const k = ri(1, 5); return { t: `x^{2} + ${k}`, g: x => x * x + k, s: 2, fac: 'x', fx: x => x, dom: [0.2, 1.4] }; },
+    () => ({ t: 'x^{3} + 1', g: x => x ** 3 + 1, s: 3, fac: 'x^{2}', fx: x => x * x, dom: [0.2, 1.2] })
+  ];
+  const OUTERS = [
+    { wrap: t => `\\cos\\left(${t}\\right)`, F: Math.sin },
+    { wrap: t => `\\sin\\left(${t}\\right)`, F: u => -Math.cos(u) },
+    { wrap: t => `e^{${t}}`, F: Math.exp },
+    { wrap: t => `\\left(${t}\\right)^{3}`, F: u => u ** 4 / 4 },
+    { wrap: t => `\\sqrt{${t}}`, F: u => (2 / 3) * u ** 1.5 },
+    { wrap: t => `\\frac{1}{${t}}`, F: Math.log, frac: true }
+  ];
+  drill(document.getElementById('drill'), {
+    title: 'Substitution', label: '∫ =', antideriv: true,
+    intro: 'Choose u, adjust the constant, integrate, substitute back, and add + C.',
+    make() {
+      const g = INNERS[ri(0, INNERS.length - 1)](), o = OUTERS[ri(0, OUTERS.length - 1)], m = ri(1, 3);
+      const coef = m === 1 ? '' : m;
+      const q = o.frac ? `\\int \\frac{${coef}${g.fac || (coef ? '' : '1')}}{${g.t}}\\,dx` : `\\int ${coef}${g.fac}\\,${o.wrap(g.t)}\\,dx`;
+      return { q, d: x => (m / g.s) * o.F(g.g(x)), domain: g.dom,
+        hints: ['Let u be the inside expression. What is du?', `\\( du = ${g.s}${g.fac}\\,dx \\). Compare with what’s in the integral and fix the constant factor.`, 'Integrate in u, then put \\( u = \\) the inside back in. Check by differentiating.'],
+        mistakes: [{ fn: x => m * o.F(g.g(x)), msg: 'Close, but adjust for the constant: du has an extra factor you need to divide by.' }] };
+    }
+  });
+
+  practiceList(document.getElementById('practice'), [
+    { id: 'su-power', tag: 'Indefinite', prompt: '<p>Find \\( \\displaystyle\\int 2x(x^2 + 1)^5\\,dx \\).</p>', label: '∫ =',
+      answer: { type: 'antideriv', fn: x => (x * x + 1) ** 6 / 6 },
+      rungs: [['Nudge', 'The inside of the power is a good u.'], ['Hint', '\\( u = x^2 + 1 \\), \\( du = 2x\\,dx \\), exactly what’s there.'], ['Strategy', '\\( \\int u^5\\,du \\), then substitute back.']],
+      mistakes: [{ fn: x => (x * x + 1) ** 6 / 6 * 2 * x, noC: true, msg: 'The 2x was used up as du, so it shouldn’t still be in the answer.' }] },
+    { id: 'su-exp', tag: 'Adjust constant', prompt: '<p>Find \\( \\displaystyle\\int x e^{x^2}\\,dx \\).</p>', label: '∫ =',
+      answer: { type: 'antideriv', fn: x => Math.exp(x * x) / 2 },
+      rungs: [['Nudge', 'This is the first worked example. Try it without looking.'], ['Hint', '\\( x\\,dx = \\tfrac12\\,du \\).'], ['Strategy', '\\( \\tfrac12\\int e^u du \\).']],
+      mistakes: [{ fn: x => Math.exp(x * x), noC: true, msg: 'Check by differentiating: you’d get \\( 2xe^{x^2} \\), twice too big.' }] },
+    { id: 'su-cos3x', tag: 'Linear inside', prompt: '<p>Find \\( \\displaystyle\\int \\cos(3x)\\,dx \\).</p>', label: '∫ =',
+      answer: { type: 'antideriv', fn: x => Math.sin(3 * x) / 3 },
+      rungs: [['Nudge', '\\( u = 3x \\).'], ['Hint', '\\( dx = \\tfrac13 du \\).'], ['Strategy', '\\( \\tfrac13\\sin u + C \\).']],
+      mistakes: [{ fn: x => Math.sin(3 * x), noC: true, msg: 'Differentiate your answer: \\( 3\\cos 3x \\). Divide by 3.' }, { fn: x => 3 * Math.sin(3 * x), noC: true, msg: 'Divide by 3, don’t multiply.' }] },
+    { id: 'su-log', tag: 'Denominator', prompt: '<p>Find \\( \\displaystyle\\int \\frac{x}{x^2 + 4}\\,dx \\).</p>', label: '∫ =',
+      answer: { type: 'antideriv', fn: x => 0.5 * Math.log(x * x + 4) },
+      rungs: [['Nudge', 'Let u be the denominator.'], ['Hint', '\\( du = 2x\\,dx \\), so \\( x\\,dx = \\tfrac12du \\).'], ['Strategy', '\\( \\tfrac12\\int\\frac{du}{u} = \\tfrac12\\ln|u| \\).']],
+      mistakes: [{ fn: x => Math.log(x * x + 4), noC: true, msg: 'Adjust for the constant: \\( x\\,dx \\) is only half of du.' }, { fn: x => 0.5 * Math.atan(x / 2), noC: true, msg: 'arctan would come from \\( \\frac{1}{x^2 + 4} \\) with no x on top. Here the x on top makes u-substitution work.' }] },
+    { id: 'su-def', tag: 'Definite', prompt: '<p>Evaluate \\( \\displaystyle\\int_0^1 x(x^2 + 1)^3\\,dx \\).</p>',
+      answer: { type: 'number', value: 15 / 8 },
+      rungs: [['Nudge', 'Second worked example. Change the limits.'], ['Hint', 'u runs from 1 to 2.'], ['Strategy', '\\( \\tfrac12\\cdot\\tfrac14(2^4 - 1^4) \\).']],
+      mistakes: [{ value: 15 / 4, msg: 'Don’t forget the \\( \\tfrac12 \\) from \\( x\\,dx = \\tfrac12du \\).' }, { value: 1 / 8, msg: 'You kept the x-limits (0 to 1) after switching to u. Convert them.' }] },
+    { id: 'su-trig-def', tag: 'Definite', prompt: '<p>Evaluate \\( \\displaystyle\\int_0^{\\pi/2} \\sin^2 x\\cos x\\,dx \\).</p>',
+      answer: { type: 'number', value: 1 / 3 },
+      rungs: [['Nudge', 'What’s the inside of the square?'], ['Hint', '\\( u = \\sin x \\), \\( du = \\cos x\\,dx \\). The limits become 0 and 1.'], ['Strategy', '\\( \\int_0^1 u^2\\,du \\).']],
+      mistakes: [{ value: Math.PI ** 3 / 24, msg: 'Change the limits: when \\( x = \\pi/2 \\), \\( u = \\sin(\\pi/2) = 1 \\).' }] }
+  ]);
+
+  quiz(document.getElementById('quiz'), [
+    { q: 'For \\( \\displaystyle\\int x\\sqrt{x^2 + 7}\\,dx \\), the best choice is…',
+      choices: [{ t: '\\( u = x \\)', ok: false, why: 'Then \\( \\sqrt{x^2 + 7} \\) still has an x problem.' }, { t: '\\( u = x^2 + 7 \\)', ok: true, why: 'du = 2x dx, and the integrand has x dx: off by a constant.' }, { t: '\\( u = \\sqrt{x^2 + 7} \\)', ok: false, why: 'It can work with extra effort, but the inside of the root is simpler.' }] },
+    { q: 'Can substitution handle \\( \\displaystyle\\int e^{x^2}\\,dx \\)?',
+      choices: [{ t: 'Yes, with \\( u = x^2 \\)', ok: false, why: 'du = 2x dx, but there’s no x in the integrand to match. A missing x can’t be fixed like a constant.' }, { t: 'No', ok: true, why: 'In fact \\( e^{x^2} \\) has no elementary antiderivative at all.' }] },
+    { q: 'After substituting in a definite integral, you should…',
+      choices: [{ t: 'keep the original limits', ok: false, why: 'The limits belong to x. Once you’re in u, they must be u-values.' }, { t: 'convert the limits to u-values (or substitute back before evaluating)', ok: true, why: 'Either works. Just don’t mix the two.' }] }
+  ]);
+});
+</script>
+</body>
+</html>

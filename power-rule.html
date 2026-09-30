@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Power Rule</title>
+<meta name="description" content="Calculus I Companion, Topic 3.1: the power rule, constant multiple and sum rules, rewriting before differentiating, and horizontal tangents.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;1,6..72,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="lesson.css">
+<script src="site.js"></script>
+<script src="course.js"></script>
+</head>
+<body data-topic="power-rule">
+<main class="wrap">
+
+<!-- ================= SEE IT ================= -->
+<section class="step" id="see" data-title="Why 2x? Grow a square">
+  <div class="prose">
+    <p>In Unit 2 you found \( \frac{d}{dx}x^2 = 2x \) by grinding through a limit. Here’s a picture of why. A square with side x has area \( A = x^2 \). Grow the side by a little bit, dx, and look at where the new area comes from.</p>
+  </div>
+  <div class="card widget">
+    <div class="widget-grid">
+      <svg id="sqPlot" role="img" aria-label="A square of side x with two strips and a small corner added"></svg>
+      <div>
+        <div class="ctls">
+          <div class="ctl"><label for="xS">Side x</label><input id="xS" type="range" min="100" max="400" value="300"><output id="xO"></output></div>
+          <div class="ctl"><label for="dS">Growth dx</label><input id="dS" type="range" min="1" max="100" value="60"><output id="dO"></output></div>
+        </div>
+        <div class="readout" id="sqRead" aria-live="polite"></div>
+        <p class="observe">Shrink dx. The two <b style="color:var(--secant)">gold strips</b> stay important, and the tiny <b style="color:var(--tangent)">red corner</b> becomes negligible.</p>
+      </div>
+    </div>
+  </div>
+  <div class="callout idea"><b>The pattern</b>
+    <p>New area ≈ two strips of size \( x \cdot dx \), so the area grows at a rate of \( 2x \). For a cube \( V = x^3 \), growing the side adds <b>three</b> slabs of size \( x^2\,dx \), so the rate is \( 3x^2 \). The exponent counts how many faces grow, and each face is one dimension smaller.</p>
+  </div>
+</section>
+
+<!-- ================= BUILD IT ================= -->
+<section class="step" id="build" data-title="The first shortcuts">
+  <div class="callout idea"><b>The Power Rule</b>
+    <div class="display">\[ \frac{d}{dx}\,x^n = n\,x^{n-1} \qquad\text{for every real number } n. \]</div>
+    <p>Bring the exponent down in front, then subtract one from it.</p>
+  </div>
+  <div class="prose">
+    <p>For a positive whole number n, it comes straight from the definition: expanding \( (x+h)^n = x^n + n x^{n-1}h + (\text{terms with } h^2) \), the difference quotient is \( n x^{n-1} + (\text{terms with } h) \), which approaches \( n x^{n-1} \). Unit 3 later proves it for every real n.</p>
+  </div>
+  <div class="table-wrap"><table class="ref">
+    <tr><th>Rule</th><th>Statement</th><th>Why</th></tr>
+    <tr><td>Constant</td><td>\( \frac{d}{dx}\,c = 0 \)</td><td>A flat line has slope 0</td></tr>
+    <tr><td>Constant multiple</td><td>\( \frac{d}{dx}\,[c\,f(x)] = c\,f'(x) \)</td><td>Stretching a graph vertically stretches every slope</td></tr>
+    <tr><td>Sum / difference</td><td>\( \frac{d}{dx}\,[f \pm g] = f' \pm g' \)</td><td>Rates of change add</td></tr>
+  </table></div>
+
+  <h3>Rewrite before you differentiate</h3>
+  <div class="prose"><p>The power rule needs the form \( x^n \). Roots and fractions have to be rewritten first:</p></div>
+  <div class="table-wrap"><table class="ref">
+    <tr><th>Looks like</th><th>Rewrite as</th><th>Derivative</th></tr>
+    <tr><td>\( \sqrt{x} \)</td><td>\( x^{1/2} \)</td><td>\( \tfrac12 x^{-1/2} = \dfrac{1}{2\sqrt x} \)</td></tr>
+    <tr><td>\( \dfrac{1}{x^3} \)</td><td>\( x^{-3} \)</td><td>\( -3x^{-4} = -\dfrac{3}{x^4} \)</td></tr>
+    <tr><td>\( \sqrt[3]{x^2} \)</td><td>\( x^{2/3} \)</td><td>\( \tfrac23 x^{-1/3} \)</td></tr>
+    <tr><td>\( \dfrac{x^2 + 1}{x} \)</td><td>\( x + x^{-1} \)</td><td>\( 1 - x^{-2} \)</td></tr>
+  </table></div>
+  <div class="callout warn"><b>Common mistakes</b>
+    <p>\( \frac{d}{dx}\dfrac{1}{x^2} \ne \dfrac{1}{2x} \). You can’t differentiate a denominator separately. Rewrite it as \( x^{-2} \) first. Also, the power rule moves exponents <b>down</b>, so \( x^{-2} \) becomes \( x^{-3} \), not \( x^{-1} \).</p>
+  </div>
+  <div id="wx1"></div>
+</section>
+
+<!-- ================= TRY IT ================= -->
+<section class="step" id="try" data-title="Your turn">
+  <div id="drill"></div>
+  <div class="practice-list" id="practice" style="margin-top:18px"></div>
+</section>
+
+<!-- ================= CHECK ================= -->
+<section class="step" id="check" data-title="Before you move on">
+  <div class="tf" id="tf"></div>
+</section>
+
+</main>
+
+<script src="lesson.js"></script>
+<script>
+Lesson.ready(() => {
+  const { Plot, practiceList, worked, trueFalse, drill, typeset } = Lesson;
+
+  // ---------------- Growing square ----------------
+  const sp = Plot(document.getElementById('sqPlot'), { x: [-0.3, 5.5], y: [-0.3, 5.5], w: 360, h: 360, ticks: false });
+  const xS = document.getElementById('xS'), dS = document.getElementById('dS');
+  const rect = (x0, y0, x1, y1, color, op) => `<rect x="${sp.sx(x0)}" y="${sp.sy(y1)}" width="${sp.sx(x1) - sp.sx(x0)}" height="${sp.sy(y0) - sp.sy(y1)}" style="fill:${color};opacity:${op};stroke:var(--ink-3);stroke-width:1"/>`;
+  function drawSq() {
+    const x = xS.value / 100, d = dS.value / 100;
+    sp.draw(rect(0, 0, x, x, 'var(--curve)', 0.25) + rect(x, 0, x + d, x, 'var(--secant)', 0.55) + rect(0, x, x, x + d, 'var(--secant)', 0.55) + rect(x, x, x + d, x + d, 'var(--tangent)', 0.7) +
+      sp.text(x / 2, x / 2, 'x²', 'lbl', 0, 4, 'middle'));
+    document.getElementById('xO').textContent = x.toFixed(2);
+    document.getElementById('dO').textContent = d.toFixed(2);
+    const r = document.getElementById('sqRead');
+    r.innerHTML = `\\( \\Delta A = \\underbrace{2x\\,dx}_{\\text{strips}} + \\underbrace{dx^2}_{\\text{corner}} = ${(2 * x * d).toFixed(4)} + ${(d * d).toFixed(4)} \\)<br>` +
+      `\\( \\dfrac{\\Delta A}{dx} = 2x + dx = ${(2 * x + d).toFixed(3)} \\quad\\to\\quad 2x = ${(2 * x).toFixed(2)} \\text{ as } dx \\to 0 \\)`;
+    typeset(r);
+  }
+  xS.addEventListener('input', drawSq); dS.addEventListener('input', drawSq);
+  drawSq();
+
+  worked(document.getElementById('wx1'), {
+    problem: 'Differentiate \\( y = 4x^3 - \\dfrac{5}{x^2} + 6\\sqrt{x} - 7 \\).',
+    steps: [
+      { show: 'Rewrite: \\( y = 4x^3 - 5x^{-2} + 6x^{1/2} - 7 \\).', why: 'Every term is now a constant times a power of x.' },
+      { show: 'Power rule term by term: \\( y\' = 12x^2 - 5(-2)x^{-3} + 6\\cdot\\tfrac12 x^{-1/2} - 0 \\).', why: 'The sum and constant multiple rules let you work on each term separately.' },
+      { show: 'Clean up: \\( y\' = 12x^2 + \\dfrac{10}{x^3} + \\dfrac{3}{\\sqrt x} \\).', why: 'Negative times negative gives +10. The constant −7 disappears.' }
+    ]
+  });
+
+  // ---------------- Drill ----------------
+  const TERMS = [
+    { n: 5 }, { n: 4 }, { n: 3 }, { n: 2 }, { n: 1 }, { n: 0 }, { n: -1, frac: true }, { n: -2, frac: true }, { n: 0.5, root: true }, { n: -0.5, rootFrac: true }
+  ];
+  const ri = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+  function termTex(c, t, first) {
+    const sign = c < 0 ? '-' : first ? '' : '+', a = Math.abs(c), co = a === 1 ? '' : a;
+    if (t.n === 0) return `${sign} ${a}`;
+    if (t.frac) return `${sign} \\frac{${a}}{${t.n === -1 ? 'x' : 'x^2'}}`;
+    if (t.rootFrac) return `${sign} \\frac{${a}}{\\sqrt{x}}`;
+    if (t.root) return `${sign} ${co}\\sqrt{x}`;
+    return `${sign} ${co}x${t.n === 1 ? '' : `^{${t.n}}`}`;
+  }
+  drill(document.getElementById('drill'), {
+    title: 'Power rule', label: 'dy/dx',
+    make() {
+      const k = ri(2, 3), picks = [...TERMS].sort(() => Math.random() - 0.5).slice(0, k).sort((a, b) => b.n - a.n);
+      const cs = picks.map(() => (Math.random() < 0.3 ? -1 : 1) * ri(1, 7));
+      const q = 'y = ' + picks.map((t, i) => termTex(cs[i], t, i === 0)).join(' ');
+      const d = x => picks.reduce((s, t, i) => s + (t.n === 0 ? 0 : cs[i] * t.n * Math.pow(x, t.n - 1)), 0);
+      const neg = picks.some(t => t.n < 1 && t.n !== 0);
+      return { q, d, domain: neg ? [0.5, 3] : [-2, 2], hints: ['Rewrite roots and fractions as powers first: \\( \\sqrt x = x^{1/2} \\), \\( \\frac{1}{x^2} = x^{-2} \\).', 'Apply the power rule to each term separately. Constants go to 0.', 'Negative exponents move <i>down</i>: \\( x^{-2} \\to -2x^{-3} \\).'] };
+    }
+  });
+
+  practiceList(document.getElementById('practice'), [
+    { id: 'pr-poly', tag: 'Polynomial',
+      prompt: '<p>Find \\( \\dfrac{d}{dx}\\left(4x^5 - 3x^2 + 7\\right) \\).</p>', label: 'dy/dx',
+      answer: { type: 'expr', vars: ['x'], fn: x => 20 * x ** 4 - 6 * x },
+      rungs: [['Nudge', 'Work term by term.'], ['Hint', '\\( \\frac{d}{dx}4x^5 = 4 \\cdot 5x^4 \\). The constant 7 has slope 0.'], ['Strategy', 'Three terms, three quick applications of the power rule.']],
+      mistakes: [{ fn: x => 20 * x ** 4 - 6 * x + 7, msg: 'The derivative of a constant is 0.' }, { fn: x => 20 * x ** 5 - 6 * x ** 2, msg: 'Don’t forget to lower the exponent by one.' }] },
+    { id: 'pr-rewrite', tag: 'Rewrite first',
+      prompt: '<p>Find \\( \\dfrac{d}{dx}\\left(\\sqrt{x} + \\dfrac{1}{x}\\right) \\).</p>', label: 'dy/dx',
+      answer: { type: 'expr', vars: ['x'], fn: x => 0.5 / Math.sqrt(x) - 1 / (x * x), domain: [0.5, 4] },
+      rungs: [['Nudge', 'Rewrite both terms as powers of x.'], ['Hint', '\\( x^{1/2} + x^{-1} \\).'], ['Strategy', 'Power rule on each. For \\( x^{-1} \\), the new exponent is \\( -2 \\).']],
+      mistakes: [{ fn: x => 0.5 / Math.sqrt(x) + 1 / (x * x), msg: 'Check the sign on the second term: \\( (-1)x^{-2} \\).' }, { fn: x => 0.5 / Math.sqrt(x), msg: 'The \\( \\frac1x \\) term has a derivative too. Rewrite it as \\( x^{-1} \\).' }] },
+    { id: 'pr-quotient-simplify', tag: 'Simplify first',
+      prompt: '<p>Find \\( \\dfrac{d}{dx}\\,\\dfrac{x^3 + 2}{x} \\) <i>without</i> a quotient rule.</p>', label: 'dy/dx',
+      answer: { type: 'expr', vars: ['x'], fn: x => 2 * x - 2 / (x * x), domain: [0.5, 3] },
+      rungs: [['Nudge', 'Split the fraction: each term on top gets divided by x.'], ['Hint', '\\( \\dfrac{x^3}{x} + \\dfrac{2}{x} = x^2 + 2x^{-1} \\).'], ['Strategy', 'Power rule on each term.']],
+      mistakes: [{ fn: x => 3 * x * x, msg: 'You can’t take the derivative of the top and bottom separately. Divide first, then differentiate.' }],
+      success: 'Splitting a fraction with a single-term denominator is almost always faster than the quotient rule.' },
+    { id: 'pr-frac-exp', tag: 'Fractional power',
+      prompt: '<p>Find \\( \\dfrac{d}{dx}\\,6\\sqrt[3]{x^2} \\).</p>', label: 'dy/dx',
+      answer: { type: 'expr', vars: ['x'], fn: x => 4 * Math.pow(x, -1 / 3), domain: [0.5, 4] },
+      rungs: [['Nudge', 'Write the root as a fractional exponent.'], ['Hint', '\\( \\sqrt[3]{x^2} = x^{2/3} \\).'], ['Strategy', '\\( 6 \\cdot \\tfrac23 x^{2/3 - 1} \\). What is \\( \\tfrac23 - 1 \\)?']],
+      mistakes: [{ fn: x => 4 * Math.pow(x, -1 / 3) * x, msg: 'Subtract 1 from the exponent: \\( \\tfrac23 - 1 = -\\tfrac13 \\).' }, { fn: x => 6 * (2 / 3) * Math.pow(x, 5 / 3), msg: 'The exponent goes <i>down</i> by 1, not up.' }] },
+    { id: 'pr-horiz', tag: 'Horizontal tangents',
+      prompt: '<p>At which x-values does \\( y = x^3 - 12x + 1 \\) have a horizontal tangent line?</p>', label: 'x =',
+      answer: { type: 'set', values: [2, -2] }, format: 'List x-values separated by commas.',
+      rungs: [['Nudge', 'A horizontal tangent has slope 0.'], ['Hint', 'Set \\( y\' = 3x^2 - 12 = 0 \\).'], ['Strategy', 'Solve for x. Don’t forget the negative square root.']],
+      mistakes: [{ values: [2], msg: '\\( x^2 = 4 \\) has two solutions.' }],
+      success: 'In Unit 4 these become <i>critical numbers</i>, the candidates for maximums and minimums.' },
+    { id: 'pr-tangent', tag: 'Tangent line',
+      prompt: '<p>Find the tangent line to \\( y = \\dfrac{2}{x} \\) at \\( x = 1 \\).</p>', label: 'y =',
+      answer: { type: 'expr', vars: ['x'], fn: x => -2 * x + 4 },
+      rungs: [['Nudge', 'You need the point \\( (1, y(1)) \\) and the slope \\( y\'(1) \\).'], ['Hint', '\\( y = 2x^{-1} \\), so \\( y\' = -2x^{-2} \\).'], ['Strategy', 'Point-slope with the point (1, 2) and slope \\( y\'(1) \\).']],
+      mistakes: [{ fn: x => 2 * x, msg: 'Check the slope’s sign: \\( 2/x \\) is decreasing.' }, { fn: x => -2 * x, msg: 'The line has to pass through \\( (1, 2) \\).' }],
+      success: 'Compare this with Unit 2, where you needed a full limit for the same kind of problem.' }
+  ]);
+
+  trueFalse(document.getElementById('tf'), [
+    { s: '\\( \\dfrac{d}{dx}\\,\\pi^2 = 2\\pi \\)', ok: false, why: '\\( \\pi^2 \\) is a constant (about 9.87), so its derivative is 0.' },
+    { s: '\\( \\dfrac{d}{dx}\\,x^{-1} = -x^{-2} \\)', ok: true, why: 'The exponent comes down as −1, and the new exponent is −2.' },
+    { s: '\\( \\dfrac{d}{dx}\\left[f(x)\\,g(x)\\right] = f\'(x)\\,g\'(x) \\)', ok: false, why: 'Try \\( x \\cdot x = x^2 \\): the right side gives \\( 1 \\cdot 1 = 1 \\), but the real derivative is \\( 2x \\). Products need the product rule (Topic 3.3).' },
+    { s: '\\( \\dfrac{d}{dx}\\,\\sqrt{x} = \\dfrac{1}{2\\sqrt{x}} \\)', ok: true, why: 'This matches Topic 2.2’s limit computation, now in one line.' }
+  ]);
+});
+</script>
+</body>
+</html>

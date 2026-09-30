@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Fundamental Theorem</title>
+<meta name="description" content="Calculus I Companion, Topic 5.3: accumulation functions, why the rate of accumulating area equals the height, and evaluating definite integrals with antiderivatives.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;1,6..72,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="lesson.css">
+<script src="site.js"></script>
+<script src="course.js"></script>
+<style>
+  .stack { display: grid; gap: 8px; }
+  .stack .tag-f { font-size: 13px; color: var(--ink-3); margin: 0 0 2px 4px; }
+</style>
+</head>
+<body data-topic="ftc">
+<main class="wrap">
+
+<!-- ================= SEE IT ================= -->
+<section class="step" id="see" data-title="How fast does area pile up?">
+  <div class="prose">
+    <p>Start at 0 and sweep to the right, collecting the area under f as you go. The running total is a new function, \( A(x) = \int_0^x f(t)\,dt \), graphed below. Drag x and compare two numbers: the <b>slope</b> of A, and the <b>height</b> of f.</p>
+  </div>
+  <div class="card widget">
+    <div class="seg" id="fBtns" role="group" aria-label="Choose f" style="margin-bottom:12px"></div>
+    <div class="widget-grid">
+      <div class="stack">
+        <div><p class="tag-f">f(t), shading the area from 0 to x</p><svg id="topPlot" role="img" aria-label="Area under f from 0 to x"></svg></div>
+        <div><p class="tag-f">A(x) = accumulated area so far</p><svg id="botPlot" role="img" aria-label="The accumulation function with its tangent line"></svg></div>
+      </div>
+      <div>
+        <div class="ctls"><div class="ctl"><label for="xS">x</label><input id="xS" type="range" min="0" max="1000" value="400"><output id="xO"></output></div></div>
+        <div class="readout" id="ftRead" aria-live="polite"></div>
+        <p class="observe">Where f is negative, the area collected is negative, so A goes down. Where f crosses zero, A levels off.</p>
+      </div>
+    </div>
+  </div>
+  <div class="callout idea"><b>What you just saw</b>
+    <p>The slope of A equals the height of f, everywhere. Pushing x forward by a sliver h adds a thin strip of area, about \( f(x)\cdot h \), so A grows at rate \( f(x) \). <b>Accumulating is the reverse of differentiating.</b> That link between areas and slopes is the Fundamental Theorem of Calculus.</p>
+  </div>
+</section>
+
+<!-- ================= BUILD IT ================= -->
+<section class="step" id="build" data-title="Both parts of the theorem">
+  <div class="callout idea"><b>FTC, Part 1</b>
+    <p>If f is continuous, then \( A(x) = \displaystyle\int_a^x f(t)\,dt \) is differentiable and</p>
+    <div class="display">\[ \frac{d}{dx}\int_a^x f(t)\,dt = f(x). \]</div>
+    <p>Every continuous function has an antiderivative, and here’s one.</p>
+  </div>
+  <div class="callout idea"><b>FTC, Part 2 (the evaluation theorem)</b>
+    <p>If F is any antiderivative of f on \( [a, b] \), then</p>
+    <div class="display">\[ \int_a^b f(x)\,dx = F(b) - F(a) = \Big[F(x)\Big]_a^b. \]</div>
+    <p>The limit of a Riemann sum reduces to plugging two numbers into an antiderivative. You can use any antiderivative, because the +C cancels.</p>
+  </div>
+  <div id="wx1"></div>
+  <h3>Part 1 with a chain</h3>
+  <div class="prose"><p>If the upper limit is a function \( g(x) \), the Chain Rule applies: \( \dfrac{d}{dx}\displaystyle\int_a^{g(x)} f(t)\,dt = f\big(g(x)\big)\cdot g'(x) \). If x is the <i>lower</i> limit, flip the limits first, which adds a minus sign.</p></div>
+  <div id="wx2"></div>
+  <div class="callout warn"><b>Common mistakes</b>
+    <p>Forgetting to subtract \( F(a) \), especially when it isn’t zero. Using a “+C” in a definite integral, which isn’t wrong but always cancels. Writing \( f(b) - f(a) \) instead of \( F(b) - F(a) \): evaluate the <b>antiderivative</b>, not the integrand. And in Part 1, forgetting the chain factor \( g'(x) \).</p>
+  </div>
+</section>
+
+<!-- ================= TRY IT ================= -->
+<section class="step" id="try" data-title="Your turn">
+  <div id="drill"></div>
+  <div class="practice-list" id="practice" style="margin-top:18px"></div>
+</section>
+
+<!-- ================= CHECK ================= -->
+<section class="step" id="check" data-title="Before you move on">
+  <div class="quiz" id="quiz"></div>
+</section>
+
+</main>
+
+<script src="lesson.js"></script>
+<script>
+Lesson.ready(() => {
+  const { Plot, practiceList, worked, quiz, drill, typeset } = Lesson;
+
+  const FNS = [
+    { lbl: 'f(t) = t', f: t => t, A: x => x * x / 2, y: [-0.5, 3.5], ay: [-0.5, 5], X: 3 },
+    { lbl: 'f(t) = cos t', f: Math.cos, A: Math.sin, y: [-1.3, 1.3], ay: [-1.3, 1.3], X: 6.2 },
+    { lbl: 'f(t) = 2 − t', f: t => 2 - t, A: x => 2 * x - x * x / 2, y: [-2.5, 2.5], ay: [-2.5, 2.5], X: 4.5 }
+  ];
+  const tp = Plot(document.getElementById('topPlot'), { x: [-0.3, 3.2], y: [-0.5, 3.5], h: 200 });
+  const bp = Plot(document.getElementById('botPlot'), { x: [-0.3, 3.2], y: [-0.5, 5], h: 200 });
+  const xS = document.getElementById('xS');
+  let cur = 0;
+  document.getElementById('fBtns').innerHTML = FNS.map((F, i) => `<button type="button" data-i="${i}">${F.lbl}</button>`).join('');
+  function drawFT() {
+    const F = FNS[cur], x = F.X * xS.value / 1000, fx = F.f(x), Ax = F.A(x);
+    tp.range([-0.3, F.X + 0.2], F.y); bp.range([-0.3, F.X + 0.2], F.ay);
+    let s = '';
+    const n = 160;
+    for (let i = 0; i < n; i++) {
+      const t = x * i / n, h = x / n, v = F.f(t + h / 2);
+      s += `<rect x="${tp.sx(t)}" y="${Math.min(tp.sy(0), tp.sy(v))}" width="${tp.sx(t + h) - tp.sx(t) + 0.4}" height="${Math.abs(tp.sy(v) - tp.sy(0))}" style="fill:${v >= 0 ? 'var(--good)' : 'var(--warn)'};opacity:.35"/>`;
+    }
+    tp.draw(s + tp.fn(F.f, 'c1') + tp.seg(x, 0, x, fx, 'c3') + tp.dot(x, fx, 'c3 solid', 5));
+    bp.draw(bp.fn(F.A, 'ghost', { from: 0, to: F.X }) + bp.fn(F.A, 'c2', { from: 0, to: x }) + bp.seg(x - 0.6, Ax - 0.6 * fx, x + 0.6, Ax + 0.6 * fx, 'c3') + bp.dot(x, Ax, 'c2 solid', 6));
+    document.getElementById('xO').textContent = x.toFixed(2);
+    const r = document.getElementById('ftRead');
+    r.innerHTML = `Area so far: \\( A(${x.toFixed(2)}) = ${Ax.toFixed(4)} \\)<br>Slope of A here: <b class="mono">${fx.toFixed(4)}</b><br>Height of f here: <b class="mono">${fx.toFixed(4)}</b> (the same)`;
+    typeset(r);
+  }
+  function pick(i) { cur = i; document.querySelectorAll('#fBtns button').forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.i === i))); drawFT(); }
+  document.getElementById('fBtns').addEventListener('click', e => { const b = e.target.closest('button'); if (b) pick(+b.dataset.i); });
+  xS.addEventListener('input', drawFT);
+  pick(0);
+
+  worked(document.getElementById('wx1'), {
+    problem: 'Evaluate \\( \\displaystyle\\int_0^2 x^2\\,dx \\), the area you estimated with rectangles in Topic 5.1.',
+    steps: [
+      { show: 'An antiderivative of \\( x^2 \\) is \\( F(x) = \\dfrac{x^3}{3} \\).' },
+      { show: '\\( \\Big[\\dfrac{x^3}{3}\\Big]_0^2 = \\dfrac{8}{3} - \\dfrac{0}{3} = \\dfrac83 \\).', why: 'Every Riemann sum in Topic 5.1 was heading here: 2.6666…' }
+    ]
+  });
+  worked(document.getElementById('wx2'), {
+    problem: 'Find \\( \\dfrac{d}{dx}\\displaystyle\\int_1^{x^2}\\cos t\\,dt \\).',
+    steps: [
+      { show: 'The upper limit is \\( g(x) = x^2 \\), not x, so the Chain Rule applies.' },
+      { show: 'Plug the upper limit into the integrand: \\( \\cos(x^2) \\).' },
+      { show: 'Multiply by the derivative of the upper limit: \\( \\cos(x^2)\\cdot 2x \\).', why: 'Check: the integral equals \\( \\sin(x^2) - \\sin 1 \\), whose derivative is \\( 2x\\cos(x^2) \\). ✓' }
+    ]
+  });
+
+  // ---------------- Evaluation drill ----------------
+  const ri = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+  drill(document.getElementById('drill'), {
+    title: 'Evaluate definite integrals', label: 'Value', format: 'An exact number, e.g. 26/3.',
+    intro: 'Find an antiderivative, then compute F(b) − F(a). Unlimited problems, checked but never shown.',
+    make() {
+      const n = ri(1, 3), c = ri(1, 4) * (n + 1), k = ri(-3, 5), a = ri(-1, 1), b = a + ri(1, 3);
+      const F = x => c / (n + 1) * x ** (n + 1) + k * x;
+      const v = F(b) - F(a);
+      return { q: `\\int_{${a}}^{${b}} \\left(${c}x^{${n}} ${k < 0 ? '-' : '+'} ${Math.abs(k)}\\right)dx`, d: () => v, domain: [0, 1],
+        hints: ['Antiderivative term by term: \\( x^n \\to \\dfrac{x^{n+1}}{n+1} \\), and a constant k → kx.', 'Evaluate F at the top limit, then subtract F at the bottom limit. Watch negative signs when a < 0.'] };
+    }
+  });
+
+  practiceList(document.getElementById('practice'), [
+    { id: 'ft-lin', tag: 'Evaluate', prompt: '<p>Evaluate \\( \\displaystyle\\int_1^3 (2x + 1)\\,dx \\).</p>', answer: { type: 'number', value: 10 },
+      rungs: [['Nudge', 'Find an antiderivative.'], ['Hint', '\\( F(x) = x^2 + x \\).'], ['Strategy', '\\( F(3) - F(1) \\).']],
+      mistakes: [{ value: 12, msg: 'Don’t forget to subtract F(1).' }, { value: 4, msg: 'That’s \\( f(3) - f(1) \\). Evaluate the antiderivative, not the integrand.' }] },
+    { id: 'ft-sin', tag: 'Trig', prompt: '<p>Evaluate \\( \\displaystyle\\int_0^{\\pi}\\sin x\\,dx \\).</p>', answer: { type: 'number', value: 2 },
+      rungs: [['Nudge', 'An antiderivative of sin x is \\( -\\cos x \\).'], ['Hint', '\\( -\\cos\\pi - (-\\cos 0) \\).'], ['Strategy', '\\( \\cos\\pi = -1 \\) and \\( \\cos 0 = 1 \\).']],
+      mistakes: [{ value: -2, msg: 'Check the sign of the antiderivative: \\( (-\\cos x)\' = \\sin x \\).' }, { value: 0, msg: 'Two negatives: \\( -(-1) - (-1) \\).' }],
+      success: 'One arch of the sine wave has area exactly 2.' },
+    { id: 'ft-ln', tag: 'Logarithm', prompt: '<p>Evaluate \\( \\displaystyle\\int_1^e \\frac1x\\,dx \\).</p>', answer: { type: 'number', value: 1 },
+      rungs: [['Nudge', 'Antiderivative of \\( \\tfrac1x \\)?'], ['Hint', '\\( \\ln x \\).'], ['Strategy', '\\( \\ln e - \\ln 1 \\).']],
+      success: 'That’s another way to define e: the number where the area under \\( \\tfrac1x \\) from 1 reaches exactly 1.' },
+    { id: 'ft-exp', tag: 'Exponential', prompt: '<p>Evaluate \\( \\displaystyle\\int_0^1 e^x\\,dx \\).</p>', answer: { type: 'number', value: Math.E - 1 },
+      rungs: [['Nudge', 'eˣ is its own antiderivative.'], ['Hint', '\\( e^1 - e^0 \\).'], ['Strategy', '\\( e^0 = 1 \\).']],
+      mistakes: [{ value: Math.E, msg: 'Subtract F(0) = e⁰ = 1.' }] },
+    { id: 'ft-p1', tag: 'FTC Part 1', prompt: '<p>Find \\( \\dfrac{d}{dx}\\displaystyle\\int_2^x \\sqrt{1 + t^3}\\,dt \\).</p>', label: 'Derivative',
+      answer: { type: 'expr', vars: ['x'], fn: x => Math.sqrt(1 + x ** 3), domain: [0, 2] },
+      rungs: [['Nudge', 'This is exactly the form in Part 1.'], ['Hint', 'Replace t with x in the integrand.'], ['Strategy', 'No integration needed, and none is possible here anyway.']],
+      mistakes: [{ fn: x => Math.sqrt(1 + x ** 3) - 3, msg: 'The lower limit 2 doesn’t appear in the answer. Part 1 gives exactly f(x).' }],
+      success: '\\( \\sqrt{1 + t^3} \\) has no elementary antiderivative, but the derivative of its integral is easy.' },
+    { id: 'ft-chain', tag: 'Part 1 + chain', prompt: '<p>Find \\( \\dfrac{d}{dx}\\displaystyle\\int_0^{x^3} \\sin t\\,dt \\).</p>', label: 'Derivative',
+      answer: { type: 'expr', vars: ['x'], fn: x => Math.sin(x ** 3) * 3 * x * x },
+      rungs: [['Nudge', 'The upper limit is \\( x^3 \\).'], ['Hint', '\\( \\sin(\\text{upper limit}) \\cdot (\\text{upper limit})\' \\).'], ['Strategy', '\\( \\sin(x^3)\\cdot 3x^2 \\).']],
+      mistakes: [{ fn: x => Math.sin(x ** 3), msg: 'Multiply by the derivative of the upper limit, \\( 3x^2 \\).' }, { fn: x => Math.sin(x), msg: 'Substitute the upper limit \\( x^3 \\) for t.' }] },
+    { id: 'ft-lower', tag: 'Lower limit', prompt: '<p>Find \\( \\dfrac{d}{dx}\\displaystyle\\int_x^5 t^2\\,dt \\).</p>', label: 'Derivative',
+      answer: { type: 'expr', vars: ['x'], fn: x => -x * x },
+      rungs: [['Nudge', 'x is the <i>lower</i> limit.'], ['Hint', 'Flip it: \\( \\int_x^5 = -\\int_5^x \\).'], ['Strategy', 'Then apply Part 1.']],
+      mistakes: [{ fn: x => x * x, msg: 'When x is the lower limit, a minus sign appears.' }] }
+  ]);
+
+  quiz(document.getElementById('quiz'), [
+    { q: '\\( \\displaystyle\\int_a^b f(x)\\,dx = F(b) - F(a) \\) requires F to be…',
+      choices: [{ t: 'the antiderivative with C = 0', ok: false, why: 'Any antiderivative works, because C cancels in the subtraction.' }, { t: 'any antiderivative of f', ok: true, why: '\\( (F(b) + C) - (F(a) + C) = F(b) - F(a) \\).' }] },
+    { q: 'If \\( A(x) = \\displaystyle\\int_0^x f(t)\\,dt \\) and f is positive, A is…',
+      choices: [{ t: 'increasing', ok: true, why: '\\( A\' = f \\gt 0 \\).' }, { t: 'decreasing', ok: false, why: 'Adding positive area makes the total grow.' }, { t: 'constant', ok: false, why: 'Only if f = 0.' }] },
+    { q: 'Where does \\( A(x) = \\displaystyle\\int_0^x (2 - t)\\,dt \\) reach its maximum?',
+      choices: [{ t: 'x = 2', ok: true, why: '\\( A\' = 2 - x \\) changes from + to − at 2. After that you start collecting negative area. Try it in the explorer.' }, { t: 'x = 0', ok: false, why: 'A(0) = 0, but A increases right away.' }, { t: 'x = 4', ok: false, why: 'At x = 4, A is back to 0: the positive and negative areas cancel.' }] }
+  ]);
+});
+</script>
+</body>
+</html>

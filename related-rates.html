@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Related Rates</title>
+<meta name="description" content="Calculus I Companion, Topic 3.9: connecting rates of change through an equation, with a sliding ladder, balloons, cones and shadows.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;1,6..72,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="lesson.css">
+<script src="site.js"></script>
+<script src="course.js"></script>
+<style>
+  .steps-rr { counter-reset: rr; list-style: none; padding: 0; margin: 12px 0; display: grid; gap: 8px; max-width: 48em; }
+  .steps-rr li { counter-increment: rr; display: grid; grid-template-columns: 32px 1fr; gap: 10px; padding: 10px 14px; }
+  .steps-rr li::before { content: counter(rr); display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--uc); color: var(--bg); font-weight: 600; font-size: 13px; }
+</style>
+</head>
+<body data-topic="related-rates">
+<main class="wrap">
+
+<!-- ================= SEE IT ================= -->
+<section class="step" id="see" data-title="The sliding ladder">
+  <div class="prose">
+    <p>A 10-ft ladder leans against a wall. Someone pulls the bottom away from the wall at a <b>steady 1 ft/s</b>. <b>Predict first:</b> does the top slide down the wall at a steady speed too? Then press play.</p>
+  </div>
+  <div class="card widget">
+    <div class="widget-grid">
+      <svg id="lPlot" role="img" aria-label="A ladder sliding down a wall"></svg>
+      <div>
+        <div class="row"><button class="btn primary" type="button" id="play">▶ Play</button><button class="btn" type="button" id="reset">Reset</button></div>
+        <div class="ctls"><div class="ctl"><label for="tS">Time t (s)</label><input id="tS" type="range" min="0" max="790" value="0"><output id="tO"></output></div></div>
+        <div class="readout" id="lRead" aria-live="polite"></div>
+        <p class="observe">Watch the top’s speed near the end.</p>
+      </div>
+    </div>
+  </div>
+  <div class="callout idea"><b>What happened</b>
+    <p>The bottom moves at a constant rate, but the top <b>speeds up</b>, faster and faster as it nears the floor. The two rates are <i>related</i> through the equation \( x^2 + y^2 = 100 \), and that relationship changes as the ladder falls. That’s a related-rates problem.</p>
+  </div>
+</section>
+
+<!-- ================= BUILD IT ================= -->
+<section class="step" id="build" data-title="A reliable method">
+  <div class="prose"><p>Every quantity is a function of time t. Differentiating an equation that links the quantities, with respect to t, links their <b>rates</b>. It’s implicit differentiation (Topic 3.6) with t playing the role of x.</p></div>
+  <ol class="steps-rr">
+    <li class="card"><span><b>Draw a picture</b> and label the quantities that change with variables.</span></li>
+    <li class="card"><span><b>List</b> the rate you know (with units and sign) and the rate you want.</span></li>
+    <li class="card"><span><b>Write an equation</b> relating the variables. Geometry is usually the source: Pythagoras, area, volume, similar triangles.</span></li>
+    <li class="card"><span><b>Differentiate</b> both sides with respect to t. Every variable gets a \( \frac{d}{dt} \).</span></li>
+    <li class="card"><span><b>Now substitute</b> the numbers for the moment in question, and solve.</span></li>
+    <li class="card"><span><b>Answer in a sentence</b> with units. A negative rate means the quantity is decreasing.</span></li>
+  </ol>
+  <div class="callout warn"><b>The #1 mistake</b>
+    <p>Substituting a changing value <b>before</b> differentiating. If you plug in \( x = 6 \) first, x becomes a constant, its rate becomes 0, and the problem falls apart. Only constants, like the ladder’s length 10, go in before step 4.</p>
+  </div>
+  <div id="wx1"></div>
+  <div id="wx2"></div>
+</section>
+
+<!-- ================= TRY IT ================= -->
+<section class="step" id="try" data-title="Your turn">
+  <div class="prose"><p>Exact answers (with π, fractions) or decimals to three places are both accepted.</p></div>
+  <div class="practice-list" id="practice"></div>
+</section>
+
+<!-- ================= CHECK ================= -->
+<section class="step" id="check" data-title="Before you move on">
+  <div class="quiz" id="quiz"></div>
+</section>
+
+</main>
+
+<script src="lesson.js"></script>
+<script>
+Lesson.ready(() => {
+  const { Plot, practiceList, worked, quiz, typeset } = Lesson;
+
+  const lp = Plot(document.getElementById('lPlot'), { x: [-1.5, 12], y: [-1, 11.5], w: 400, h: 360, ticks: false });
+  const tS = document.getElementById('tS');
+  let timer = null;
+  const trail = [];
+  function drawL() {
+    const t = tS.value / 100, x = 2 + t, y = Math.sqrt(100 - x * x), dy = -x / y;
+    lp.draw(`<rect x="${lp.sx(-1.5)}" y="${lp.sy(11.5)}" width="${lp.sx(0) - lp.sx(-1.5)}" height="${lp.sy(0) - lp.sy(11.5)}" style="fill:var(--ink-3);opacity:.25"/>` +
+      lp.seg(-1.5, 0, 12, 0, 'axis') + lp.seg(x, 0, 0, y, 'c2') + lp.seg(0, 0, x, 0, 'c1 thin') + lp.seg(0, 0, 0, y, 'c3 thin') +
+      lp.dot(x, 0, 'c1 solid', 6) + lp.dot(0, y, 'c3 solid', 6) + lp.text(x / 2, 0, `x = ${x.toFixed(2)}`, 'tick', 0, 16, 'middle') + lp.text(0, y / 2, `y = ${y.toFixed(2)}`, 'tick', 8, 0) +
+      lp.text(x / 2 + 0.3, y / 2 + 0.3, '10 ft', 'lbl', 6, 0));
+    document.getElementById('tO').textContent = t.toFixed(2);
+    const r = document.getElementById('lRead');
+    r.innerHTML = `Bottom: \\( \\dfrac{dx}{dt} = 1 \\) ft/s (steady)<br>Top: \\( \\dfrac{dy}{dt} = -\\dfrac{x}{y}\\cdot\\dfrac{dx}{dt} = ${dy.toFixed(3)} \\) ft/s` + (dy < -3 ? ' <b style="color:var(--warn)">and speeding up</b>' : '');
+    typeset(r);
+  }
+  const stop = () => { clearInterval(timer); timer = null; document.getElementById('play').textContent = '▶ Play'; };
+  document.getElementById('play').addEventListener('click', () => {
+    if (timer) return stop();
+    if (+tS.value >= 790) tS.value = 0;
+    document.getElementById('play').textContent = '❚❚ Pause';
+    timer = setInterval(() => { tS.value = Math.min(790, +tS.value + 4); drawL(); if (+tS.value >= 790) stop(); }, 40);
+  });
+  document.getElementById('reset').addEventListener('click', () => { stop(); tS.value = 0; drawL(); });
+  tS.addEventListener('input', drawL);
+  drawL();
+
+  worked(document.getElementById('wx1'), {
+    problem: 'Air is pumped into a spherical balloon at 100 cm³/s. How fast is the radius increasing when the radius is 5 cm?',
+    steps: [
+      { show: 'Know: \\( \\dfrac{dV}{dt} = 100 \\). Want: \\( \\dfrac{dr}{dt} \\) when \\( r = 5 \\).' },
+      { show: 'Equation: \\( V = \\tfrac43\\pi r^3 \\).' },
+      { show: 'Differentiate with respect to t: \\( \\dfrac{dV}{dt} = 4\\pi r^2\\,\\dfrac{dr}{dt} \\).', why: 'Chain Rule: r depends on t, so \\( r^3 \\) becomes \\( 3r^2 \\cdot \\frac{dr}{dt} \\).' },
+      { show: 'Substitute: \\( 100 = 4\\pi(25)\\,\\dfrac{dr}{dt} \\), so \\( \\dfrac{dr}{dt} = \\dfrac{1}{\\pi} \\approx 0.318 \\) cm/s.' },
+      { show: 'When the radius is 5 cm, it’s growing at about 0.32 cm/s.', why: 'As the balloon grows, the same airflow spreads over more surface, so the radius grows more slowly.' }
+    ]
+  });
+  worked(document.getElementById('wx2'), {
+    problem: 'Water pours into an upside-down cone (height 12 m, top radius 4 m) at 3 m³/min. How fast is the water level rising when the water is 6 m deep?',
+    steps: [
+      { show: 'Variables: water depth h, water surface radius r, volume V. Know \\( \\frac{dV}{dt} = 3 \\). Want \\( \\frac{dh}{dt} \\) at \\( h = 6 \\).' },
+      { show: 'Similar triangles: \\( \\dfrac{r}{h} = \\dfrac{4}{12} \\), so \\( r = \\dfrac{h}{3} \\).', why: 'This removes r so that only one changing variable remains. That’s the key move for cone problems.' },
+      { show: '\\( V = \\tfrac13\\pi r^2 h = \\tfrac13\\pi\\dfrac{h^2}{9}h = \\dfrac{\\pi h^3}{27} \\).' },
+      { show: 'Differentiate: \\( \\dfrac{dV}{dt} = \\dfrac{\\pi h^2}{9}\\dfrac{dh}{dt} \\). At h = 6: \\( 3 = 4\\pi\\dfrac{dh}{dt} \\).' },
+      { show: '\\( \\dfrac{dh}{dt} = \\dfrac{3}{4\\pi} \\approx 0.239 \\) m/min.' }
+    ]
+  });
+
+  practiceList(document.getElementById('practice'), [
+    { id: 'rr-circle', tag: 'Area', prompt: '<p>A circle’s radius grows at 2 cm/s. How fast is its area growing when the radius is 5 cm? (cm²/s)</p>', label: 'dA/dt',
+      answer: { type: 'number', value: 20 * Math.PI, acceptDecimal: true },
+      rungs: [['Nudge', '\\( A = \\pi r^2 \\). Differentiate with respect to t.'], ['Hint', '\\( \\dfrac{dA}{dt} = 2\\pi r\\,\\dfrac{dr}{dt} \\).'], ['Strategy', 'Substitute r = 5 and dr/dt = 2.']],
+      mistakes: [{ value: 25 * Math.PI, msg: 'That’s the area, not its rate.' }, { value: 10 * Math.PI, msg: 'Don’t forget the factor \\( \\frac{dr}{dt} = 2 \\).' }] },
+    { id: 'rr-ladder', tag: 'Ladder', prompt: '<p>A 13-ft ladder slides so its bottom moves away from the wall at 3 ft/s. Find \\( \\frac{dy}{dt} \\) (the rate the top’s height changes) when the bottom is 5 ft from the wall.</p>', label: 'dy/dt',
+      answer: { type: 'number', value: -1.25, acceptDecimal: true },
+      rungs: [['Nudge', '\\( x^2 + y^2 = 169 \\).'], ['Hint', '\\( 2x\\dot x + 2y\\dot y = 0 \\). When x = 5, \\( y = 12 \\).'], ['Strategy', '\\( \\dot y = -\\dfrac{x}{y}\\dot x \\).']],
+      mistakes: [{ value: 1.25, msg: 'The top is moving <i>down</i>, so its rate is negative.' }, { value: -7.2, msg: 'Check which leg goes on top: \\( -x/y \\), with x = 5 and y = 12.' }],
+      success: 'The top is falling at 1.25 ft/s.' },
+    { id: 'rr-cube', tag: 'Volume', prompt: '<p>A cube’s edges grow at 0.5 cm/s. How fast is its volume growing when the edges are 4 cm? (cm³/s)</p>', label: 'dV/dt',
+      answer: { type: 'number', value: 24 },
+      rungs: [['Nudge', '\\( V = s^3 \\).'], ['Hint', '\\( \\dfrac{dV}{dt} = 3s^2\\dfrac{ds}{dt} \\).'], ['Strategy', '\\( 3(16)(0.5) \\).']],
+      mistakes: [{ value: 48, msg: 'Multiply by ds/dt = 0.5.' }, { value: 64, msg: 'That’s the volume itself.' }] },
+    { id: 'rr-balloon', tag: 'Sphere', prompt: '<p>A spherical balloon is inflated at \\( 36\\pi \\) cm³/s. How fast is the radius increasing when r = 3 cm? (cm/s)</p>', label: 'dr/dt',
+      answer: { type: 'number', value: 1 },
+      rungs: [['Nudge', 'Same setup as the first worked example.'], ['Hint', '\\( 36\\pi = 4\\pi(3)^2\\dfrac{dr}{dt} \\).'], ['Strategy', 'Divide. The π cancels.']] },
+    { id: 'rr-cone', tag: 'Cone', prompt: '<p>An upside-down cone tank has height 10 m and top radius 4 m. Water flows in at 2 m³/min. How fast is the water level rising when the water is 5 m deep? (m/min)</p>', label: 'dh/dt',
+      answer: { type: 'number', value: 1 / (2 * Math.PI), acceptDecimal: true },
+      rungs: [['Nudge', 'Similar triangles first: \\( r = \\tfrac{4}{10}h = 0.4h \\).'], ['Hint', '\\( V = \\tfrac13\\pi(0.4h)^2h = \\dfrac{0.16\\pi}{3}h^3 \\).'], ['Strategy', '\\( \\dfrac{dV}{dt} = 0.16\\pi h^2\\dfrac{dh}{dt} \\). Substitute h = 5.']],
+      mistakes: [{ value: 3 / (8 * Math.PI), msg: 'It looks like you treated r as fixed at 4. The water’s surface radius changes with depth, so use similar triangles to write r in terms of h.' }],
+      success: 'The level rises about 0.16 m/min at that depth, and it slows down as the cone widens.' },
+    { id: 'rr-shadow', tag: 'Shadow', prompt: '<p>A 6-ft person walks away from a 15-ft lamppost at 5 ft/s. How fast is the length of their shadow increasing? (ft/s)</p>', label: 'ds/dt',
+      answer: { type: 'number', value: 10 / 3, acceptDecimal: true },
+      rungs: [['Nudge', 'Let x = distance from the post to the person, s = shadow length. Draw both similar triangles.'], ['Hint', 'Big triangle: height 15, base \\( x + s \\). Small: height 6, base s. So \\( \\dfrac{15}{x + s} = \\dfrac{6}{s} \\).'], ['Strategy', 'Cross-multiply to get \\( 9s = 6x \\). Differentiate.']],
+      mistakes: [{ value: 5, msg: 'The shadow grows at a different rate from the walker. Set up the similar triangles.' }, { value: 25 / 3, msg: 'That’s the rate of the shadow’s <i>tip</i> (x + s). The question asks about the shadow’s length.' }],
+      success: 'The shadow grows at a constant 10/3 ft/s, no matter where the person is.' }
+  ]);
+
+  quiz(document.getElementById('quiz'), [
+    { q: 'In the ladder problem, when should you substitute x = 5?',
+      choices: [{ t: 'Before differentiating', ok: false, why: 'Then x would be a constant and dx/dt would become 0.' }, { t: 'After differentiating', ok: true, why: 'Differentiate the general relationship first, then plug in the moment.' }] },
+    { q: 'A result of \\( \\frac{dV}{dt} = -4 \\) m³/min means…',
+      choices: [{ t: 'The volume is −4', ok: false, why: 'A rate, not an amount.' }, { t: 'The volume is decreasing by 4 m³ each minute (at that moment)', ok: true, why: 'Negative rate means decreasing.' }] },
+    { q: 'Why use similar triangles in a cone problem?',
+      choices: [{ t: 'To remove one variable, leaving V in terms of h only', ok: true, why: 'Then there’s just one unknown rate to solve for.' }, { t: 'Because the formula for a cone needs them', ok: false, why: 'The volume formula uses r and h, and similar triangles link r to h.' }] }
+  ]);
+});
+</script>
+</body>
+</html>

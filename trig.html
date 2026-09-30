@@ -1,0 +1,394 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trigonometry Review</title>
+<meta name="description" content="Calculus I Companion, Topic 0.5: radians, the unit circle, special angles, identities, trig graphs and inverse trig functions.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;1,6..72,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="lesson.css">
+<script src="site.js"></script>
+<script src="course.js"></script>
+<style>
+  .uc-grid { display: grid; gap: 16px; align-items: center; }
+  @media (min-width: 900px) { .uc-grid { grid-template-columns: 320px 1fr; } }
+  #circlePlot { max-width: 340px; margin: 0 auto; }
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 14px; color: var(--ink-2); margin-top: 10px; }
+  .legend i { display: inline-block; width: 18px; height: 4px; border-radius: 2px; vertical-align: middle; margin-right: 6px; }
+  .drill-grid { display: grid; gap: 16px; align-items: center; }
+  @media (min-width: 720px) { .drill-grid { grid-template-columns: 220px 1fr; } }
+  #drillPlot { max-width: 240px; margin: 0 auto; }
+  .drill-q { font-size: 22px; margin-bottom: 6px; }
+</style>
+</head>
+<body data-topic="trig">
+<main class="wrap">
+
+<!-- ================= SEE IT ================= -->
+<section class="step" id="see" data-title="Unwrapping the unit circle">
+  <div class="prose">
+    <p>Walk a point around a circle of radius 1. The distance you’ve walked along the circle is the angle \( \theta \) <b>in radians</b>. The point’s height is \( \sin\theta \) and its horizontal position is \( \cos\theta \). Drag the point, or drag along the wave, and watch the height get “unwrapped” into a graph.</p>
+  </div>
+
+  <div class="card widget">
+    <div class="uc-grid">
+      <svg id="circlePlot" role="img" aria-label="Unit circle with a movable point"></svg>
+      <div>
+        <div class="seg" role="group" aria-label="Which coordinate to graph" style="margin-bottom:10px"><button type="button" id="modeSin" aria-pressed="true">Graph sin θ</button><button type="button" id="modeCos" aria-pressed="false">Graph cos θ</button></div>
+        <svg id="wavePlot" role="img" aria-label="Graph of sine or cosine traced up to the current angle"></svg>
+        <div class="ctls"><div class="ctl"><label for="tSlider">Angle θ</label><input id="tSlider" type="range" min="0" max="628" value="105"><output id="tOut"></output></div></div>
+        <div class="readout" id="ucRead" aria-live="polite"></div>
+        <div class="legend"><span><i style="background:var(--u2)"></i>arc length = θ</span><span><i style="background:var(--secant)"></i>cos θ (across)</span><span><i style="background:var(--tangent)"></i>sin θ (up)</span></div>
+      </div>
+    </div>
+  </div>
+  <ol class="observe prose">
+    <li>At what angle is \( \sin\theta \) largest? Where is \( \cos\theta = 0 \)?</li>
+    <li>Walk past \( \theta = \pi \). Why does sine turn negative there?</li>
+    <li>What happens after one full lap, at \( \theta = 2\pi \approx 6.28 \)?</li>
+  </ol>
+</section>
+
+<!-- ================= BUILD IT ================= -->
+<section class="step" id="build" data-title="The trig toolkit">
+  <h3 style="margin-top:0">Radians</h3>
+  <div class="prose">
+    <p>A <b>radian</b> measures an angle by the arc it cuts off on the unit circle. A full turn is the whole circumference, \( 2\pi \), so \( 360^\circ = 2\pi \) and \( 180^\circ = \pi \).</p>
+    <div class="display">\[ \text{radians} = \text{degrees} \times \frac{\pi}{180}, \qquad \text{degrees} = \text{radians} \times \frac{180}{\pi} \]</div>
+  </div>
+  <div class="callout calc"><b>Why calculus insists on radians</b>
+    <p>Only in radians is \( \dfrac{d}{dx}\sin x = \cos x \). That rests on the limit \( \dfrac{\sin x}{x} \to 1 \) as \( x \to 0 \), which works because for small angles the arc (θ) and the height (sin θ) are almost the same length. In degrees, an extra factor of \( \pi/180 \) shows up everywhere.</p>
+  </div>
+
+  <h3>Definitions from the circle</h3>
+  <div class="prose">
+    <p>For the point where angle \( \theta \) meets the unit circle:</p>
+    <div class="display">\[ \cos\theta = x, \qquad \sin\theta = y, \qquad \tan\theta = \frac{\sin\theta}{\cos\theta} \;\;(\text{the slope of the radius}) \]</div>
+    <p>The reciprocals are \( \sec\theta = \dfrac{1}{\cos\theta} \), \( \csc\theta = \dfrac{1}{\sin\theta} \) and \( \cot\theta = \dfrac{\cos\theta}{\sin\theta} \).</p>
+  </div>
+
+  <h3>Special angles</h3>
+  <div class="prose"><p>You should know these without a calculator. Here’s a pattern that helps: in the sine column, the numbers under the root count 0, 1, 2, 3, 4, and cosine runs the same list backwards.</p></div>
+  <div class="table-wrap"><table class="ref">
+    <tr><th>\( \theta \)</th><th>\( 0 \)</th><th>\( \frac{\pi}{6} \) (30°)</th><th>\( \frac{\pi}{4} \) (45°)</th><th>\( \frac{\pi}{3} \) (60°)</th><th>\( \frac{\pi}{2} \) (90°)</th></tr>
+    <tr><td>\( \sin\theta \)</td><td>\( \frac{\sqrt0}{2} = 0 \)</td><td>\( \frac{\sqrt1}{2} = \frac12 \)</td><td>\( \frac{\sqrt2}{2} \)</td><td>\( \frac{\sqrt3}{2} \)</td><td>\( \frac{\sqrt4}{2} = 1 \)</td></tr>
+    <tr><td>\( \cos\theta \)</td><td>\( 1 \)</td><td>\( \frac{\sqrt3}{2} \)</td><td>\( \frac{\sqrt2}{2} \)</td><td>\( \frac12 \)</td><td>\( 0 \)</td></tr>
+    <tr><td>\( \tan\theta \)</td><td>\( 0 \)</td><td>\( \frac{1}{\sqrt3} = \frac{\sqrt3}{3} \)</td><td>\( 1 \)</td><td>\( \sqrt3 \)</td><td>undefined</td></tr>
+  </table></div>
+  <div class="prose">
+    <p><b>Any other quadrant:</b> find the <b>reference angle</b> (the acute angle back to the x-axis), use the value from the table, then fix the sign by where the point is. Sine is positive above the x-axis (quadrants I and II), and cosine is positive to the right of the y-axis (quadrants I and IV).</p>
+  </div>
+
+  <h3>Identities worth knowing</h3>
+  <div class="prose">
+    <p>The point \( (\cos\theta, \sin\theta) \) is on a circle of radius 1, so the Pythagorean theorem gives the most important identity:</p>
+    <div class="display">\[ \sin^2\theta + \cos^2\theta = 1 \]</div>
+    <p>Divide it by \( \cos^2\theta \) to get \( \tan^2\theta + 1 = \sec^2\theta \). A few others:</p>
+    <ul>
+      <li><b>Even/odd:</b> \( \cos(-\theta) = \cos\theta \) and \( \sin(-\theta) = -\sin\theta \) (reflect the point across the x-axis).</li>
+      <li><b>Periodic:</b> \( \sin(\theta + 2\pi) = \sin\theta \), \( \cos(\theta + 2\pi) = \cos\theta \), \( \tan(\theta + \pi) = \tan\theta \).</li>
+      <li><b>Double angle:</b> \( \sin 2\theta = 2\sin\theta\cos\theta \) and \( \cos 2\theta = \cos^2\theta - \sin^2\theta \).</li>
+    </ul>
+  </div>
+
+  <h3>Graphs</h3>
+  <div class="card widget">
+    <div class="seg" id="graphBtns" role="group" aria-label="Choose a graph"><button type="button" data-g="sin" aria-pressed="true">sin x</button><button type="button" data-g="cos" aria-pressed="false">cos x</button><button type="button" data-g="tan" aria-pressed="false">tan x</button></div>
+    <svg id="graphPlot" role="img" aria-label="Graph of a trig function" style="margin-top:12px"></svg>
+    <p class="observe" id="graphNote"></p>
+  </div>
+
+  <h3>Inverse trig functions</h3>
+  <div class="prose">
+    <p>Sine isn’t one-to-one, so, as in the <a href="inverse.html">inverse functions</a> lesson, we keep only one piece of it. \( \arcsin x \) (also written \( \sin^{-1}x \)) answers the question “which angle in \( [-\tfrac{\pi}{2}, \tfrac{\pi}{2}] \) has sine equal to x?”</p>
+  </div>
+  <div class="table-wrap"><table class="ref">
+    <tr><th>Function</th><th>Accepts</th><th>Returns angles in</th></tr>
+    <tr><td>\( \arcsin x \)</td><td>\( [-1, 1] \)</td><td>\( [-\tfrac{\pi}{2}, \tfrac{\pi}{2}] \)</td></tr>
+    <tr><td>\( \arccos x \)</td><td>\( [-1, 1] \)</td><td>\( [0, \pi] \)</td></tr>
+    <tr><td>\( \arctan x \)</td><td>all reals</td><td>\( (-\tfrac{\pi}{2}, \tfrac{\pi}{2}) \)</td></tr>
+  </table></div>
+  <div id="wx1"></div>
+</section>
+
+<!-- ================= TRY IT ================= -->
+<section class="step" id="try" data-title="Your turn">
+  <div class="card widget" style="max-width:48em">
+    <div class="p-head"><span class="p-num">Drill · Special angles</span><span class="chip" id="streak">Streak: 0</span></div>
+    <div class="drill-grid">
+      <svg id="drillPlot" role="img" aria-label="Unit circle showing the angle to evaluate"></svg>
+      <div>
+        <div class="drill-q" id="drillQ"></div>
+        <form class="answer-row" id="drillForm" autocomplete="off" style="margin-top:6px">
+          <input id="drillIn" type="text" spellcheck="false" placeholder="e.g. -sqrt(3)/2" aria-label="Your answer">
+          <button class="btn primary" type="submit">Check</button>
+          <button class="btn" type="button" id="drillHint">Hint</button>
+          <button class="btn" type="button" id="drillSkip">Skip</button>
+        </form>
+        <div class="p-preview" id="drillPrev"></div>
+        <div class="feedback" id="drillFb" aria-live="polite"></div>
+      </div>
+    </div>
+  </div>
+  <div class="practice-list" id="practice" style="margin-top:18px"></div>
+</section>
+
+<!-- ================= CHECK ================= -->
+<section class="step" id="check" data-title="Before you move on">
+  <div class="tf" id="tf"></div>
+</section>
+
+</main>
+
+<script src="lesson.js"></script>
+<script>
+Lesson.ready(() => {
+  const { Plot, practiceList, worked, trueFalse, typeset, parse, evaluate } = Lesson;
+  const PI = Math.PI, TAU = 2 * PI;
+  const PI_TICKS = [[PI / 2, 'π/2'], [PI, 'π'], [3 * PI / 2, '3π/2'], [TAU, '2π']].map(([v, l]) => ({ v, l }));
+
+  // Exact labels for special angles.
+  const SPECIAL = [];
+  for (let k = 0; k < 12; k++) SPECIAL.push(k * PI / 6);
+  for (let k = 1; k < 8; k += 2) SPECIAL.push(k * PI / 4);
+  SPECIAL.sort((a, b) => a - b);
+  function angleTex(t) {
+    const r6 = Math.round(t / (PI / 6)), r4 = Math.round(t / (PI / 4));
+    const fmt = (n, d) => { const g = (a, b) => b ? g(b, a % b) : a, c = g(n, d); n /= c; d /= c; if (n === 0) return '0'; const top = n === 1 ? '\\pi' : `${n}\\pi`; return d === 1 ? top : `\\frac{${top}}{${d}}`; };
+    if (Math.abs(t - r6 * PI / 6) < 1e-9) return fmt(r6, 6);
+    if (Math.abs(t - r4 * PI / 4) < 1e-9) return fmt(r4, 4);
+    return null;
+  }
+
+  // ---------------- Unit circle + unwrapping ----------------
+  const cp = Plot(document.getElementById('circlePlot'), { x: [-1.45, 1.45], y: [-1.45, 1.45], w: 320, h: 320, xstep: 0.5, ystep: 0.5, ticks: false });
+  const wp = Plot(document.getElementById('wavePlot'), { x: [-0.3, TAU + 0.3], y: [-1.5, 1.5], w: 520, h: 220, xstep: PI / 2, ystep: 0.5, xticks: PI_TICKS, yticks: [{ v: 1, l: '1' }, { v: -1, l: '−1' }] });
+  const tSlider = document.getElementById('tSlider');
+  let mode = 'sin';
+  function drawUC() {
+    const t = tSlider.value / 100, c = Math.cos(t), s = Math.sin(t);
+    cp.draw(
+      cp.param(Math.cos, Math.sin, 0, TAU, 'ghost') +
+      cp.param(u => Math.cos(u), u => Math.sin(u), 0, t, 'c4 band', 120) +
+      cp.seg(0, 0, c, s, 'ghost') + cp.seg(0, 0, c, 0, 'c2') + cp.seg(c, 0, c, s, 'c3') +
+      cp.dot(c, s, 'c1', 8, ' data-handle="p" style="cursor:grab"')
+    );
+    const f = mode === 'sin' ? Math.sin : Math.cos, cls = mode === 'sin' ? 'c3' : 'c2';
+    wp.draw(wp.fn(f, 'ghost', { from: 0, to: TAU }) + wp.fn(f, cls, { from: 0, to: t }) + wp.seg(t, 0, t, f(t), cls + ' thin') + wp.seg(0, 0, t, 0, 'c4 band') + wp.dot(t, f(t), cls.replace('c', 'c') + ' solid', 6, ' data-handle="w" style="cursor:grab"'));
+    document.getElementById('tOut').textContent = t.toFixed(2);
+    const near = SPECIAL.concat([TAU]).find(a => Math.abs(a - t) < 0.015);
+    const ex = near !== undefined ? angleTex(near % TAU === 0 && near > 0 ? 0 : near) : null;
+    const r = document.getElementById('ucRead');
+    r.innerHTML = `\\( \\theta = ${t.toFixed(2)} \\) rad ${ex && near < TAU ? `\\( \\approx ${ex} \\)` : near >= TAU - 0.02 ? '\\( \\approx 2\\pi \\)' : ''} \\( = ${(t * 180 / PI).toFixed(1)}^\\circ \\)` +
+      ` &nbsp;·&nbsp; \\( \\cos\\theta = ${c.toFixed(3)} \\) &nbsp;·&nbsp; \\( \\sin\\theta = ${s.toFixed(3)} \\)`;
+    typeset(r);
+  }
+  tSlider.addEventListener('input', drawUC);
+  cp.onDrag((h, pt) => { let a = Math.atan2(pt.y, pt.x); if (a < 0) a += TAU; tSlider.value = Math.round(a * 100); drawUC(); });
+  wp.onDrag((h, pt) => { tSlider.value = Math.round(Math.max(0, Math.min(TAU, pt.x)) * 100); drawUC(); }, { anywhere: 'w' });
+  const setMode = m => { mode = m; document.getElementById('modeSin').setAttribute('aria-pressed', m === 'sin'); document.getElementById('modeCos').setAttribute('aria-pressed', m === 'cos'); drawUC(); };
+  document.getElementById('modeSin').addEventListener('click', () => setMode('sin'));
+  document.getElementById('modeCos').addEventListener('click', () => setMode('cos'));
+  drawUC();
+
+  // ---------------- Trig graphs ----------------
+  const gp = Plot(document.getElementById('graphPlot'), { x: [-TAU - 0.3, TAU + 0.3], y: [-3, 3], w: 640, h: 260, xstep: PI / 2, ystep: 1,
+    xticks: [{ v: -TAU, l: '−2π' }, { v: -PI, l: '−π' }, { v: PI, l: 'π' }, { v: TAU, l: '2π' }] });
+  const GRAPHS = {
+    sin: { f: Math.sin, note: 'Period \\( 2\\pi \\), amplitude 1, range \\( [-1, 1] \\). It’s an <b>odd</b> function, symmetric through the origin.' },
+    cos: { f: Math.cos, note: 'Period \\( 2\\pi \\), range \\( [-1, 1] \\). It’s an <b>even</b> function, symmetric across the y-axis. It’s the sine graph shifted left by \\( \\tfrac{\\pi}{2} \\).' },
+    tan: { f: Math.tan, note: 'Period \\( \\pi \\). Vertical asymptotes where \\( \\cos x = 0 \\), at \\( x = \\pm\\tfrac{\\pi}{2}, \\pm\\tfrac{3\\pi}{2}, \\ldots \\), because you can’t divide by zero. Range: all reals.' }
+  };
+  function drawGraph(g) {
+    let s = gp.fn(GRAPHS[g].f, 'c1', { n: 800 });
+    if (g === 'tan') for (let k = -3; k <= 3; k += 2) s += gp.seg(k * PI / 2, -5, k * PI / 2, 5, 'ghost');
+    gp.draw(s);
+    document.querySelectorAll('#graphBtns button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.g === g)));
+    const n = document.getElementById('graphNote'); n.innerHTML = GRAPHS[g].note; typeset(n);
+  }
+  document.getElementById('graphBtns').addEventListener('click', e => { const b = e.target.closest('button'); if (b) drawGraph(b.dataset.g); });
+  drawGraph('sin');
+
+  worked(document.getElementById('wx1'), {
+    problem: 'Solve \\( 2\\cos x + 1 = 0 \\) for \\( 0 \\le x \\lt 2\\pi \\).',
+    steps: [
+      { show: 'Isolate the trig function: \\( \\cos x = -\\tfrac12 \\).' },
+      { show: 'Reference angle: \\( \\cos\\theta = \\tfrac12 \\) at \\( \\theta = \\tfrac{\\pi}{3} \\).', why: 'Ignore the sign for a moment and find the acute angle from the table.' },
+      { show: 'Where is cosine negative? Quadrants II and III, to the left of the y-axis.', why: 'Cosine is the x-coordinate.' },
+      { show: 'Quadrant II: \\( \\pi - \\tfrac{\\pi}{3} = \\tfrac{2\\pi}{3} \\). Quadrant III: \\( \\pi + \\tfrac{\\pi}{3} = \\tfrac{4\\pi}{3} \\).', why: 'Measure the reference angle back from the negative x-axis in each quadrant.' },
+      { show: '\\( x = \\tfrac{2\\pi}{3} \\) or \\( x = \\tfrac{4\\pi}{3} \\).', why: 'A calculator’s \\( \\arccos(-\\tfrac12) \\) gives only the first one. Trig equations usually have more than one solution in a full turn.' }
+    ]
+  });
+
+  // ---------------- Special-angle drill ----------------
+  const dp = Plot(document.getElementById('drillPlot'), { x: [-1.4, 1.4], y: [-1.4, 1.4], w: 240, h: 240, ticks: false });
+  const FN = { sin: Math.sin, cos: Math.cos, tan: Math.tan };
+  let q = null, streak = 0, hintLevel = 0;
+  function newQ() {
+    let t, fn;
+    do { t = SPECIAL[Math.floor(Math.random() * SPECIAL.length)]; fn = ['sin', 'cos', 'sin', 'cos', 'tan'][Math.floor(Math.random() * 5)]; }
+    while ((fn === 'tan' && Math.abs(Math.cos(t)) < 1e-9) || (q && q.t === t && q.fn === fn));
+    q = { t, fn, val: FN[fn](t) };
+    hintLevel = 0;
+    dp.draw(dp.param(Math.cos, Math.sin, 0, TAU, 'ghost') + dp.param(Math.cos, Math.sin, 0, t, 'c4 band', 80) + dp.seg(0, 0, Math.cos(t), Math.sin(t), 'c1') + dp.dot(Math.cos(t), Math.sin(t), 'c1 solid', 5));
+    const el = document.getElementById('drillQ');
+    el.innerHTML = `\\( \\${fn}\\left(${angleTex(t)}\\right) = \\;? \\)`;
+    typeset(el);
+    document.getElementById('drillIn').value = '';
+    document.getElementById('drillPrev').textContent = '';
+    const fb = document.getElementById('drillFb'); fb.className = 'feedback'; fb.innerHTML = '';
+  }
+  function refInfo(t) {
+    const quad = t < PI / 2 ? 1 : t < PI ? 2 : t < 3 * PI / 2 ? 3 : 4;
+    const ref = quad === 1 ? t : quad === 2 ? PI - t : quad === 3 ? t - PI : TAU - t;
+    return { quad, ref };
+  }
+  function say(kind, html) { const fb = document.getElementById('drillFb'); fb.className = 'feedback ' + kind; fb.innerHTML = html; typeset(fb); }
+  document.getElementById('drillIn').addEventListener('input', e => {
+    const p = document.getElementById('drillPrev');
+    try { p.innerHTML = 'Reads as: <span></span>'; katex.render(Lesson.toTex(parse(e.target.value)), p.querySelector('span')); } catch (err) { p.textContent = ''; }
+  });
+  document.getElementById('drillForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const raw = document.getElementById('drillIn').value.trim();
+    if (!raw) return;
+    if (/^(undefined|dne|und)$/i.test(raw)) { say('try', 'It is defined here. Is the x-coordinate 0 at this angle?'); return; }
+    let v;
+    try { v = evaluate(parse(raw), {}); } catch (err) { say('try', err.message || 'I couldn’t read that.'); return; }
+    const close = (a, b) => Math.abs(a - b) < 1e-9;
+    if (close(v, q.val)) {
+      streak++;
+      document.getElementById('streak').textContent = `Streak: ${streak}`;
+      say('good', `<b class="tag-good">Correct.</b> Next one coming up…`);
+      setTimeout(newQ, 1100);
+      return;
+    }
+    streak = 0;
+    document.getElementById('streak').textContent = 'Streak: 0';
+    const other = q.fn === 'sin' ? Math.cos(q.t) : q.fn === 'cos' ? Math.sin(q.t) : null;
+    if (close(-v, q.val)) say('try', 'Right size, wrong sign. Which quadrant is the angle in, and is this coordinate positive or negative there?');
+    else if (other !== null && close(Math.abs(v), Math.abs(other))) say('try', `That’s the size of the <b>${q.fn === 'sin' ? 'cosine' : 'sine'}</b> value. ${q.fn === 'sin' ? 'Sine is the height (y).' : 'Cosine is the horizontal position (x).'}`);
+    else if (Math.abs(v - q.val) < 0.01) say('near', 'That’s the right decimal. Now give the exact value, using sqrt( ) and fractions.');
+    else say('try', 'Not quite. Try the Hint button.');
+  });
+  document.getElementById('drillHint').addEventListener('click', () => {
+    const { quad, ref } = refInfo(q.t);
+    hintLevel++;
+    if (hintLevel === 1) say('near', ref === 0 || Math.abs(ref - PI / 2) < 1e-9
+      ? 'This angle is on an axis. Where exactly is the point on the circle? Read off its x or y.'
+      : `The reference angle is \\( ${angleTex(ref)} \\). Look it up in the special-angle table.`);
+    else say('near', ref === 0 || Math.abs(ref - PI / 2) < 1e-9
+      ? 'On an axis, each coordinate is 0, 1 or −1.'
+      : `The point is in quadrant ${['I', 'II', 'III', 'IV'][quad - 1]}. ${q.fn === 'sin' ? 'Sine is positive in I and II.' : q.fn === 'cos' ? 'Cosine is positive in I and IV.' : 'Tangent is positive in I and III.'}`);
+  });
+  document.getElementById('drillSkip').addEventListener('click', () => { streak = 0; document.getElementById('streak').textContent = 'Streak: 0'; newQ(); });
+  newQ();
+
+  // ---------------- Practice ----------------
+  practiceList(document.getElementById('practice'), [
+    { id: 'tr-rad', tag: 'Convert',
+      prompt: '<p>Convert \\( 150^\\circ \\) to radians. Give an exact answer in terms of π.</p>',
+      placeholder: 'e.g. 3pi/4',
+      rungs: [
+        ['Nudge', '\\( 180^\\circ = \\pi \\) radians.'],
+        ['Hint', 'Multiply by \\( \\dfrac{\\pi}{180} \\), then reduce the fraction.'],
+        ['Strategy', '\\( 150 \\) and \\( 180 \\) share a factor of 30.']
+      ],
+      answer: { type: 'number', value: 5 * PI / 6 },
+      mistakes: [{ value: 150 * 180 / PI, msg: 'That multiplies by \\( \\tfrac{180}{\\pi} \\), which converts radians to degrees. Flip it.' }],
+      success: 'Since 150° is 30° short of 180°, it’s \\( \\tfrac{\\pi}{6} \\) short of \\( \\pi \\).' },
+
+    { id: 'tr-sin76', tag: 'Evaluate',
+      prompt: '<p>Find the exact value of \\( \\sin\\!\\left(\\dfrac{7\\pi}{6}\\right) \\).</p>',
+      rungs: [
+        ['Nudge', 'Locate the angle: \\( \\tfrac{7\\pi}{6} \\) is a little more than \\( \\pi \\). Which quadrant is that?'],
+        ['Hint', 'The reference angle is \\( \\tfrac{7\\pi}{6} - \\pi \\).'],
+        ['Strategy', 'Look up sine of the reference angle, then decide the sign. Is the point above or below the x-axis?']
+      ],
+      answer: { type: 'number', value: -0.5 },
+      mistakes: [
+        { value: 0.5, msg: 'Right size, but the point is in quadrant III, below the x-axis.' },
+        { value: -Math.sqrt(3) / 2, msg: 'That’s the size of the <i>cosine</i> value for this reference angle. Sine of \\( \\tfrac{\\pi}{6} \\) is the smaller one.' }
+      ],
+      success: 'Reference angle, then sign. That two-step routine works for every special angle.' },
+
+    { id: 'tr-tan', tag: 'Evaluate',
+      prompt: '<p>Find the exact value of \\( \\tan\\!\\left(\\dfrac{\\pi}{3}\\right) \\).</p>',
+      rungs: [
+        ['Nudge', 'Tangent is sine divided by cosine.'],
+        ['Hint', 'At \\( \\tfrac{\\pi}{3} \\): \\( \\sin = \\tfrac{\\sqrt3}{2} \\) and \\( \\cos = \\tfrac12 \\).'],
+        ['Strategy', 'Dividing two fractions with the same denominator leaves the numerators.']
+      ],
+      answer: { type: 'number', value: Math.sqrt(3) },
+      mistakes: [{ value: 1 / Math.sqrt(3), msg: 'That’s \\( \\tan\\tfrac{\\pi}{6} \\), which is cos over sin here. Check which one goes on top.' }],
+      success: 'Steeper angle, bigger slope: the radius at 60° has slope \\( \\sqrt3 \\approx 1.73 \\).' },
+
+    { id: 'tr-solve', tag: 'Solve',
+      prompt: '<p>Solve \\( 2\\sin x = 1 \\) for \\( 0 \\le x \\lt 2\\pi \\). List every solution.</p>',
+      label: 'x =', format: 'Separate solutions with commas, e.g. pi/4, 3pi/4',
+      rungs: [
+        ['Nudge', 'Isolate \\( \\sin x \\) first.'],
+        ['Hint', 'Which special angle has sine \\( \\tfrac12 \\)? And in which quadrants is sine positive?'],
+        ['Strategy', 'Use the reference angle in quadrant I and in quadrant II, where the second angle is \\( \\pi \\) minus the reference angle.']
+      ],
+      answer: { type: 'set', values: [PI / 6, 5 * PI / 6] },
+      success: 'Two solutions per full turn is typical for sine and cosine equations.' },
+
+    { id: 'tr-pyth', tag: 'Identity',
+      prompt: '<p>If \\( \\sin\\theta = \\tfrac35 \\) and \\( \\theta \\) is in quadrant II, find \\( \\cos\\theta \\).</p>',
+      label: 'cos θ =',
+      rungs: [
+        ['Nudge', 'Which identity connects sine and cosine?'],
+        ['Hint', 'Use \\( \\sin^2\\theta + \\cos^2\\theta = 1 \\) to solve for \\( \\cos^2\\theta \\).'],
+        ['Strategy', 'The square root gives ±. Quadrant II decides the sign.']
+      ],
+      answer: { type: 'number', value: -0.8 },
+      mistakes: [{ value: 0.8, msg: 'The size is right. Is cosine positive in quadrant II?' }],
+      success: 'It’s a 3-4-5 right triangle placed in quadrant II.' },
+
+    { id: 'tr-arcsin', tag: 'Inverse trig',
+      prompt: '<p>Find \\( \\arcsin\\!\\left(-\\tfrac12\\right) \\).</p>',
+      rungs: [
+        ['Nudge', 'Which angles have sine equal to \\( -\\tfrac12 \\)? There are infinitely many, so which one does arcsin return?'],
+        ['Hint', 'arcsin only returns angles in \\( [-\\tfrac{\\pi}{2}, \\tfrac{\\pi}{2}] \\), which are quadrants I and IV measured from 0.'],
+        ['Strategy', 'Find the reference angle for sine \\( \\tfrac12 \\), then go <i>clockwise</i> from 0 by that much.']
+      ],
+      answer: { type: 'number', value: -PI / 6 },
+      mistakes: [
+        { value: 7 * PI / 6, msg: 'Sine of that angle is \\( -\\tfrac12 \\), but arcsin must return an angle between \\( -\\tfrac{\\pi}{2} \\) and \\( \\tfrac{\\pi}{2} \\).' },
+        { value: 11 * PI / 6, msg: 'Same angle on the circle, but arcsin measures it the short way, clockwise, as a negative angle.' },
+        { value: PI / 6, msg: 'Check the sign: \\( \\sin\\tfrac{\\pi}{6} = +\\tfrac12 \\).' }
+      ],
+      success: 'Restricted range means there’s exactly one answer. That’s what makes arcsin a function.' },
+
+    { id: 'tr-simplify', tag: 'Simplify',
+      prompt: '<p>Simplify \\( \\dfrac{1 - \\cos^2 x}{\\sin x} \\) to a single trig function.</p>',
+      label: 'Simplified', placeholder: 'e.g. cos(x)',
+      rungs: [
+        ['Nudge', 'The numerator looks like part of the Pythagorean identity.'],
+        ['Hint', 'Rearrange \\( \\sin^2 x + \\cos^2 x = 1 \\) to get \\( 1 - \\cos^2 x = \\;? \\)'],
+        ['Strategy', 'Replace the numerator, then cancel one factor.']
+      ],
+      answer: { type: 'expr', vars: ['x'], fn: x => Math.sin(x), domain: [0.2, 2.9] },
+      form: raw => !/cos|\//i.test(raw),
+      formMsg: 'Equivalent, but simplify it all the way down to one trig function.',
+      success: 'This substitution will show up again in integrals and in the derivatives of inverse trig functions.' }
+  ]);
+
+  trueFalse(document.getElementById('tf'), [
+    { s: '\\( \\sin(-x) = -\\sin x \\) for every x.', ok: true, why: 'Reflecting the point across the x-axis flips its height.' },
+    { s: '\\( \\cos(2x) = 2\\cos x \\)', ok: false, why: 'Try \\( x = 0 \\): the left side is 1 and the right side is 2. The real identity is \\( \\cos^2 x - \\sin^2 x \\).' },
+    { s: '\\( \\sin^2 x + \\cos^2 x = 1 \\) for every real x.', ok: true, why: 'Every point \\( (\\cos x, \\sin x) \\) lies on the unit circle.' },
+    { s: '\\( \\tan x \\) is defined for every real x.', ok: false, why: 'It’s undefined wherever \\( \\cos x = 0 \\), such as \\( x = \\tfrac{\\pi}{2} \\).' },
+    { s: '\\( \\sin(x + 2\\pi) = \\sin x \\)', ok: true, why: 'One full lap brings you back to the same point.' }
+  ]);
+});
+</script>
+</body>
+</html>

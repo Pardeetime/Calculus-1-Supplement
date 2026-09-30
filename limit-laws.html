@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Limit Laws and Algebra</title>
+<meta name="description" content="Calculus I Companion, Topic 1.4: the limit laws, direct substitution, and algebraic techniques for 0/0 forms: factoring, conjugates and common denominators.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;1,6..72,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="lesson.css">
+<script src="site.js"></script>
+<script src="course.js"></script>
+<style>
+  .flow { list-style: none; margin: 12px 0; padding: 0; display: grid; gap: 10px; max-width: 48em; }
+  .flow li { padding: 12px 14px; display: grid; grid-template-columns: 120px 1fr; gap: 12px; align-items: start; }
+  .flow .res { font-weight: 600; }
+  @media (max-width: 560px) { .flow li { grid-template-columns: 1fr; gap: 4px; } }
+</style>
+</head>
+<body data-topic="limit-laws">
+<main class="wrap">
+
+<!-- ================= SEE IT ================= -->
+<section class="step" id="see" data-title="0/0 is a disguise">
+  <div class="prose">
+    <p>All four limits below are at \( x \to 2 \), and all four give \( \dfrac00 \) when you substitute. Before you reveal each graph, <b>guess</b> whether the limits will turn out the same.</p>
+  </div>
+  <div class="card widget">
+    <div class="seg" id="dBtns" role="group" aria-label="Choose a limit" style="margin-bottom:12px"></div>
+    <div class="widget-grid">
+      <svg id="dPlot" role="img" aria-label="Graph of the selected function near x equals 2"></svg>
+      <div>
+        <div class="display" id="dTex" style="font-size:19px"></div>
+        <div class="readout" id="dSub"></div>
+        <div class="row" style="margin-top:12px"><button class="btn primary" type="button" id="reveal">Reveal the graph</button></div>
+        <div class="observe" id="dNote" aria-live="polite"></div>
+        <p class="chip" id="dCount" style="margin-top:10px;display:inline-block">Revealed 0 of 4</p>
+      </div>
+    </div>
+  </div>
+  <div class="callout idea"><b>What you saw</b>
+    <p>Four limits gave the same “answer” on substitution, 0/0, but four different real answers: 4, ¼, 0, and no limit at all. <b>0/0 is not an answer.</b> It tells you the substitution was hiding something, and the algebra in this lesson removes the disguise.</p>
+  </div>
+</section>
+
+<!-- ================= BUILD IT ================= -->
+<section class="step" id="build" data-title="Laws, substitution and the 0/0 toolkit">
+  <h3 style="margin-top:0">The limit laws</h3>
+  <div class="prose"><p>If \( \lim_{x\to a} f(x) \) and \( \lim_{x\to a} g(x) \) both exist, then limits split across arithmetic:</p></div>
+  <div class="table-wrap"><table class="ref">
+    <tr><th>Law</th><th>Statement</th></tr>
+    <tr><td>Sum / difference</td><td>\( \lim (f \pm g) = \lim f \pm \lim g \)</td></tr>
+    <tr><td>Constant multiple</td><td>\( \lim c\,f = c \lim f \)</td></tr>
+    <tr><td>Product</td><td>\( \lim (f g) = (\lim f)(\lim g) \)</td></tr>
+    <tr><td>Quotient</td><td>\( \lim \dfrac{f}{g} = \dfrac{\lim f}{\lim g} \), <b>only if</b> \( \lim g \ne 0 \)</td></tr>
+    <tr><td>Power / root</td><td>\( \lim f^n = (\lim f)^n \), \( \lim \sqrt[n]{f} = \sqrt[n]{\lim f} \)</td></tr>
+  </table></div>
+  <div class="prose">
+    <p>Together they give the <b>direct substitution property</b>: if \( f \) is a polynomial, a rational function, a root, a trig, exponential or log function (or a combination), and \( a \) is in its domain, then \( \lim_{x\to a} f(x) = f(a) \). <b>Always try substitution first.</b></p>
+  </div>
+
+  <h3>The decision flow</h3>
+  <ol class="flow">
+    <li class="card"><span class="res">Substitute</span><span>Plug in \( x = a \). What do you get?</span></li>
+    <li class="card"><span class="res">A number</span><span>That’s the limit. You’re done.</span></li>
+    <li class="card"><span class="res">\( \dfrac{\text{nonzero}}{0} \)</span><span>Infinite limit or DNE. Use sign analysis on each side (Topic 1.3).</span></li>
+    <li class="card"><span class="res">\( \dfrac{0}{0} \)</span><span>Indeterminate, so do algebra: <b>factor and cancel</b>; multiply by the <b>conjugate</b> if there’s a root; get a <b>common denominator</b> if there are fractions inside fractions; <b>expand</b> if there are powers. Then substitute again.</span></li>
+  </ol>
+  <div class="callout calc"><b>Why canceling is legal</b>
+    <p>\( \dfrac{x^2-4}{x-2} \) and \( x + 2 \) are equal for <b>every x except 2</b>. A limit never looks at \( x = 2 \) itself, so the two have the same limit. Canceling doesn’t change the function anywhere the limit cares about.</p>
+  </div>
+  <div id="wx1"></div>
+  <div id="wx2"></div>
+  <div class="callout warn"><b>Common mistake</b>
+    <p>Writing “\( = \frac00 \), so the limit doesn’t exist.” As you saw above, 0/0 can hide any answer. Also, keep writing “\( \lim_{x\to a} \)” in front of every line until the moment you substitute, since instructors take points off for dropping it.</p>
+  </div>
+</section>
+
+<!-- ================= TRY IT ================= -->
+<section class="step" id="try" data-title="Your turn">
+  <div class="prose"><p>Substitute first every time. Then choose your tool.</p></div>
+  <div class="practice-list" id="practice"></div>
+</section>
+
+<!-- ================= CHECK ================= -->
+<section class="step" id="check" data-title="Before you move on">
+  <div class="prose"><p>For each limit, which technique should you reach for <i>first</i>?</p></div>
+  <div class="quiz" id="quiz"></div>
+</section>
+
+</main>
+
+<script src="lesson.js"></script>
+<script>
+Lesson.ready(() => {
+  const { Plot, practiceList, worked, quiz, typeset } = Lesson;
+
+  // ---------------- 0/0 is a disguise ----------------
+  const DIS = [
+    { tex: '\\lim_{x\\to2}\\frac{x^2-4}{x-2}', f: x => (x * x - 4) / (x - 2), hole: 4, note: 'The limit is <b>4</b>: a hole at height 4.' },
+    { tex: '\\lim_{x\\to2}\\frac{x-2}{x^2-4}', f: x => (x - 2) / (x * x - 4), hole: 0.25, note: 'The limit is <b>¼</b>: a hole at height 0.25.' },
+    { tex: '\\lim_{x\\to2}\\frac{x^2-4x+4}{x-2}', f: x => (x * x - 4 * x + 4) / (x - 2), hole: 0, note: 'The limit is <b>0</b>: a hole right on the x-axis.' },
+    { tex: '\\lim_{x\\to2}\\frac{x-2}{x^2-4x+4}', f: x => (x - 2) / (x * x - 4 * x + 4), hole: null, note: 'There’s <b>no limit</b>. It’s a vertical asymptote: \\( -\\infty \\) from the left and \\( +\\infty \\) from the right.' }
+  ];
+  const dp = Plot(document.getElementById('dPlot'), { x: [-1, 5], y: [-5, 7], h: 340 });
+  const revealed = new Set();
+  let cur = 0;
+  document.getElementById('dBtns').innerHTML = DIS.map((d, i) => `<button type="button" data-i="${i}">Limit ${'ABCD'[i]}</button>`).join('');
+  function drawD() {
+    const D = DIS[cur], show = revealed.has(cur);
+    dp.draw(show ? dp.fn(D.f, 'c1', { n: 800 }) + (D.hole !== null ? dp.dot(2, D.hole, 'c1', 6) : dp.seg(2, -8, 2, 8, 'ghost')) : dp.text(2, 1, 'graph hidden until you guess', 'tick', 0, 0, 'middle'));
+    document.querySelectorAll('#dBtns button').forEach((b, k) => b.setAttribute('aria-pressed', String(k === cur)));
+    const t = document.getElementById('dTex'); t.innerHTML = `\\[ ${D.tex} \\]`; typeset(t);
+    const s = document.getElementById('dSub'); s.innerHTML = 'Substitute \\( x = 2 \\): top → 0, bottom → 0, giving \\( \\dfrac{0}{0} \\).'; typeset(s);
+    const n = document.getElementById('dNote'); n.innerHTML = show ? D.note : ''; typeset(n);
+    document.getElementById('reveal').hidden = show;
+    document.getElementById('dCount').textContent = `Revealed ${revealed.size} of 4`;
+  }
+  document.getElementById('dBtns').addEventListener('click', e => { const b = e.target.closest('button'); if (b) { cur = +b.dataset.i; drawD(); } });
+  document.getElementById('reveal').addEventListener('click', () => { revealed.add(cur); drawD(); });
+  drawD();
+
+  worked(document.getElementById('wx1'), {
+    problem: '<b>Conjugate:</b> find \\( \\displaystyle\\lim_{h\\to0} \\frac{\\sqrt{9+h} - 3}{h} \\).',
+    steps: [
+      { show: 'Substitute: \\( \\dfrac{3 - 3}{0} = \\dfrac00 \\). There’s a root, so try the conjugate.' },
+      { show: 'Multiply top and bottom by \\( \\sqrt{9+h} + 3 \\): \\[ \\lim_{h\\to0} \\frac{(\\sqrt{9+h} - 3)(\\sqrt{9+h} + 3)}{h(\\sqrt{9+h} + 3)} \\]', why: 'This is multiplying by 1 in disguise. The point is \\( (A - B)(A + B) = A^2 - B^2 \\), which gets rid of the root on top.' },
+      { show: 'Top becomes \\( (9 + h) - 9 = h \\): \\[ \\lim_{h\\to0} \\frac{h}{h(\\sqrt{9+h} + 3)} = \\lim_{h\\to0} \\frac{1}{\\sqrt{9+h} + 3} \\]', why: 'Leave the bottom factored, because you want to cancel that h.' },
+      { show: 'Substitute now: \\( \\dfrac{1}{3 + 3} = \\dfrac16 \\).', why: 'Topic 1.2’s table estimate was 0.1667, and now it’s proven.' }
+    ]
+  });
+  worked(document.getElementById('wx2'), {
+    problem: '<b>Common denominator:</b> find \\( \\displaystyle\\lim_{x\\to3} \\frac{\\frac1x - \\frac13}{x - 3} \\).',
+    steps: [
+      { show: 'Substitute: \\( \\dfrac{\\frac13 - \\frac13}{0} = \\dfrac00 \\). There are fractions inside a fraction, so combine them.' },
+      { show: 'Combine the top: \\( \\dfrac1x - \\dfrac13 = \\dfrac{3 - x}{3x} \\).' },
+      { show: 'Divide by \\( x - 3 \\): \\( \\dfrac{3 - x}{3x(x - 3)} \\). Notice \\( 3 - x = -(x - 3) \\).', why: 'Spotting a factor that’s the negative of another is a very common trick.' },
+      { show: 'Cancel: \\( \\displaystyle\\lim_{x\\to3} \\frac{-1}{3x} = -\\frac19 \\).' }
+    ]
+  });
+
+  practiceList(document.getElementById('practice'), [
+    { id: 'll-direct', tag: 'Substitute first',
+      prompt: '<p>Find \\( \\displaystyle\\lim_{x\\to2} \\frac{x^2 + 1}{x + 3} \\).</p>',
+      answer: { type: 'limit', value: 1 },
+      rungs: [['Nudge', 'Before doing any algebra, what happens if you substitute?'], ['Hint', 'Is the denominator 0 at \\( x = 2 \\)?'], ['Strategy', 'If substitution gives a real number, that number is the limit.']],
+      success: 'No algebra needed. Always check that before reaching for tools.' },
+    { id: 'll-factor', tag: 'Factor',
+      prompt: '<p>Find \\( \\displaystyle\\lim_{x\\to-3} \\frac{x^2 + x - 6}{x + 3} \\).</p>',
+      answer: { type: 'limit', value: -5 },
+      rungs: [['Nudge', 'Substitute: you get 0/0. So \\( x + 3 \\) must be a factor of the top.'], ['Hint', 'Factor \\( x^2 + x - 6 \\) as \\( (x + 3)(x - \\,?\\,) \\).'], ['Strategy', 'Cancel the common factor, then substitute \\( x = -3 \\) into what’s left.']],
+      mistakes: [{ value: 5, msg: 'Check the sign after you substitute \\( -3 \\) into the remaining factor.' }, { value: -1, msg: 'Check your factoring. Multiply your factors back out.' }],
+      success: 'If substituting a gives 0/0 for a polynomial, then \\( (x - a) \\) is a factor. That’s the Factor Theorem.' },
+    { id: 'll-cubes', tag: 'Factor',
+      prompt: '<p>Find \\( \\displaystyle\\lim_{x\\to2} \\frac{x^3 - 8}{x - 2} \\).</p>',
+      answer: { type: 'limit', value: 12 },
+      rungs: [['Nudge', '0/0 again. The top is a difference of cubes.'], ['Hint', '\\( a^3 - b^3 = (a - b)(a^2 + ab + b^2) \\).'], ['Strategy', 'Factor with \\( a = x \\), \\( b = 2 \\), cancel, then substitute.']],
+      mistakes: [{ value: 4, msg: 'The second factor of \\( a^3 - b^3 \\) has three terms: \\( a^2 + ab + b^2 \\).' }, { value: 8, msg: 'Recheck the middle term \\( ab \\) of the second factor.' }],
+      success: 'Preview: this is the slope of \\( x^3 \\) at \\( x = 2 \\), which is \\( 3x^2 \\) there.' },
+    { id: 'll-conj', tag: 'Conjugate',
+      prompt: '<p>Find \\( \\displaystyle\\lim_{x\\to0} \\frac{\\sqrt{x + 4} - 2}{x} \\).</p>',
+      answer: { type: 'limit', value: 0.25 },
+      rungs: [['Nudge', 'A root minus a number, and 0/0: try the conjugate.'], ['Hint', 'Multiply top and bottom by \\( \\sqrt{x+4} + 2 \\). The top becomes \\( (x + 4) - 4 \\).'], ['Strategy', 'Cancel the x, then substitute \\( x = 0 \\).']],
+      mistakes: [{ value: 0.5, msg: 'After canceling you should have \\( \\dfrac{1}{\\sqrt{x+4} + 2} \\). Substitute carefully: both terms in the denominator count.' }],
+      success: 'Same pattern as the worked example. Conjugates turn \\( \\sqrt{\\ } - c \\) into something you can cancel.' },
+    { id: 'll-expand', tag: 'Expand',
+      prompt: '<p>Find \\( \\displaystyle\\lim_{h\\to0} \\frac{(2 + h)^2 - 4}{h} \\).</p>',
+      answer: { type: 'limit', value: 4 },
+      rungs: [['Nudge', 'Substitute: 0/0. Expand the square.'], ['Hint', '\\( (2 + h)^2 = 4 + 4h + h^2 \\).'], ['Strategy', 'After subtracting 4, factor an h out of the top and cancel.']],
+      mistakes: [{ value: 0, msg: 'Did \\( (2+h)^2 \\) become \\( 4 + h^2 \\)? Expand it as \\( (2+h)(2+h) \\).' }],
+      success: 'This is the slope of \\( y = x^2 \\) at \\( x = 2 \\). It’s the derivative in disguise.' },
+    { id: 'll-complex', tag: 'Common denominator',
+      prompt: '<p>Find \\( \\displaystyle\\lim_{x\\to1} \\frac{\\frac1x - 1}{x - 1} \\).</p>',
+      answer: { type: 'limit', value: -1 },
+      rungs: [['Nudge', 'Fractions inside a fraction: combine the top into a single fraction.'], ['Hint', '\\( \\dfrac1x - 1 = \\dfrac{1 - x}{x} \\).'], ['Strategy', '\\( 1 - x = -(x - 1) \\). Cancel, then substitute.']],
+      mistakes: [{ value: 1, msg: 'Watch the sign: \\( 1 - x \\) is the <i>negative</i> of \\( x - 1 \\).' }],
+      success: 'Same move as the second worked example.' },
+    { id: 'll-conj-bottom', tag: 'Conjugate',
+      prompt: '<p>Find \\( \\displaystyle\\lim_{x\\to4} \\frac{x - 4}{\\sqrt{x} - 2} \\).</p>',
+      answer: { type: 'limit', value: 4 },
+      rungs: [['Nudge', 'This time the root is in the <i>denominator</i>. The conjugate still works.'], ['Hint', 'Multiply by \\( \\dfrac{\\sqrt x + 2}{\\sqrt x + 2} \\). The bottom becomes \\( x - 4 \\).'], ['Strategy', 'Or notice \\( x - 4 = (\\sqrt x - 2)(\\sqrt x + 2) \\) and factor directly.']],
+      mistakes: [{ value: 0.25, msg: 'You may have flipped it. The \\( x - 4 \\) is on top, and after canceling, \\( \\sqrt x + 2 \\) stays on top.' }],
+      success: 'Treating \\( x - 4 \\) as a difference of squares is a nice shortcut.' }
+  ]);
+
+  quiz(document.getElementById('quiz'), [
+    { q: '\\( \\displaystyle\\lim_{x\\to5} \\frac{x^2 - 25}{x - 5} \\)',
+      choices: [{ t: 'Direct substitution', ok: false, why: 'Substituting gives 0/0.' }, { t: 'Factor and cancel', ok: true, why: 'Difference of squares: \\( (x-5)(x+5) \\).' }, { t: 'Conjugate', ok: false, why: 'There’s no root here.' }, { t: 'Sign analysis', ok: false, why: 'That’s for nonzero/0.' }] },
+    { q: '\\( \\displaystyle\\lim_{x\\to1} \\frac{x + 4}{x - 1} \\)',
+      choices: [{ t: 'Factor and cancel', ok: false, why: 'The top is 5 at \\( x = 1 \\), not 0, so there’s no common factor.' }, { t: 'Sign analysis', ok: true, why: '5/0 means the limit is infinite: \\( -\\infty \\) from the left, \\( +\\infty \\) from the right, so DNE.' }, { t: 'Direct substitution', ok: false, why: 'The denominator is 0 there.' }] },
+    { q: '\\( \\displaystyle\\lim_{x\\to9} \\frac{\\sqrt{x} - 3}{x - 9} \\)',
+      choices: [{ t: 'Conjugate', ok: true, why: 'A root minus a number with 0/0: multiply by \\( \\sqrt x + 3 \\).' }, { t: 'Common denominator', ok: false, why: 'There are no fractions within the fraction.' }, { t: 'Direct substitution', ok: false, why: 'It gives 0/0.' }] },
+    { q: '\\( \\displaystyle\\lim_{x\\to\\pi} \\frac{\\cos x}{x} \\)',
+      choices: [{ t: 'Direct substitution', ok: true, why: '\\( \\cos\\pi / \\pi = -1/\\pi \\). The denominator isn’t 0, so you’re done.' }, { t: 'Factor and cancel', ok: false, why: 'Try substituting first, since nothing breaks.' }, { t: 'Conjugate', ok: false, why: 'There’s no root and no 0/0.' }] }
+  ]);
+});
+</script>
+</body>
+</html>

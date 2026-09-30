@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Squeeze Theorem</title>
+<meta name="description" content="Calculus I Companion, Topic 1.5: trapping a limit between two bounds, and the geometric proof that sin θ / θ approaches 1.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;1,6..72,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="lesson.css">
+<script src="site.js"></script>
+<script src="course.js"></script>
+</head>
+<body data-topic="squeeze">
+<main class="wrap">
+
+<!-- ================= SEE IT ================= -->
+<section class="step" id="see" data-title="Trapped">
+  <div class="prose">
+    <p>Here’s \( f(x) = x^2 \sin\!\left(\dfrac1x\right) \). Near 0, \( \sin(1/x) \) oscillates infinitely fast, so the algebra from the last lesson can’t help. But look at the two gold curves. Zoom in toward the origin: where is \( f \) forced to go?</p>
+  </div>
+  <div class="card widget">
+    <div class="widget-grid">
+      <svg id="sqPlot" role="img" aria-label="x squared sine of 1 over x between plus and minus x squared"></svg>
+      <div>
+        <div class="ctls"><div class="ctl"><label for="zSlider">Zoom in</label><input id="zSlider" type="range" min="0" max="100" value="0"><output id="zOut"></output></div></div>
+        <div class="row" style="margin-top:12px"><button class="btn" type="button" id="bounds" aria-pressed="true">Hide bounds</button></div>
+        <div class="readout" id="sqRead"></div>
+        <p class="observe">At every zoom level, the wiggly curve stays between \( -x^2 \) and \( x^2 \). Both bounds are pinched to 0 at the origin, and so is everything between them.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= BUILD IT ================= -->
+<section class="step" id="build" data-title="The theorem and its most famous use">
+  <div class="callout idea"><b>Squeeze Theorem</b>
+    <p>If \( g(x) \le f(x) \le h(x) \) for all x near a (except possibly at a), and</p>
+    <div class="display">\[ \lim_{x\to a} g(x) = \lim_{x\to a} h(x) = L, \quad\text{then}\quad \lim_{x\to a} f(x) = L. \]</div>
+  </div>
+  <div class="prose">
+    <p><b>Where the bounds come from:</b> nearly always from \( -1 \le \sin(\text{anything}) \le 1 \) (or cosine). Multiply through by a factor that’s <b>never negative</b>, like \( x^2 \) or \( |x| \), so the inequalities don’t flip.</p>
+  </div>
+  <div id="wx1"></div>
+  <div class="callout warn"><b>Both bounds must meet</b>
+    <p>From \( -1 \le \sin(1/x) \le 1 \) alone you get nothing: the bounds −1 and 1 don’t squeeze to one number. And \( \lim \sin(1/x) \) really doesn’t exist. The squeeze only works when both bounds approach the <b>same</b> limit.</p>
+  </div>
+
+  <h3>The famous one: \( \dfrac{\sin\theta}{\theta} \to 1 \)</h3>
+  <div class="prose"><p>You estimated this in Topic 1.2. Now you can prove it. Compare three areas inside the unit circle, for a small angle θ in radians:</p></div>
+  <div class="card widget">
+    <div class="widget-grid">
+      <svg id="geoPlot" role="img" aria-label="Unit circle with a small triangle, a sector and a larger triangle"></svg>
+      <div>
+        <div class="ctls"><div class="ctl"><label for="thSlider">Angle θ</label><input id="thSlider" type="range" min="5" max="140" value="90"><output id="thOut"></output></div></div>
+        <div class="readout" id="geoRead"></div>
+        <div class="observe" id="geoNote"></div>
+      </div>
+    </div>
+  </div>
+  <div class="prose">
+    <p>The picture shows <span style="color:var(--tangent)">small triangle</span> ≤ <span style="color:var(--curve)">sector</span> ≤ <span style="color:var(--secant)">big triangle</span>:</p>
+    <div class="display">\[ \tfrac12\sin\theta \;\le\; \tfrac12\theta \;\le\; \tfrac12\tan\theta. \]</div>
+    <p>Multiply by \( \tfrac{2}{\sin\theta} \) (positive for small θ) and flip each fraction, which reverses the inequalities:</p>
+    <div class="display">\[ \cos\theta \;\le\; \frac{\sin\theta}{\theta} \;\le\; 1. \]</div>
+    <p>As \( \theta \to 0 \), \( \cos\theta \to 1 \). Both bounds meet at 1, so by the Squeeze Theorem, \( \displaystyle \lim_{\theta\to0}\frac{\sin\theta}{\theta} = 1 \).</p>
+  </div>
+  <div class="callout calc"><b>Why calculus cares</b>
+    <p>This single limit is why \( \frac{d}{dx}\sin x = \cos x \) (Unit 3). It’s also why radians are required: the sector area \( \tfrac12\theta \) is only that simple in radians.</p>
+  </div>
+  <div class="prose">
+    <p><b>Using it:</b> match the angle to the denominator. For \( \dfrac{\sin 4x}{x} \), write \( 4 \cdot \dfrac{\sin 4x}{4x} \). The fraction has the form \( \dfrac{\sin\square}{\square} \) with \( \square \to 0 \), so it approaches 1, and the limit is \( 4 \).</p>
+  </div>
+</section>
+
+<!-- ================= TRY IT ================= -->
+<section class="step" id="try" data-title="Your turn">
+  <div class="practice-list" id="practice"></div>
+</section>
+
+<!-- ================= CHECK ================= -->
+<section class="step" id="check" data-title="Before you move on">
+  <div class="quiz" id="quiz"></div>
+</section>
+
+</main>
+
+<script src="lesson.js"></script>
+<script>
+Lesson.ready(() => {
+  const { Plot, practiceList, worked, quiz, typeset } = Lesson;
+
+  // ---------------- Squeeze zoom ----------------
+  const f = x => x * x * Math.sin(1 / x);
+  const sp = Plot(document.getElementById('sqPlot'), { x: [-1, 1], y: [-1, 1], h: 340, ticks: false });
+  const zSlider = document.getElementById('zSlider');
+  let showB = true;
+  function drawSq() {
+    const w = 0.6 * Math.pow(10, -2.5 * zSlider.value / 100), yh = 1.3 * w * w;
+    sp.range([-w, w], [-yh, yh]);
+    sp.draw((showB ? sp.fn(x => x * x, 'c2') + sp.fn(x => -x * x, 'c2') : '') + sp.fn(f, 'c1', { n: 5000 }) + sp.dot(0, 0, 'c3 solid', 4));
+    document.getElementById('zOut').textContent = `±${w.toPrecision(2)}`;
+    const r = document.getElementById('sqRead');
+    r.innerHTML = `Window: \\( x \\in [-${w.toPrecision(2)},\\, ${w.toPrecision(2)}] \\). The bounds \\( \\pm x^2 \\) are at most \\( ${(w * w).toPrecision(2)} \\) here.`;
+    typeset(r);
+  }
+  zSlider.addEventListener('input', drawSq);
+  document.getElementById('bounds').addEventListener('click', e => { showB = !showB; e.currentTarget.textContent = showB ? 'Hide bounds' : 'Show bounds'; e.currentTarget.setAttribute('aria-pressed', showB); drawSq(); });
+  drawSq();
+
+  worked(document.getElementById('wx1'), {
+    problem: 'Find \\( \\displaystyle\\lim_{x\\to0} x^4 \\cos\\!\\left(\\frac{2}{x}\\right) \\).',
+    steps: [
+      { show: 'Substitution fails (\\( 2/0 \\)), and there’s nothing to factor. The oscillating part is \\( \\cos(2/x) \\).' },
+      { show: 'Start from what you know: \\( -1 \\le \\cos(2/x) \\le 1 \\).' },
+      { show: 'Multiply by \\( x^4 \\), which is \\( \\ge 0 \\): \\( -x^4 \\le x^4\\cos(2/x) \\le x^4 \\).', why: 'Because \\( x^4 \\) is never negative, the inequalities keep their direction.' },
+      { show: '\\( \\displaystyle\\lim_{x\\to0}(-x^4) = 0 \\) and \\( \\displaystyle\\lim_{x\\to0} x^4 = 0 \\). Both bounds meet at 0.' },
+      { show: 'By the Squeeze Theorem, \\( \\displaystyle\\lim_{x\\to0} x^4\\cos(2/x) = 0 \\).', why: 'On an exam, name the theorem and show both bounds’ limits.' }
+    ]
+  });
+
+  // ---------------- sin θ / θ geometry ----------------
+  const gp = Plot(document.getElementById('geoPlot'), { x: [-0.15, 1.35], y: [-0.15, 1.35], w: 360, h: 360, ticks: false });
+  const th = document.getElementById('thSlider');
+  function drawGeo() {
+    const t = th.value / 100, c = Math.cos(t), s = Math.sin(t), tn = Math.tan(t);
+    const sector = [[0, 0]]; for (let i = 0; i <= 40; i++) { const u = t * i / 40; sector.push([Math.cos(u), Math.sin(u)]); }
+    gp.draw(gp.param(Math.cos, Math.sin, 0, Math.PI / 2, 'ghost') +
+      gp.poly([[0, 0], [1, 0], [1, Math.min(tn, 3)]], 'fill2') + gp.poly(sector, 'fill1') + `<path d="M${gp.sx(0)} ${gp.sy(0)}L${gp.sx(1)} ${gp.sy(0)}L${gp.sx(c)} ${gp.sy(s)}Z" style="fill:var(--tangent);opacity:.25"/>` +
+      gp.seg(0, 0, 1, Math.min(tn, 3), 'c2') + gp.seg(1, 0, 1, Math.min(tn, 3), 'c2') + gp.seg(0, 0, 1, 0, 'c1') + gp.seg(c, s, 1, 0, 'c3') +
+      gp.dot(c, s, 'c1 solid', 4) + gp.text(1, Math.min(tn, 1.3), 'tan θ', 'tick', 6, 0) + gp.text(0.08, 0.02, 'θ', 'lbl', 0, -4));
+    document.getElementById('thOut').textContent = t.toFixed(2);
+    const r = document.getElementById('geoRead');
+    r.innerHTML = `\\( \\tfrac12\\sin\\theta = ${(s / 2).toFixed(4)} \\;\\le\\; \\tfrac12\\theta = ${(t / 2).toFixed(4)} \\;\\le\\; \\tfrac12\\tan\\theta = ${(tn / 2).toFixed(4)} \\)`;
+    typeset(r);
+    const n = document.getElementById('geoNote');
+    n.innerHTML = `\\( \\cos\\theta = ${c.toFixed(4)} \\;\\le\\; \\dfrac{\\sin\\theta}{\\theta} = ${(s / t).toFixed(4)} \\;\\le\\; 1 \\)<br>Shrink θ and watch the middle value get trapped against 1.`;
+    typeset(n);
+  }
+  th.addEventListener('input', drawGeo);
+  drawGeo();
+
+  practiceList(document.getElementById('practice'), [
+    { id: 'sq-basic', tag: 'Squeeze',
+      prompt: '<p>Find \\( \\displaystyle\\lim_{x\\to0} x^2 \\cos\\!\\left(\\frac{5}{x}\\right) \\).</p>',
+      answer: { type: 'limit', value: 0 },
+      rungs: [['Nudge', 'Which part oscillates? Bound just that part first.'], ['Hint', '\\( -1 \\le \\cos(5/x) \\le 1 \\). Multiply through by \\( x^2 \\ge 0 \\).'], ['Strategy', 'Find the limits of both bounds as \\( x \\to 0 \\).']],
+      mistakes: [{ value: 'dne', msg: '\\( \\cos(5/x) \\) alone has no limit, but the \\( x^2 \\) factor crushes it. Try squeezing.' }],
+      success: 'A factor that goes to 0 times something bounded always goes to 0.' },
+    { id: 'sq-bound', tag: 'Find the bound',
+      prompt: '<p>For all \\( x \\ne 0 \\): \\( -|x| \\le x\\sin\\!\\left(\\dfrac1x\\right) \\le \\;? \\) Give the upper bound as a function of x.</p>',
+      label: 'Upper bound', placeholder: 'e.g. x^2',
+      answer: { type: 'expr', vars: ['x'], fn: x => Math.abs(x), domain: [-2, 2] },
+      format: 'Use abs(x) for |x|.',
+      rungs: [['Nudge', 'Start from \\( -1 \\le \\sin(1/x) \\le 1 \\). You need to multiply by x, but x can be negative.'], ['Hint', 'The size of \\( x\\sin(1/x) \\) is at most the size of x: \\( |x \\sin(1/x)| \\le |x| \\).'], ['Strategy', 'The bounds should mirror each other, and the lower one is given.']],
+      mistakes: [{ fn: x => x, msg: 'That fails for negative x. Try \\( x = -0.5 \\): your bound would be negative, but \\( x\\sin(1/x) \\) can be positive there.' }],
+      success: 'Absolute value keeps the multiplier non-negative, so the inequalities stay valid on both sides of 0.' },
+    { id: 'sq-given', tag: 'Given bounds',
+      prompt: '<p>Suppose \\( 4x - 9 \\le f(x) \\le x^2 - 4x + 7 \\) for all \\( x \\ge 0 \\). Find \\( \\displaystyle\\lim_{x\\to4} f(x) \\).</p>',
+      answer: { type: 'limit', value: 7 },
+      rungs: [['Nudge', 'You don’t need to know f. Just find the limits of the bounds.'], ['Hint', 'Both bounds are polynomials, so substitute \\( x = 4 \\) into each.'], ['Strategy', 'If both give the same number, the Squeeze Theorem finishes it.']],
+      success: 'Both bounds equal 7 at \\( x = 4 \\) (the parabola touches the line there), so f is pinched to 7.' },
+    { id: 'sq-sin3x', tag: 'sin θ / θ',
+      prompt: '<p>Find \\( \\displaystyle\\lim_{x\\to0} \\frac{\\sin 3x}{x} \\).</p>',
+      answer: { type: 'limit', value: 3 },
+      rungs: [['Nudge', 'You need the angle and the denominator to match: \\( \\dfrac{\\sin \\square}{\\square} \\).'], ['Hint', 'Multiply top and bottom by 3: \\( \\dfrac{\\sin 3x}{x} = 3\\cdot\\dfrac{\\sin 3x}{3x} \\).'], ['Strategy', 'As \\( x \\to 0 \\), \\( 3x \\to 0 \\) too, so \\( \\dfrac{\\sin 3x}{3x} \\to 1 \\).']],
+      mistakes: [{ value: 1, msg: 'The angle is 3x but the denominator is only x, so they don’t match yet.' }, { value: 1 / 3, msg: 'Close, but upside down. You multiply by 3 to fix the denominator, so a factor of 3 comes out front.' }],
+      success: 'In general \\( \\dfrac{\\sin kx}{x} \\to k \\).' },
+    { id: 'sq-ratio', tag: 'sin θ / θ',
+      prompt: '<p>Find \\( \\displaystyle\\lim_{x\\to0} \\frac{\\sin 2x}{\\sin 5x} \\).</p>',
+      answer: { type: 'limit', value: 0.4 },
+      rungs: [['Nudge', 'Build two copies of \\( \\dfrac{\\sin\\square}{\\square} \\), one for the top and one for the bottom.'], ['Hint', 'Divide top and bottom by x: \\( \\dfrac{\\sin 2x / x}{\\sin 5x / x} \\).'], ['Strategy', 'Use the result from the previous problem on the top and the bottom separately.']],
+      mistakes: [{ value: 2.5, msg: 'Upside down. Which one is on top?' }],
+      success: 'For small angles, \\( \\sin\\theta \\approx \\theta \\), so this is roughly \\( \\tfrac{2x}{5x} \\).' },
+    { id: 'sq-mixed', tag: 'sin θ / θ',
+      prompt: '<p>Find \\( \\displaystyle\\lim_{x\\to0} \\frac{\\sin x}{x^2 + x} \\).</p>',
+      answer: { type: 'limit', value: 1 },
+      rungs: [['Nudge', 'Factor the denominator.'], ['Hint', '\\( x^2 + x = x(x + 1) \\), so the expression is \\( \\dfrac{\\sin x}{x}\\cdot\\dfrac{1}{x + 1} \\).'], ['Strategy', 'Use the product law: find the limit of each factor.']],
+      mistakes: [{ value: 0, msg: 'The denominator also goes to 0. Split it into \\( \\dfrac{\\sin x}{x} \\) times something.' }],
+      success: 'Splitting into a known limit times an easy one is a common strategy.' }
+  ]);
+
+  quiz(document.getElementById('quiz'), [
+    { q: 'Since \\( -1 \\le \\sin(1/x) \\le 1 \\), what is \\( \\displaystyle\\lim_{x\\to0} \\sin(1/x) \\)?',
+      choices: [{ t: '0', ok: false, why: 'The bounds −1 and 1 don’t meet, so nothing is squeezed.' }, { t: 'It does not exist', ok: true, why: 'It oscillates between −1 and 1 forever. The squeeze needs bounds with the <i>same</i> limit.' }, { t: 'Between −1 and 1', ok: false, why: 'A limit is a single number (or doesn’t exist).' }] },
+    { q: 'To bound \\( x^3\\sin(1/x) \\) near 0, what should you multiply \\( -1 \\le \\sin(1/x) \\le 1 \\) by?',
+      choices: [{ t: '\\( x^3 \\)', ok: false, why: 'For negative x, \\( x^3 \\lt 0 \\), and multiplying by a negative flips inequalities.' }, { t: '\\( |x^3| \\)', ok: true, why: 'Then \\( -|x|^3 \\le x^3\\sin(1/x) \\le |x|^3 \\), valid on both sides of 0.' }] },
+    { q: 'Why must θ be in radians for \\( \\dfrac{\\sin\\theta}{\\theta} \\to 1 \\)?',
+      choices: [{ t: 'Calculators require it', ok: false, why: 'This is a mathematical fact, not a calculator setting.' }, { t: 'The sector area is \\( \\tfrac12\\theta \\) only in radians', ok: true, why: 'In degrees it’s \\( \\tfrac{\\pi}{360}\\theta \\), and the limit becomes \\( \\tfrac{\\pi}{180} \\).' }] }
+  ]);
+});
+</script>
+</body>
+</html>

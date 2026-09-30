@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How Derivatives Shape a Graph</title>
+<meta name="description" content="Calculus I Companion, Topic 4.3: increasing and decreasing, the First Derivative Test, concavity, inflection points and the Second Derivative Test.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;1,6..72,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="lesson.css">
+<script src="site.js"></script>
+<script src="course.js"></script>
+<style>
+  .stack { display: grid; gap: 6px; }
+  .stack .tag-f { font-size: 13px; color: var(--ink-3); margin: 0 0 2px 4px; }
+  .bars { width: 100%; height: auto; display: block; }
+  .bars text { font: 11px var(--font-body); fill: var(--ink-2); }
+</style>
+</head>
+<body data-topic="shape">
+<main class="wrap">
+
+<!-- ================= SEE IT ================= -->
+<section class="step" id="see" data-title="Three graphs, one story">
+  <div class="prose">
+    <p>Here are f, \( f' \) and \( f'' \), lined up. The two color strips summarize what the derivatives say about f: whether it’s <b>rising or falling</b> (from the sign of \( f' \)) and whether it’s <b>bending up or down</b> (from the sign of \( f'' \)). Move the cursor and match each feature of f to its cause.</p>
+  </div>
+  <div class="card widget">
+    <div class="seg" id="fBtns" role="group" aria-label="Choose f" style="margin-bottom:12px"></div>
+    <div class="widget-grid">
+      <div class="stack">
+        <div><p class="tag-f" id="lbF">f</p><svg id="pF" role="img" aria-label="Graph of f"></svg></div>
+        <svg id="bars" class="bars" role="img" aria-label="Strips showing increasing/decreasing and concavity"></svg>
+        <div><p class="tag-f">f′</p><svg id="pD" role="img" aria-label="Graph of f prime"></svg></div>
+        <div><p class="tag-f">f″</p><svg id="pD2" role="img" aria-label="Graph of f double prime"></svg></div>
+      </div>
+      <div>
+        <div class="ctls"><div class="ctl"><label for="xS">x</label><input id="xS" type="range" min="0" max="1000" value="200"><output id="xO"></output></div></div>
+        <div class="readout" id="shRead" aria-live="polite"></div>
+        <ul class="observe">
+          <li><b>Hilltops and valleys</b> of f line up with zeros of \( f' \) where its sign changes.</li>
+          <li><b>Inflection points</b> (where the bend flips) line up with sign changes of \( f'' \).</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= BUILD IT ================= -->
+<section class="step" id="build" data-title="The tests">
+  <div class="table-wrap"><table class="ref">
+    <tr><th>Test</th><th>Statement</th></tr>
+    <tr><td><b>Increasing/Decreasing</b></td><td>\( f' \gt 0 \) on an interval ⟹ f increasing; \( f' \lt 0 \) ⟹ decreasing.</td></tr>
+    <tr><td><b>First Derivative Test</b></td><td>At a critical number c: \( f' \) changes + to − ⟹ local max; − to + ⟹ local min; no sign change ⟹ neither.</td></tr>
+    <tr><td><b>Concavity</b></td><td>\( f'' \gt 0 \) ⟹ concave up (bends like ∪, slopes increasing); \( f'' \lt 0 \) ⟹ concave down (∩).</td></tr>
+    <tr><td><b>Inflection point</b></td><td>A point on the graph where concavity changes. It’s usually where \( f'' = 0 \) or is undefined, <i>and</i> changes sign.</td></tr>
+    <tr><td><b>Second Derivative Test</b></td><td>If \( f'(c) = 0 \): \( f''(c) \gt 0 \) ⟹ local min (cup); \( f''(c) \lt 0 \) ⟹ local max (cap); \( f''(c) = 0 \) ⟹ <b>inconclusive</b>.</td></tr>
+  </table></div>
+  <div id="wx1"></div>
+  <div class="callout warn"><b>Common mistakes</b>
+    <p>\( f''(c) = 0 \) does <b>not</b> automatically mean an inflection point: \( x^4 \) has \( f''(0) = 0 \) but is concave up on both sides. Always check for a sign change. Also, when the Second Derivative Test gives 0, go back to the First Derivative Test. Don’t conclude “neither.”</p>
+  </div>
+</section>
+
+<!-- ================= TRY IT ================= -->
+<section class="step" id="try" data-title="Your turn">
+  <div class="practice-list" id="practice"></div>
+</section>
+
+<!-- ================= CHECK ================= -->
+<section class="step" id="check" data-title="Before you move on">
+  <div class="quiz" id="quiz"></div>
+</section>
+
+</main>
+
+<script src="lesson.js"></script>
+<script>
+Lesson.ready(() => {
+  const { Plot, practiceList, worked, quiz, typeset } = Lesson;
+
+  const FNS = [
+    { lbl: 'x³ − 3x', tex: 'x^3 - 3x', f: x => x ** 3 - 3 * x, d: x => 3 * x * x - 3, d2: x => 6 * x, x: [-2.5, 2.5], y: [-5, 5], dy: [-4, 12], d2y: [-15, 15] },
+    { lbl: 'x⁴ − 4x³', tex: 'x^4 - 4x^3', f: x => x ** 4 - 4 * x ** 3, d: x => 4 * x ** 3 - 12 * x * x, d2: x => 12 * x * x - 24 * x, x: [-1.3, 4.3], y: [-30, 10], dy: [-20, 30], d2y: [-15, 40] },
+    { lbl: 'x e⁻ˣ', tex: 'x e^{-x}', f: x => x * Math.exp(-x), d: x => (1 - x) * Math.exp(-x), d2: x => (x - 2) * Math.exp(-x), x: [-0.8, 6], y: [-0.8, 0.6], dy: [-0.4, 2], d2y: [-0.5, 0.3] }
+  ];
+  const pF = Plot(document.getElementById('pF'), { x: [-2.5, 2.5], y: [-5, 5], h: 190 });
+  const pD = Plot(document.getElementById('pD'), { x: [-2.5, 2.5], y: [-4, 12], h: 140 });
+  const pD2 = Plot(document.getElementById('pD2'), { x: [-2.5, 2.5], y: [-15, 15], h: 140 });
+  const bars = document.getElementById('bars'); bars.setAttribute('viewBox', '0 0 520 54');
+  const xS = document.getElementById('xS');
+  let cur = 0;
+  document.getElementById('fBtns').innerHTML = FNS.map((F, i) => `<button type="button" data-i="${i}">${F.lbl}</button>`).join('');
+  function zeros(g, [a, b]) {
+    const out = []; let px = a, pv = g(a);
+    for (let i = 1; i <= 2000; i++) { const x = a + (b - a) * i / 2000, v = g(x); if (pv * v < 0) out.push({ x: (px + x) / 2, change: true }); px = x; pv = v; }
+    return out;
+  }
+  function strip(g, y, posLbl, negLbl) {
+    const F = FNS[cur], [a, b] = F.x, n = 260; let s = '';
+    for (let i = 0; i < n; i++) {
+      const x = a + (b - a) * (i + 0.5) / n, v = g(x);
+      s += `<rect x="${(i / n * 520).toFixed(1)}" y="${y}" width="${(520 / n + 0.5).toFixed(1)}" height="18" style="fill:${v > 0 ? 'var(--good)' : 'var(--warn)'};opacity:${Math.abs(v) < 1e-9 ? 0.1 : 0.35}"/>`;
+    }
+    return s + `<text x="6" y="${y + 13}">${posLbl} / ${negLbl}</text>`;
+  }
+  function drawSh() {
+    const F = FNS[cur], [a, b] = F.x, x = a + (b - a) * xS.value / 1000;
+    pF.range(F.x, F.y); pD.range(F.x, F.dy); pD2.range(F.x, F.d2y);
+    const crit = zeros(F.d, F.x), infl = zeros(F.d2, F.x);
+    const cursor = p => p.seg(x, -1e4, x, 1e4, 'mirror');
+    pF.draw(cursor(pF) + pF.fn(F.f, 'c1') + crit.map(c => pF.dot(c.x, F.f(c.x), 'c2 solid', 5)).join('') + infl.map(c => pF.dot(c.x, F.f(c.x), 'c4 solid', 5)).join('') + pF.dot(x, F.f(x), 'c1', 6));
+    pD.draw(cursor(pD) + pD.fn(F.d, 'c2') + pD.dot(x, F.d(x), 'c2 solid', 5));
+    pD2.draw(cursor(pD2) + pD2.fn(F.d2, 'c4') + pD2.dot(x, F.d2(x), 'c4 solid', 5));
+    bars.innerHTML = strip(F.d, 4, 'increasing', 'decreasing') + strip(F.d2, 30, 'concave up', 'concave down') + `<line x1="${((x - a) / (b - a) * 520).toFixed(1)}" y1="0" x2="${((x - a) / (b - a) * 520).toFixed(1)}" y2="54" style="stroke:var(--ink);stroke-width:1.5"/>`;
+    document.getElementById('xO').textContent = x.toFixed(2);
+    const d = F.d(x), d2 = F.d2(x), r = document.getElementById('shRead');
+    r.innerHTML = `\\( f'(${x.toFixed(2)}) = ${d.toFixed(3)} \\): ${Math.abs(d) < 0.02 ? 'flat' : d > 0 ? '<b style="color:var(--good)">increasing</b>' : '<b style="color:var(--warn)">decreasing</b>'}<br>` +
+      `\\( f''(${x.toFixed(2)}) = ${d2.toFixed(3)} \\): ${Math.abs(d2) < 0.02 ? 'no bend (possible inflection)' : d2 > 0 ? '<b style="color:var(--good)">concave up ∪</b>' : '<b style="color:var(--warn)">concave down ∩</b>'}<br>` +
+      '<span class="muted">Gold dots: turning points. Purple dots: inflection points.</span>';
+    typeset(r);
+  }
+  function pick(i) {
+    cur = i;
+    document.querySelectorAll('#fBtns button').forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.i === i)));
+    document.getElementById('lbF').textContent = 'f(x) = ' + FNS[i].lbl;
+    drawSh();
+  }
+  document.getElementById('fBtns').addEventListener('click', e => { const b = e.target.closest('button'); if (b) pick(+b.dataset.i); });
+  xS.addEventListener('input', drawSh);
+  pick(0);
+
+  worked(document.getElementById('wx1'), {
+    problem: 'Analyze \\( f(x) = x^4 - 4x^3 \\): increasing/decreasing, local extrema, concavity and inflection points.',
+    steps: [
+      { show: '\\( f\'(x) = 4x^3 - 12x^2 = 4x^2(x - 3) \\). Critical numbers: 0 and 3.' },
+      { show: 'Sign of \\( f\' \\): negative on \\( (-\\infty, 0) \\), negative on \\( (0, 3) \\) (since \\( x^2 \\ge 0 \\)), positive on \\( (3, \\infty) \\).', why: 'The factor \\( x^2 \\) never changes sign, so there’s no sign change at 0.' },
+      { show: 'First Derivative Test: local min at \\( x = 3 \\), \\( f(3) = -27 \\). At \\( x = 0 \\): no sign change, so <b>neither</b>, just a flat spot.' },
+      { show: '\\( f\'\'(x) = 12x^2 - 24x = 12x(x - 2) \\). Positive on \\( (-\\infty, 0) \\), negative on \\( (0, 2) \\), positive on \\( (2, \\infty) \\).' },
+      { show: 'Inflection points at \\( x = 0 \\) and \\( x = 2 \\): \\( (0, 0) \\) and \\( (2, -16) \\).', why: 'Choose “x⁴ − 4x³” in the explorer above to see all of this at once.' }
+    ]
+  });
+
+  practiceList(document.getElementById('practice'), [
+    { id: 'sh-inc', tag: 'Increasing', prompt: '<p>On what set is \\( f(x) = x^3 - 12x \\) increasing?</p>',
+      answer: { type: 'interval', value: '(-inf,-2)U(2,inf)' },
+      rungs: [['Nudge', 'Find where \\( f\' \\gt 0 \\).'], ['Hint', '\\( f\'(x) = 3x^2 - 12 = 3(x - 2)(x + 2) \\).'], ['Strategy', 'Sign chart with test points on each side of −2 and 2.']],
+      mistakes: [{ value: '(-2,2)', msg: 'That’s where \\( f\' \\lt 0 \\), so f is decreasing there.' }] },
+    { id: 'sh-max', tag: 'First Derivative Test', prompt: '<p>Where does \\( f(x) = x^3 - 12x \\) have a local maximum?</p>', label: 'x =',
+      answer: { type: 'set', values: [-2] }, format: 'List x-values separated by commas.',
+      rungs: [['Nudge', 'Use your sign chart from the last problem.'], ['Hint', 'A local max is where \\( f\' \\) switches from + to −.'], ['Strategy', 'Which critical number has + on its left and − on its right?']],
+      mistakes: [{ values: [2], msg: 'At x = 2, \\( f\' \\) goes from − to +, so that’s a local min.' }, { values: [-2, 2], msg: 'Only one of them is a max.' }] },
+    { id: 'sh-cu', tag: 'Concavity', prompt: '<p>On what interval is \\( f(x) = x^3 - 6x^2 + 1 \\) concave up?</p>',
+      answer: { type: 'interval', value: '(2,inf)' },
+      rungs: [['Nudge', 'Concave up means \\( f\'\' \\gt 0 \\).'], ['Hint', '\\( f\'\'(x) = 6x - 12 \\).'], ['Strategy', 'Solve \\( 6x - 12 \\gt 0 \\).']],
+      mistakes: [{ value: '(-inf,2)', msg: 'That’s where \\( f\'\' \\lt 0 \\), so f is concave down there.' }, { value: '(0,4)', msg: 'That’s where \\( f\' \\lt 0 \\). Concavity uses the <i>second</i> derivative.' }] },
+    { id: 'sh-infl', tag: 'Inflection', prompt: '<p>Find the x-coordinate of the inflection point of \\( f(x) = xe^{-x} \\).</p>', label: 'x =',
+      answer: { type: 'number', value: 2 },
+      rungs: [['Nudge', 'You need \\( f\'\' \\). Take two derivatives, using the product rule each time.'], ['Hint', '\\( f\'(x) = (1 - x)e^{-x} \\), \\( f\'\'(x) = (x - 2)e^{-x} \\).'], ['Strategy', 'Where does \\( f\'\' \\) change sign? \\( e^{-x} \\) is always positive.']],
+      mistakes: [{ value: 1, msg: 'That’s where \\( f\' = 0 \\) (the max). Inflection points come from \\( f\'\' \\).' }] },
+    { id: 'sh-2dt', tag: 'Second Derivative Test', prompt: '<p>\\( f(x) = x^4 - 8x^2 \\) has critical numbers 0 and ±2. Use the Second Derivative Test to list the x-values of all local <b>minimums</b>.</p>', label: 'x =',
+      answer: { type: 'set', values: [2, -2] }, format: 'List x-values separated by commas.',
+      rungs: [['Nudge', '\\( f\'\'(x) = 12x^2 - 16 \\).'], ['Hint', 'Evaluate \\( f\'\' \\) at each critical number. Positive means cup-shaped, a min.'], ['Strategy', '\\( f\'\'(0) = -16 \\) and \\( f\'\'(\\pm2) = 32 \\).']],
+      mistakes: [{ values: [0], msg: '\\( f\'\'(0) \\lt 0 \\) means cap-shaped, so that’s a local max.' }],
+      success: 'A “W” shape: minimums at ±2 and a local max at 0.' }
+  ]);
+
+  quiz(document.getElementById('quiz'), [
+    { q: '\\( f\'(c) = 0 \\) and \\( f\'\'(c) = 0 \\). What can you conclude from the Second Derivative Test?',
+      choices: [{ t: 'Neither max nor min', ok: false, why: '\\( x^4 \\) has a min at 0 with \\( f\'\'(0) = 0 \\).' }, { t: 'Nothing, it’s inconclusive', ok: true, why: 'Go back to the First Derivative Test and check the sign of \\( f\' \\) on each side.' }, { t: 'An inflection point', ok: false, why: 'Only if \\( f\'\' \\) changes sign there.' }] },
+    { q: 'If \\( f\' \\) is increasing on an interval, then f is…',
+      choices: [{ t: 'increasing', ok: false, why: 'Increasing slopes can still be negative. Think of the left half of \\( x^2 \\).' }, { t: 'concave up', ok: true, why: 'Slopes growing means the graph bends upward.' }] },
+    { q: 'At an inflection point, the tangent line…',
+      choices: [{ t: 'is always horizontal', ok: false, why: 'The inflection points of \\( x^3 - 3x \\) (at 0) have slope −3.' }, { t: 'crosses the curve', ok: true, why: 'The curve switches from one side of its tangent to the other there.' }] }
+  ]);
+});
+</script>
+</body>
+</html>

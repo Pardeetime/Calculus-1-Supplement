@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tangent and Velocity Problems</title>
+<meta name="description" content="Calculus I Companion, Topic 1.1: average versus instantaneous rates of change, secant and tangent lines, and why calculus needs limits.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;1,6..72,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="lesson.css">
+<script src="site.js"></script>
+<script src="course.js"></script>
+</head>
+<body data-topic="tangent-velocity">
+<main class="wrap">
+
+<!-- ================= SEE IT ================= -->
+<section class="step" id="see" data-title="How fast at one instant?">
+  <div class="prose">
+    <p>A ball is dropped from the top of a tall building. After \( t \) seconds it has fallen \( s(t) = 4.9t^2 \) meters. <b>How fast is it moving at exactly \( t = 2 \) seconds?</b></p>
+    <p>That sounds easy until you try it. Speed is distance divided by time, but at a single instant no time passes and no distance is covered. So measure the <b>average</b> velocity over shorter and shorter intervals starting at \( t = 2 \).</p>
+  </div>
+
+  <div class="card widget">
+    <div class="widget-grid">
+      <svg id="dropPlot" role="img" aria-label="Distance fallen versus time with a secant line"></svg>
+      <div>
+        <p style="margin:0 0 6px;font-weight:500">Interval length \( \Delta t \):</p>
+        <div class="seg" id="dtBtns" role="group" aria-label="Interval length"></div>
+        <div class="seg" role="group" aria-label="Direction" style="margin-top:8px"><button type="button" id="dirAfter" aria-pressed="true">after t = 2</button><button type="button" id="dirBefore" aria-pressed="false">before t = 2</button></div>
+        <div class="readout" id="dropRead" aria-live="polite"></div>
+        <div class="table-wrap"><table class="ref" id="avgTable"><tr><th>Interval</th><th>Average velocity (m/s)</th></tr></table></div>
+        <form class="answer-row" id="predictForm" autocomplete="off">
+          <label for="predictIn">Velocity at t = 2 seems to be:</label>
+          <input id="predictIn" type="text" inputmode="decimal" style="max-width:110px" placeholder="m/s">
+          <button class="btn primary" type="submit">Check</button>
+        </form>
+        <div class="feedback" id="predictFb" aria-live="polite"></div>
+      </div>
+    </div>
+  </div>
+  <div class="callout idea"><b>What you just did</b>
+    <p>You never computed a speed <i>at</i> an instant. You watched what the average speeds <b>approach</b> as the interval shrinks. That “approach” idea is called a <b>limit</b>, and it’s the reason this whole unit exists.</p>
+  </div>
+</section>
+
+<!-- ================= BUILD IT ================= -->
+<section class="step" id="build" data-title="Secants, tangents and rates">
+  <h3 style="margin-top:0">Average rate of change: slope of a secant line</h3>
+  <div class="prose">
+    <p>The <b>average rate of change</b> of \( f \) from \( x = a \) to \( x = b \) is</p>
+    <div class="display">\[ \frac{\Delta y}{\Delta x} = \frac{f(b) - f(a)}{b - a}. \]</div>
+    <p>On the graph, that’s the slope of the <b>secant line</b> through \( (a, f(a)) \) and \( (b, f(b)) \). For position, it’s average velocity. The units are always <i>output units per input unit</i>, like meters per second or dollars per item.</p>
+  </div>
+
+  <h3>Instantaneous rate: slope of the tangent line</h3>
+  <div class="prose">
+    <p>Write the second point as \( a + h \). Then the secant slope is</p>
+    <div class="display">\[ m_{\text{sec}} = \frac{f(a+h) - f(a)}{h}. \]</div>
+    <p>As \( h \) shrinks toward 0, the secant line pivots toward the <b>tangent line</b>, the line that matches the curve’s direction at that point. The <b>instantaneous rate of change</b> is the value the secant slopes approach.</p>
+  </div>
+  <div class="callout warn"><b>Why not just set h = 0?</b>
+    <p>Try it: \( \dfrac{f(a+0) - f(a)}{0} = \dfrac{0}{0} \), which has no meaning. We need a precise way to say “what the quotient approaches as \( h \) gets close to 0, <i>without</i> letting \( h \) equal 0.” That’s exactly what a limit is.</p>
+  </div>
+
+  <h3>The algebra trick</h3>
+  <div class="prose"><p>For nice functions, you can simplify the secant slope <i>before</i> letting \( h \) shrink. Once the \( h \) in the denominator cancels, it’s easy to see where the expression is heading.</p></div>
+  <div id="wx1"></div>
+  <div class="callout calc"><b>Where this goes</b>
+    <p>In Unit 2, the slope of the tangent line gets a name, the <b>derivative</b> \( f'(a) \), with the formal definition \( \displaystyle f'(a) = \lim_{h\to0}\frac{f(a+h)-f(a)}{h} \). You just did one by hand.</p>
+  </div>
+</section>
+
+<!-- ================= TRY IT ================= -->
+<section class="step" id="try" data-title="Your turn">
+  <div class="practice-list" id="practice"></div>
+</section>
+
+<!-- ================= CHECK ================= -->
+<section class="step" id="check" data-title="Before you move on">
+  <div class="quiz" id="quiz"></div>
+</section>
+
+</main>
+
+<script src="lesson.js"></script>
+<script>
+Lesson.ready(() => {
+  const { Plot, practiceList, worked, quiz, typeset } = Lesson;
+
+  // ---------------- Falling ball ----------------
+  const s = t => 4.9 * t * t;
+  const dp = Plot(document.getElementById('dropPlot'), { x: [-0.3, 3.8], y: [-5, 62], h: 380 });
+  const DTS = [1, 0.5, 0.1, 0.01, 0.001];
+  let dt = 1, dir = 1;
+  const seen = new Map();
+  document.getElementById('dtBtns').innerHTML = DTS.map(v => `<button type="button" data-v="${v}">${v}</button>`).join('');
+
+  function drawDrop() {
+    const t2 = 2 + dir * dt, m = (s(t2) - s(2)) / (t2 - 2);
+    const line = t => s(2) + m * (t - 2);
+    dp.draw(dp.fn(s, 'c1', { from: 0, to: 3.5 }) + dp.fn(line, 'c2') + dp.seg(Math.min(2, t2), s(Math.min(2, t2)), Math.max(2, t2), s(Math.min(2, t2)), 'c2 thin') +
+      dp.seg(Math.max(2, t2), s(Math.min(2, t2)), Math.max(2, t2), s(Math.max(2, t2)), 'c2 thin') +
+      dp.dot(2, s(2), 'c1 solid', 6) + dp.dot(t2, s(t2), 'c2 solid', 6) +
+      dp.text(0.1, 58, 'meters fallen', 'tick') + dp.text(3.7, 0, 't (s)', 'tick', 0, -6, 'end'));
+    document.querySelectorAll('#dtBtns button').forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.v === dt)));
+    const a = Math.min(2, t2), b = Math.max(2, t2);
+    const key = `${a.toFixed(3)}–${b.toFixed(3)}`;
+    if (!seen.has(key)) seen.set(key, { a, b, m });
+    const rows = [...seen.values()].sort((p, q) => (q.b - q.a) - (p.b - p.a) || p.a - q.a);
+    document.getElementById('avgTable').innerHTML = '<tr><th>Interval</th><th>Average velocity (m/s)</th></tr>' +
+      rows.map(r => `<tr><td class="mono">[${+r.a.toFixed(3)}, ${+r.b.toFixed(3)}]</td><td class="mono">${r.m.toFixed(4)}</td></tr>`).join('');
+    const read = document.getElementById('dropRead');
+    read.innerHTML = `\\( \\dfrac{s(${+t2.toFixed(3)}) - s(2)}{${+t2.toFixed(3)} - 2} = \\dfrac{${(s(t2) - s(2)).toFixed(4)}}{${(t2 - 2).toFixed(3)}} = ${m.toFixed(4)} \\) m/s`;
+    typeset(read);
+  }
+  document.getElementById('dtBtns').addEventListener('click', e => { const b = e.target.closest('button'); if (b) { dt = +b.dataset.v; drawDrop(); } });
+  const setDir = d => { dir = d; document.getElementById('dirAfter').setAttribute('aria-pressed', d > 0); document.getElementById('dirBefore').setAttribute('aria-pressed', d < 0); drawDrop(); };
+  document.getElementById('dirAfter').addEventListener('click', () => setDir(1));
+  document.getElementById('dirBefore').addEventListener('click', () => setDir(-1));
+  drawDrop();
+
+  document.getElementById('predictForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const v = parseFloat(document.getElementById('predictIn').value), fb = document.getElementById('predictFb');
+    if (Number.isNaN(v)) return;
+    if (seen.size < 3) { fb.className = 'feedback near'; fb.textContent = 'Collect a few more intervals first. Try the smaller Δt values, from both sides.'; }
+    else if (Math.abs(v - 19.6) < 0.02) { fb.className = 'feedback good'; fb.innerHTML = '<b class="tag-good">Yes.</b> The averages close in on 19.6 m/s from both sides. That’s the instantaneous velocity at t = 2.'; }
+    else { fb.className = 'feedback try'; fb.innerHTML = 'Look at the bottom rows of the table, for the tiniest intervals. What number are they settling toward, from above and from below?'; }
+  });
+
+  worked(document.getElementById('wx1'), {
+    problem: 'Find the slope of the tangent line to \\( y = x^2 \\) at the point \\( (1, 1) \\), and the tangent line’s equation.',
+    steps: [
+      { show: 'Secant slope from \\( x = 1 \\) to \\( x = 1 + h \\): \\[ \\frac{(1+h)^2 - 1^2}{h} \\]' },
+      { show: 'Expand the top: \\( (1+h)^2 - 1 = 1 + 2h + h^2 - 1 = 2h + h^2 \\).', why: 'Remember \\( (1+h)^2 \\ne 1 + h^2 \\).' },
+      { show: 'Cancel: \\( \\dfrac{2h + h^2}{h} = \\dfrac{h(2 + h)}{h} = 2 + h \\), for \\( h \\ne 0 \\).', why: 'Canceling is legal because \\( h \\) is never actually 0. It only gets close.' },
+      { show: 'As \\( h \\to 0 \\), \\( 2 + h \\to 2 \\). The tangent slope is \\( m = 2 \\).' },
+      { show: 'Tangent line: \\( y - 1 = 2(x - 1) \\), so \\( y = 2x - 1 \\).', why: 'Point-slope form, using the point \\( (1,1) \\) and slope 2.' }
+    ]
+  });
+
+  // ---------------- Practice ----------------
+  practiceList(document.getElementById('practice'), [
+    { id: 'tv-avg', tag: 'Average rate',
+      prompt: '<p>Find the average rate of change of \\( f(x) = x^3 \\) on the interval \\( [1, 3] \\).</p>',
+      rungs: [
+        ['Nudge', 'Average rate of change = change in output ÷ change in input.'],
+        ['Hint', 'Compute \\( f(3) \\) and \\( f(1) \\), then use \\( \\dfrac{f(3) - f(1)}{3 - 1} \\).'],
+        ['Strategy', 'Two function values, one subtraction on top, one on the bottom, then divide.']
+      ],
+      answer: { type: 'number', value: 13 },
+      mistakes: [
+        { value: 26, msg: 'You found the change in output. Divide by the change in input.' },
+        { value: 14, msg: 'Check \\( f(1) = 1^3 \\) and \\( f(3) = 3^3 \\), then divide by \\( 3 - 1 \\).' }
+      ],
+      success: 'That’s the slope of the secant line from \\( (1, 1) \\) to \\( (3, 27) \\).' },
+
+    { id: 'tv-avgvel', tag: 'Average velocity',
+      prompt: '<p>A stone is dropped from a cliff and falls \\( s(t) = 16t^2 \\) feet in \\( t \\) seconds. Find its average velocity (in ft/s) over the interval \\( [1, 1.5] \\).</p>',
+      label: 'ft/s',
+      rungs: [
+        ['Nudge', 'Average velocity = distance change ÷ time change.'],
+        ['Hint', 'Compute \\( s(1.5) \\) and \\( s(1) \\). The time change is \\( 0.5 \\) seconds.'],
+        ['Strategy', '\\( \\dfrac{s(1.5) - s(1)}{0.5} \\). Dividing by 0.5 is the same as doubling.']
+      ],
+      answer: { type: 'number', value: 40 },
+      mistakes: [{ value: 20, msg: 'That’s the distance covered. Divide by the elapsed time, 0.5 s.' }],
+      success: 'Its speed at exactly \\( t = 1 \\) must be a bit less, since it keeps speeding up.' },
+
+    { id: 'tv-simplify', tag: 'Secant slope',
+      prompt: '<p>For the same stone, \\( s(t) = 16t^2 \\), simplify the average velocity over \\( [1, 1 + h] \\): \\[ \\frac{s(1+h) - s(1)}{h}, \\quad h \\ne 0. \\]</p>',
+      label: 'Simplified', placeholder: 'in terms of h',
+      rungs: [
+        ['Nudge', 'Write out \\( s(1+h) = 16(1+h)^2 \\) and expand it.'],
+        ['Hint', '\\( 16(1+h)^2 = 16 + 32h + 16h^2 \\). Subtract \\( s(1) \\).'],
+        ['Strategy', 'Every term left on top has a factor of \\( h \\). Factor it out and cancel with the denominator.']
+      ],
+      answer: { type: 'expr', vars: ['h'], fn: h => 32 + 16 * h, domain: [-1, 1] },
+      mistakes: [
+        { fn: h => 16 * h, msg: 'Looks like \\( (1+h)^2 \\) became \\( 1 + h^2 \\). Multiply \\( (1+h)(1+h) \\) out fully.' },
+        { fn: h => 32 * h + 16 * h * h, msg: 'Nearly there. You still need to divide by \\( h \\).' }
+      ],
+      success: 'Now the \\( h \\) in the denominator is gone, and you can see where this heads as \\( h \\) shrinks.' },
+
+    { id: 'tv-instant', tag: 'Instantaneous velocity',
+      prompt: '<p>Using your simplified expression from the previous problem, what is the stone’s <b>instantaneous</b> velocity at \\( t = 1 \\) (in ft/s)?</p>',
+      label: 'ft/s', answer: { type: 'limit', value: 32 },
+      rungs: [
+        ['Nudge', 'Instantaneous velocity is what the average velocity approaches as the interval shrinks.'],
+        ['Hint', 'What happens to your expression as \\( h \\) gets closer and closer to 0?'],
+        ['Strategy', 'Once \\( h \\) is gone from the denominator, you can let \\( h \\to 0 \\) directly.']
+      ],
+      mistakes: [{ value: 40, msg: 'That’s the average over \\( [1, 1.5] \\). You want the value as the interval shrinks to nothing.' }],
+      success: 'Just under the 40 ft/s average, as expected.' },
+
+    { id: 'tv-tangent', tag: 'Tangent line',
+      prompt: '<p>In Topic 0.1 you found that \\( \\dfrac{f(3+h) - f(3)}{h} = 6 + h \\) for \\( f(x) = x^2 \\). Use that to write the equation of the tangent line to \\( y = x^2 \\) at \\( x = 3 \\).</p>',
+      label: 'y =', placeholder: 'e.g. 4x - 4',
+      rungs: [
+        ['Nudge', 'You need a point and a slope.'],
+        ['Hint', 'The slope is what \\( 6 + h \\) approaches as \\( h \\to 0 \\). The point is \\( (3, f(3)) \\).'],
+        ['Strategy', 'Use point-slope form, \\( y - y_1 = m(x - x_1) \\), then solve for y.']
+      ],
+      answer: { type: 'expr', vars: ['x'], fn: x => 6 * x - 9 },
+      mistakes: [
+        { fn: x => 6 * x + 9, msg: 'Check the sign when you distribute: \\( y - 9 = 6(x - 3) \\).' },
+        { fn: x => 6 * x, msg: 'The line must pass through \\( (3, 9) \\). Does yours?' },
+        { fn: x => 6 * x - 3, msg: 'The point on the curve is \\( (3, 9) \\), not \\( (3, 3) \\).' }
+      ],
+      success: 'Zoom in on \\( y = x^2 \\) near \\( (3, 9) \\) and the curve would be almost impossible to tell apart from this line.' }
+  ]);
+
+  quiz(document.getElementById('quiz'), [
+    { q: 'The slope of a <b>secant</b> line on the graph of position vs. time represents…',
+      choices: [
+        { t: 'average velocity over an interval', ok: true, why: 'It connects two points, so it measures change over the time between them.' },
+        { t: 'velocity at a single instant', ok: false, why: 'That’s the tangent line, the limit of secant slopes.' },
+        { t: 'the distance traveled', ok: false, why: 'Distance is a change in y. Slope is change in y divided by change in x.' }
+      ] },
+    { q: 'Why can’t you find instantaneous velocity by plugging \\( h = 0 \\) into \\( \\dfrac{s(a+h) - s(a)}{h} \\)?',
+      choices: [
+        { t: 'It gives 0/0, which has no value', ok: true, why: 'That’s why we need limits, to ask what the quotient <i>approaches</i> instead.' },
+        { t: 'It gives 0, which is wrong', ok: false, why: 'It doesn’t give 0. Both top and bottom become 0, and 0/0 isn’t a number.' },
+        { t: 'You can. It works fine', ok: false, why: 'Try it on \\( s(t) = 16t^2 \\): you get \\( \\tfrac{0}{0} \\).' }
+      ] },
+    { q: 'If \\( C(x) \\) is the cost in dollars to make \\( x \\) phone cases, what are the units of \\( \\dfrac{C(200) - C(100)}{200 - 100} \\)?',
+      choices: [
+        { t: 'dollars', ok: false, why: 'That’s the numerator alone. What does dividing by a number of cases do?' },
+        { t: 'dollars per case', ok: true, why: 'Output units over input units: the average extra cost per case.' },
+        { t: 'cases per dollar', ok: false, why: 'It’s flipped: the numerator is in dollars.' }
+      ] }
+  ]);
+});
+</script>
+</body>
+</html>

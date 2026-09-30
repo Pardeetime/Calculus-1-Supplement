@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Area Between Curves</title>
+<meta name="description" content="Calculus I Companion, Topic 6.1: area between two curves with vertical strips, curves that cross, and horizontal strips integrated in y.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;1,6..72,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="lesson.css">
+<script src="site.js"></script>
+<script src="course.js"></script>
+</head>
+<body data-topic="area-between">
+<main class="wrap">
+
+<!-- ================= SEE IT ================= -->
+<section class="step" id="see" data-title="Slice it into strips">
+  <div class="prose">
+    <p>To find the area of a region trapped between two curves, slice it into thin strips. Each strip is a skinny rectangle whose height is <b>(top curve) − (bottom curve)</b>. Slide the red strip across each region. In scenario B, watch what happens to “top” and “bottom” partway across.</p>
+  </div>
+  <div class="card widget">
+    <div class="seg" id="sBtns" role="group" aria-label="Choose a region" style="margin-bottom:12px"></div>
+    <div class="widget-grid">
+      <svg id="abPlot" role="img" aria-label="Region between two curves with a movable strip"></svg>
+      <div>
+        <div class="display" id="abTex" style="font-size:17px"></div>
+        <div class="ctls"><div class="ctl"><label for="pS">Strip position</label><input id="pS" type="range" min="0" max="1000" value="300"><output id="pO"></output></div></div>
+        <div class="readout" id="abRead" aria-live="polite"></div>
+        <p class="observe" id="abNote"></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= BUILD IT ================= -->
+<section class="step" id="build" data-title="Top minus bottom">
+  <div class="callout idea"><b>Area between curves</b>
+    <p>If \( f(x) \ge g(x) \) on \( [a, b] \), the area between them is</p>
+    <div class="display">\[ A = \int_a^b \big[f(x) - g(x)\big]\,dx = \int_a^b (\text{top} - \text{bottom})\,dx. \]</div>
+    <p>Subtracting heights handles regions below the x-axis automatically, and the answer is always positive.</p>
+  </div>
+  <div class="prose">
+    <ol>
+      <li><b>Sketch</b> both curves.</li>
+      <li>Find where they <b>intersect</b>. Those x-values are often the limits.</li>
+      <li>Decide which curve is on <b>top</b>. Test a point between the intersections.</li>
+      <li><b>Integrate</b> top − bottom. If the curves cross inside the interval, <b>split</b> the integral there so each piece uses the correct top curve.</li>
+    </ol>
+  </div>
+  <div id="wx1"></div>
+  <div class="callout warn"><b>When curves cross</b>
+    <p>\( \int_0^{\pi}(\sin x - \cos x)\,dx = 2 \), but the true area between sine and cosine on \( [0, \pi] \) is \( 2\sqrt2 \approx 2.83 \). Past the crossing at \( \frac{\pi}{4} \), “sin − cos” is negative and <i>cancels</i> part of the area. Area needs \( \int |f - g|\,dx \), which in practice means splitting at each crossing.</p>
+  </div>
+  <h3>Horizontal strips: integrate in y</h3>
+  <div class="prose">
+    <p>Some regions are easier with <b>horizontal</b> strips, especially when the curves are written as \( x = \ldots \) or when “top” changes partway across. Then</p>
+    <div class="display">\[ A = \int_c^d (\text{right} - \text{left})\,dy. \]</div>
+  </div>
+  <div id="wx2"></div>
+</section>
+
+<!-- ================= TRY IT ================= -->
+<section class="step" id="try" data-title="Your turn">
+  <div class="prose"><p>Exact answers preferred, like 9/2, e − 3/2, or 2sqrt(2) − 2.</p></div>
+  <div class="practice-list" id="practice"></div>
+</section>
+
+<!-- ================= CHECK ================= -->
+<section class="step" id="check" data-title="Before you move on">
+  <div class="quiz" id="quiz"></div>
+</section>
+
+</main>
+
+<script src="lesson.js"></script>
+<script>
+Lesson.ready(() => {
+  const { Plot, practiceList, worked, quiz, typeset } = Lesson;
+
+  const Q = Math.PI / 4;
+  const SC = [
+    { lbl: 'A: parabola & line', tex: 'y = x + 2 \\ \\text{and}\\ y = x^2', f: x => x + 2, g: x => x * x, a: -1, b: 2, x: [-2, 3], y: [-1, 6], area: 4.5,
+      note: 'The line is always on top here. Area \\( = \\int_{-1}^{2} (x + 2 - x^2)\\,dx = \\tfrac92 \\).' },
+    { lbl: 'B: sin & cos', tex: 'y = \\sin x \\ \\text{and}\\ y = \\cos x \\ \\text{on}\\ [0, \\pi]', f: Math.sin, g: Math.cos, a: 0, b: Math.PI, x: [-0.3, 3.5], y: [-1.3, 1.3], area: 2 * Math.SQRT2,
+      note: 'Top and bottom swap at \\( x = \\tfrac{\\pi}{4} \\). The true area is \\( 2\\sqrt2 \\approx 2.828 \\), but the naive \\( \\int_0^\\pi(\\sin - \\cos)\\,dx = 2 \\) because the left part counts as negative.' },
+    { lbl: 'C: sideways', tex: 'x = y^2 \\ \\text{and}\\ x = 4', horiz: true, f: y => 4, g: y => y * y, a: -2, b: 2, x: [-1, 5], y: [-2.8, 2.8], area: 32 / 3,
+      note: 'Horizontal strips: right − left = \\( 4 - y^2 \\), for y from −2 to 2. Area \\( = \\tfrac{32}{3} \\).' }
+  ];
+  const ap = Plot(document.getElementById('abPlot'), { x: [-2, 3], y: [-1, 6], h: 360 });
+  const pS = document.getElementById('pS');
+  let cur = 0;
+  document.getElementById('sBtns').innerHTML = SC.map((s, i) => `<button type="button" data-i="${i}">${s.lbl}</button>`).join('');
+  function drawAB() {
+    const S = SC[cur], t = S.a + (S.b - S.a) * pS.value / 1000, w = (S.b - S.a) / 40;
+    ap.range(S.x, S.y);
+    let s = '';
+    const n = 200;
+    for (let i = 0; i < n; i++) {
+      const u = S.a + (S.b - S.a) * (i + 0.5) / n, h = (S.b - S.a) / n, hi = Math.max(S.f(u), S.g(u)), lo = Math.min(S.f(u), S.g(u));
+      const col = S.f(u) >= S.g(u) ? 'var(--secant)' : 'var(--curve)'; // fill matches the top curve's color
+      s += S.horiz
+        ? `<rect x="${ap.sx(lo)}" y="${ap.sy(u + h / 2)}" width="${ap.sx(hi) - ap.sx(lo)}" height="${ap.sy(u - h / 2) - ap.sy(u + h / 2) + 0.4}" style="fill:${col};opacity:.18"/>`
+        : `<rect x="${ap.sx(u - h / 2)}" y="${ap.sy(hi)}" width="${ap.sx(u + h / 2) - ap.sx(u - h / 2) + 0.4}" height="${ap.sy(lo) - ap.sy(hi)}" style="fill:${col};opacity:.18"/>`;
+    }
+    if (S.horiz) {
+      s += ap.fn(() => 4, 'ghost') + ap.param(y => y * y, y => y, -2.6, 2.6, 'c1') + ap.seg(4, -3, 4, 3, 'c2');
+      const L = S.g(t), R = S.f(t);
+      s += `<rect x="${ap.sx(L)}" y="${ap.sy(t + w / 2)}" width="${ap.sx(R) - ap.sx(L)}" height="${ap.sy(t - w / 2) - ap.sy(t + w / 2)}" style="fill:var(--tangent);opacity:.6"/>`;
+    } else {
+      const top = Math.max(S.f(t), S.g(t)), bot = Math.min(S.f(t), S.g(t));
+      s += ap.fn(S.f, 'c2') + ap.fn(S.g, 'c1') + `<rect x="${ap.sx(t - w / 2)}" y="${ap.sy(top)}" width="${ap.sx(t + w / 2) - ap.sx(t - w / 2)}" height="${ap.sy(bot) - ap.sy(top)}" style="fill:var(--tangent);opacity:.6"/>`;
+      if (cur === 1) s += ap.seg(Q, -2, Q, 2, 'mirror');
+    }
+    ap.draw(s);
+    document.getElementById('pO').textContent = t.toFixed(2);
+    const r = document.getElementById('abRead');
+    if (S.horiz) r.innerHTML = `At \\( y = ${t.toFixed(2)} \\): right \\( = 4 \\), left \\( = y^2 = ${(t * t).toFixed(2)} \\), strip length \\( = ${(4 - t * t).toFixed(2)} \\)<br>Total area \\( = ${S.area.toFixed(4)} \\)`;
+    else {
+      const fTop = S.f(t) >= S.g(t);
+      r.innerHTML = `At \\( x = ${t.toFixed(2)} \\): top is <b style="color:${fTop ? 'var(--secant)' : 'var(--curve)'}">${fTop ? 'the gold curve' : 'the teal curve'}</b>, strip height \\( = ${Math.abs(S.f(t) - S.g(t)).toFixed(3)} \\)<br>Total area \\( = ${S.area.toFixed(4)} \\)`;
+    }
+    typeset(r);
+  }
+  function pick(i) {
+    cur = i;
+    document.querySelectorAll('#sBtns button').forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.i === i)));
+    const t = document.getElementById('abTex'); t.innerHTML = `\\[ ${SC[i].tex} \\]`; typeset(t);
+    const n = document.getElementById('abNote'); n.innerHTML = SC[i].note; typeset(n);
+    drawAB();
+  }
+  document.getElementById('sBtns').addEventListener('click', e => { const b = e.target.closest('button'); if (b) pick(+b.dataset.i); });
+  pS.addEventListener('input', drawAB);
+  pick(0);
+
+  worked(document.getElementById('wx1'), {
+    problem: 'Find the area between \\( y = x + 2 \\) and \\( y = x^2 \\).',
+    steps: [
+      { show: 'Intersections: \\( x^2 = x + 2 \\Rightarrow x^2 - x - 2 = 0 \\Rightarrow (x - 2)(x + 1) = 0 \\), so \\( x = -1, 2 \\).' },
+      { show: 'Top: test \\( x = 0 \\). The line gives 2, the parabola gives 0, so the line is on top.' },
+      { show: '\\( \\displaystyle A = \\int_{-1}^{2}(x + 2 - x^2)\\,dx = \\Big[\\tfrac{x^2}{2} + 2x - \\tfrac{x^3}{3}\\Big]_{-1}^{2} \\).' },
+      { show: '\\( = \\left(2 + 4 - \\tfrac83\\right) - \\left(\\tfrac12 - 2 + \\tfrac13\\right) = \\tfrac{10}{3} + \\tfrac76 = \\tfrac92 \\).' }
+    ]
+  });
+  worked(document.getElementById('wx2'), {
+    problem: 'Find the area between \\( x = y^2 \\) and \\( x = y + 2 \\).',
+    steps: [
+      { show: 'Intersections in y: \\( y^2 = y + 2 \\Rightarrow y = -1, 2 \\).' },
+      { show: 'Right curve: at \\( y = 0 \\), \\( y + 2 = 2 \\) and \\( y^2 = 0 \\), so the line is on the right.' },
+      { show: '\\( \\displaystyle A = \\int_{-1}^{2}\\big[(y + 2) - y^2\\big]\\,dy = \\tfrac92 \\).', why: 'With vertical strips you’d have to split at x = 1, where the bottom boundary changes. Horizontal strips need just one integral.' }
+    ]
+  });
+
+  practiceList(document.getElementById('practice'), [
+    { id: 'ab-basic', tag: 'Basic', prompt: '<p>Find the area between \\( y = x^2 \\) and \\( y = 2x \\).</p>', answer: { type: 'number', value: 4 / 3 },
+      rungs: [['Nudge', 'Where do they intersect?'], ['Hint', '\\( x^2 = 2x \\Rightarrow x = 0, 2 \\). Test x = 1: which is higher?'], ['Strategy', '\\( \\int_0^2 (2x - x^2)\\,dx \\).']],
+      mistakes: [{ value: -4 / 3, msg: 'Negative area means top and bottom are flipped. The line is on top.' }, { value: 4, msg: 'That’s only the area under the line. Subtract the parabola.' }] },
+    { id: 'ab-parab', tag: 'Basic', prompt: '<p>Find the area between \\( y = x + 2 \\) and \\( y = x^2 \\) (the first worked example). Work it without looking.</p>', answer: { type: 'number', value: 4.5 },
+      rungs: [['Nudge', 'Limits −1 and 2.'], ['Hint', '\\( \\int_{-1}^{2}(x + 2 - x^2)\\,dx \\).'], ['Strategy', 'Careful with the signs when you substitute −1.']] },
+    { id: 'ab-cross', tag: 'Crossing curves', prompt: '<p>Find the <b>total</b> area enclosed between \\( y = x^3 \\) and \\( y = x \\).</p>', answer: { type: 'number', value: 0.5 },
+      rungs: [['Nudge', 'They intersect at x = −1, 0, 1. Which is on top on each piece?'], ['Hint', 'On (−1, 0), \\( x^3 \\) is on top. On (0, 1), x is on top.'], ['Strategy', 'Two integrals, each giving ¼. Or use symmetry.']],
+      mistakes: [{ value: 0, msg: 'A single integral \\( \\int_{-1}^{1}(x - x^3)dx \\) cancels. Split at the crossing, x = 0.' }, { value: 0.25, msg: 'That’s one lobe. There are two.' }] },
+    { id: 'ab-exp', tag: 'Exponential', prompt: '<p>Find the area between \\( y = e^x \\) and \\( y = x \\) from \\( x = 0 \\) to \\( x = 1 \\).</p>', answer: { type: 'number', value: Math.E - 1.5 },
+      rungs: [['Nudge', 'Which is on top? (Check x = 0.)'], ['Hint', '\\( \\int_0^1 (e^x - x)\\,dx \\).'], ['Strategy', '\\( \\big[e^x - \\tfrac{x^2}{2}\\big]_0^1 \\).']],
+      mistakes: [{ value: Math.E - 0.5, msg: 'Subtract the value at 0 as well: \\( e^0 = 1 \\).' }] },
+    { id: 'ab-horiz', tag: 'Horizontal strips', prompt: '<p>Find the area between \\( x = y^2 \\) and \\( x = 4 \\).</p>', answer: { type: 'number', value: 32 / 3 },
+      rungs: [['Nudge', 'Use horizontal strips. The y-limits are where \\( y^2 = 4 \\).'], ['Hint', '\\( \\int_{-2}^{2}(4 - y^2)\\,dy \\).'], ['Strategy', '\\( \\big[4y - \\tfrac{y^3}{3}\\big]_{-2}^{2} \\).']],
+      mistakes: [{ value: 16 / 3, msg: 'That’s only the top half (y from 0 to 2).' }],
+      success: 'This is scenario C in the explorer.' },
+    { id: 'ab-sincos', tag: 'Crossing curves', prompt: '<p>Find the area between \\( y = \\sin x \\) and \\( y = \\cos x \\) on \\( [0, \\tfrac{\\pi}{2}] \\).</p>', answer: { type: 'number', value: 2 * Math.SQRT2 - 2 },
+      rungs: [['Nudge', 'They cross at \\( \\tfrac{\\pi}{4} \\). Split there.'], ['Hint', '\\( \\int_0^{\\pi/4}(\\cos x - \\sin x)\\,dx + \\int_{\\pi/4}^{\\pi/2}(\\sin x - \\cos x)\\,dx \\).'], ['Strategy', 'Each piece equals \\( \\sqrt2 - 1 \\).']],
+      mistakes: [{ value: 0, msg: 'A single integral cancels by symmetry. Split at the crossing.' }, { value: Math.SQRT2 - 1, msg: 'That’s one of the two pieces.' }] }
+  ]);
+
+  quiz(document.getElementById('quiz'), [
+    { q: 'You compute \\( \\int_a^b (f - g)\\,dx \\) and get a negative number. What happened?',
+      choices: [{ t: 'The region is below the x-axis', ok: false, why: 'Top − bottom is positive even below the axis.' }, { t: 'g is actually on top (or they cross)', ok: true, why: 'Check which curve is higher, and split at any crossings.' }] },
+    { q: 'When are horizontal strips (integrating in y) the better choice?',
+      choices: [{ t: 'When the curves are given as \\( x = \\) functions of y, or the top/bottom boundary changes', ok: true, why: 'One integral in y can replace several in x.' }, { t: 'Never, x is always easier', ok: false, why: 'The worked example with \\( x = y^2 \\) needed only one integral in y.' }] }
+  ]);
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Derivatives of Exponentials</title>
+<meta name="description" content="Calculus I Companion, Topic 3.2: why the derivative of b^x is proportional to b^x, why e^x is its own derivative, and derivatives of general exponentials.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;1,6..72,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="lesson.css">
+<script src="site.js"></script>
+<script src="course.js"></script>
+</head>
+<body data-topic="exp-deriv">
+<main class="wrap">
+
+<!-- ================= SEE IT ================= -->
+<section class="step" id="see" data-title="Slope ÷ height is constant">
+  <div class="prose">
+    <p>Pick a base b and move along \( y = b^x \). At each point, compare the <b>slope</b> with the <b>height</b>. Something surprising happens with their ratio. Try several bases.</p>
+  </div>
+  <div class="card widget">
+    <div class="widget-grid">
+      <svg id="ePlot" role="img" aria-label="Exponential curve with its tangent line at a movable point"></svg>
+      <div>
+        <div class="ctls">
+          <div class="ctl"><label for="bS">Base b</label><input id="bS" type="range" min="120" max="500" value="200"><output id="bO"></output></div>
+          <div class="ctl"><label for="xS">Point x</label><input id="xS" type="range" min="-200" max="150" value="0"><output id="xO"></output></div>
+        </div>
+        <div class="readout" id="eRead" aria-live="polite"></div>
+        <ol class="observe">
+          <li>With b fixed, move x. What happens to slope ÷ height?</li>
+          <li>Which base makes the ratio exactly 1? (Topic 0.3 might remind you.)</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+  <div class="callout idea"><b>What you found</b>
+    <p>For each base, slope ÷ height is the <b>same number everywhere</b> on the curve. So the derivative of \( b^x \) is a constant times \( b^x \). For \( b = e \) that constant is exactly 1.</p>
+  </div>
+</section>
+
+<!-- ================= BUILD IT ================= -->
+<section class="step" id="build" data-title="Where the constant comes from">
+  <div id="wx1"></div>
+  <div class="callout idea"><b>The rules</b>
+    <div class="display">\[ \frac{d}{dx}\,e^x = e^x \qquad\qquad \frac{d}{dx}\,b^x = b^x \ln b \]</div>
+    <p>The constant \( \displaystyle\lim_{h\to0}\frac{b^h - 1}{h} \) equals \( \ln b \). You estimated the \( b = e \) case (it’s 1) in Topic 1.2. Topic 3.7 proves the general case with the Chain Rule.</p>
+  </div>
+  <div class="callout warn"><b>Power vs. exponential</b>
+    <p>\( x^3 \) is a <b>power</b> (variable base, constant exponent), so use the power rule: \( 3x^2 \). \( 3^x \) is an <b>exponential</b> (constant base, variable exponent): \( 3^x \ln 3 \). The power rule does <b>not</b> apply to \( 3^x \), and \( \frac{d}{dx}3^x \ne x\cdot3^{x-1} \).</p>
+  </div>
+  <div class="prose">
+    <p>Also watch for constants in disguise: \( e^2 \), \( e^\pi \) and \( 5^3 \) are just numbers, with derivative 0. And \( e^{x+2} = e^2 \cdot e^x \) is a constant times \( e^x \).</p>
+  </div>
+  <div class="callout calc"><b>Why it matters</b>
+    <p>“Rate of change proportional to amount” (\( y' = ky \)) describes population growth, radioactive decay, compound interest and cooling. Exponentials are the functions with that property, which is why they show up everywhere.</p>
+  </div>
+</section>
+
+<!-- ================= TRY IT ================= -->
+<section class="step" id="try" data-title="Your turn">
+  <div id="drill"></div>
+  <div class="practice-list" id="practice" style="margin-top:18px"></div>
+</section>
+
+<!-- ================= CHECK ================= -->
+<section class="step" id="check" data-title="Before you move on">
+  <div class="quiz" id="quiz"></div>
+</section>
+
+</main>
+
+<script src="lesson.js"></script>
+<script>
+Lesson.ready(() => {
+  const { Plot, practiceList, worked, quiz, drill, typeset } = Lesson;
+
+  const ep = Plot(document.getElementById('ePlot'), { x: [-2.5, 2], y: [-1, 8], h: 360 });
+  const bS = document.getElementById('bS'), xS = document.getElementById('xS');
+  function drawE() {
+    const b = bS.value / 100, x = xS.value / 100, y = b ** x, m = y * Math.log(b);
+    ep.draw(ep.fn(t => b ** t, 'c1') + ep.fn(t => y + m * (t - x), 'c3', { from: x - 1.2, to: x + 1.2 }) + ep.seg(x, 0, x, y, 'c2 thin') + ep.dot(x, y, 'c1', 7, ' data-handle="p" style="cursor:grab"'));
+    document.getElementById('bO').textContent = b.toFixed(2);
+    document.getElementById('xO').textContent = x.toFixed(2);
+    const r = document.getElementById('eRead');
+    r.innerHTML = `height \\( = ${y.toFixed(4)} \\), slope \\( = ${m.toFixed(4)} \\)<br><b>slope ÷ height \\( = ${(m / y).toFixed(4)} \\)</b>` + (Math.abs(b - Math.E) < 0.006 ? '<br>That’s about 1, and this base is e.' : '');
+    typeset(r);
+  }
+  bS.addEventListener('input', drawE); xS.addEventListener('input', drawE);
+  ep.onDrag((h, pt) => { xS.value = Math.round(Math.max(-2, Math.min(1.5, pt.x)) * 100); drawE(); });
+  drawE();
+
+  worked(document.getElementById('wx1'), {
+    problem: 'Why is \\( \\frac{d}{dx}\\,b^x \\) a constant times \\( b^x \\)?',
+    steps: [
+      { show: '\\[ \\frac{d}{dx}b^x = \\lim_{h\\to0}\\frac{b^{x+h} - b^x}{h} = \\lim_{h\\to0}\\frac{b^x\\,b^h - b^x}{h} \\]', why: 'The exponent law \\( b^{x+h} = b^x b^h \\) is the key move.' },
+      { show: '\\[ = b^x \\cdot \\lim_{h\\to0}\\frac{b^h - 1}{h} \\]', why: '\\( b^x \\) doesn’t depend on h, so it factors out of the limit.' },
+      { show: 'The remaining limit is a number that depends only on b, not on x. That’s the constant ratio you saw in the explorer.' },
+      { show: 'For \\( b = e \\) the number is 1, so \\( \\frac{d}{dx}e^x = e^x \\). In general it’s \\( \\ln b \\).' }
+    ]
+  });
+
+  const ri = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+  const sgn = (c, first) => (c < 0 ? '-' : first ? '' : '+');
+  const co = c => (Math.abs(c) === 1 ? '' : Math.abs(c));
+  const PIECES = [
+    { t: c => `${co(c)}e^{x}`, d: (c, x) => c * Math.exp(x) },
+    { t: c => `${co(c)}\\cdot 2^{x}`.replace(/^\\cdot /, ''), d: (c, x) => c * 2 ** x * Math.log(2) },
+    { t: c => `${co(c)}\\cdot 3^{x}`.replace(/^\\cdot /, ''), d: (c, x) => c * 3 ** x * Math.log(3) },
+    { t: c => `${co(c)}x^{3}`, d: (c, x) => 3 * c * x * x },
+    { t: c => `${co(c)}x^{2}`, d: (c, x) => 2 * c * x },
+    { t: c => `${co(c)}x^{e}`, d: (c, x) => c * Math.E * x ** (Math.E - 1), pos: true },
+    { t: c => `${Math.abs(c)}e^{2}`, d: () => 0 }
+  ];
+  drill(document.getElementById('drill'), {
+    title: 'Exponentials and powers', label: 'dy/dx', format: 'Type e^x for eˣ and ln(3) for ln 3.',
+    make() {
+      const picks = [...PIECES].sort(() => Math.random() - 0.5).slice(0, ri(2, 3));
+      const cs = picks.map(() => (Math.random() < 0.3 ? -1 : 1) * ri(1, 5));
+      return {
+        q: 'y = ' + picks.map((p, i) => `${sgn(cs[i], i === 0)} ${p.t(cs[i])}`).join(' '),
+        d: x => picks.reduce((s, p, i) => s + p.d(cs[i], x), 0),
+        domain: picks.some(p => p.pos) ? [0.5, 2] : [-1.5, 1.5],
+        hints: ['Sort each term: power (\\( x^n \\)), exponential (\\( b^x \\)), or constant (like \\( e^2 \\))?', 'Exponentials: \\( (e^x)\' = e^x \\), \\( (b^x)\' = b^x \\ln b \\). Powers: bring the exponent down.']
+      };
+    }
+  });
+
+  practiceList(document.getElementById('practice'), [
+    { id: 'ed-basic', tag: 'Basic', prompt: '<p>Find \\( \\dfrac{d}{dx}\\left(3e^x - x^2\\right) \\).</p>', label: 'dy/dx',
+      answer: { type: 'expr', vars: ['x'], fn: x => 3 * Math.exp(x) - 2 * x },
+      rungs: [['Nudge', 'Term by term.'], ['Hint', '\\( (e^x)\' = e^x \\), and constant multiples come along.'], ['Strategy', 'Two quick derivatives, subtracted.']],
+      mistakes: [{ fn: x => 3 * x * Math.exp(x - 1) - 2 * x, msg: '\\( e^x \\) isn’t a power of x, so the power rule doesn’t apply. \\( e^x \\) is its own derivative.' }] },
+    { id: 'ed-2x', tag: 'Other bases', prompt: '<p>Find \\( \\dfrac{d}{dx}\\,2^x \\).</p>', label: 'dy/dx',
+      answer: { type: 'expr', vars: ['x'], fn: x => 2 ** x * Math.log(2) },
+      rungs: [['Nudge', 'This is an exponential, since the variable is in the exponent.'], ['Hint', '\\( \\frac{d}{dx}b^x = b^x \\ln b \\).'], ['Strategy', 'Type it as 2^x * ln(2).']],
+      mistakes: [{ fn: x => x * 2 ** (x - 1), msg: 'That’s the power rule, which only works when the <i>base</i> is the variable.' }, { fn: x => 2 ** x, msg: 'Only base e is its own derivative. Other bases pick up a factor of \\( \\ln b \\).' }] },
+    { id: 'ed-shift', tag: 'Rewrite', prompt: '<p>Find \\( \\dfrac{d}{dx}\\,e^{x+2} \\).</p>', label: 'dy/dx',
+      answer: { type: 'expr', vars: ['x'], fn: x => Math.exp(x + 2) },
+      rungs: [['Nudge', 'Use an exponent law to split \\( e^{x+2} \\).'], ['Hint', '\\( e^{x+2} = e^2 \\cdot e^x \\), and \\( e^2 \\) is a constant.'], ['Strategy', 'Constant multiple rule.']],
+      mistakes: [{ fn: x => (x + 2) * Math.exp(x + 1), msg: 'The power rule doesn’t apply to exponentials. Rewrite as \\( e^2 e^x \\).' }],
+      success: 'Rewriting turned an unfamiliar form into a familiar one. (The Chain Rule will do this automatically.)' },
+    { id: 'ed-horiz', tag: 'Horizontal tangent', prompt: '<p>Where does \\( y = e^x - 2x \\) have a horizontal tangent?</p>', label: 'x =',
+      answer: { type: 'number', value: Math.log(2) },
+      rungs: [['Nudge', 'Set \\( y\' = 0 \\).'], ['Hint', '\\( e^x - 2 = 0 \\).'], ['Strategy', 'Solve \\( e^x = 2 \\) with a logarithm.']],
+      mistakes: [{ value: 2, msg: 'Solve \\( e^x = 2 \\) for x, not for \\( e^x \\).' }],
+      success: 'Exponential equations from Topic 0.3 are coming back already.' },
+    { id: 'ed-tangent', tag: 'Tangent line', prompt: '<p>Find the tangent line to \\( y = e^x \\) at \\( x = 0 \\).</p>', label: 'y =',
+      answer: { type: 'expr', vars: ['x'], fn: x => x + 1 },
+      rungs: [['Nudge', 'You need the height and slope at x = 0.'], ['Hint', 'Both are \\( e^0 \\).'], ['Strategy', 'Point (0, 1), slope 1.']],
+      success: 'It’s the dashed guide line from Topic 0.3’s “hunting for e” widget.' },
+    { id: 'ed-xe', tag: 'Tricky', prompt: '<p>Let \\( f(x) = e^x + x^e \\). Find \\( f\'(1) \\).</p>', label: "f′(1)",
+      answer: { type: 'number', value: 2 * Math.E },
+      rungs: [['Nudge', 'One term is an exponential and the other is a power. Which is which?'], ['Hint', '\\( x^e \\) has a constant exponent e ≈ 2.718, so use the power rule: \\( e\\,x^{e-1} \\).'], ['Strategy', 'Differentiate both, then substitute x = 1.']],
+      mistakes: [{ value: Math.E + 1, msg: 'The derivative of \\( x^e \\) at 1 is \\( e \\cdot 1^{e-1} \\), not 1.' }],
+      success: 'Same letters, completely different rules. Always ask where the variable is.' }
+  ]);
+
+  quiz(document.getElementById('quiz'), [
+    { q: '\\( \\dfrac{d}{dx}\\,e^3 = \\)',
+      choices: [{ t: '\\( e^3 \\)', ok: false, why: '\\( e^3 \\) has no x in it. It’s about 20.09, a constant.' }, { t: '\\( 3e^2 \\)', ok: false, why: 'That’s the power rule applied to a constant. There’s no variable here.' }, { t: '0', ok: true, why: 'It’s a constant, so its derivative is 0.' }] },
+    { q: 'Which function is its own derivative?',
+      choices: [{ t: '\\( 2^x \\)', ok: false, why: 'Its derivative is \\( 2^x \\ln 2 \\approx 0.69 \\cdot 2^x \\).' }, { t: '\\( e^x \\)', ok: true, why: 'Slope equals height everywhere.' }, { t: '\\( x^e \\)', ok: false, why: 'That’s a power: its derivative is \\( e\\,x^{e-1} \\).' }] },
+    { q: 'For \\( y = 10^x \\), slope ÷ height is…',
+      choices: [{ t: '10', ok: false, why: 'Try it in the explorer with a base near 5, then imagine 10. The ratio is much smaller than the base.' }, { t: '\\( \\ln 10 \\approx 2.30 \\)', ok: true, why: '\\( (10^x)\' = 10^x \\ln 10 \\).' }, { t: 'It depends on x', ok: false, why: 'That was the surprise: it’s the same everywhere on the curve.' }] }
+  ]);
+});
+</script>
+</body>
+</html>

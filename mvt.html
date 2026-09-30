@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Mean Value Theorem</title>
+<meta name="description" content="Calculus I Companion, Topic 4.2: Rolle's Theorem, the Mean Value Theorem, its hypotheses, and what it tells you about functions with equal derivatives.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;1,6..72,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="lesson.css">
+<script src="site.js"></script>
+<script src="course.js"></script>
+</head>
+<body data-topic="mvt">
+<main class="wrap">
+
+<!-- ================= SEE IT ================= -->
+<section class="step" id="see" data-title="Find the parallel tangent">
+  <div class="prose">
+    <p>The gold <b>secant</b> line joins the ends of the curve on \( [a, b] \), and its slope is the <b>average</b> rate of change. Slide the point c along the curve until its red <b>tangent</b> line is parallel to the secant. Is there always such a point? Can there be more than one?</p>
+  </div>
+  <div class="card widget">
+    <div class="widget-grid">
+      <svg id="mvPlot" role="img" aria-label="A curve with its secant line and a movable tangent line"></svg>
+      <div>
+        <div class="ctls">
+          <div class="ctl"><label for="cS">Point c</label><input id="cS" type="range" min="0" max="1000" value="200"><output id="cO"></output></div>
+          <div class="ctl"><label for="aS">a</label><input id="aS" type="range" min="-250" max="0" value="-200"><output id="aO"></output></div>
+          <div class="ctl"><label for="bS">b</label><input id="bS" type="range" min="50" max="250" value="200"><output id="bO"></output></div>
+        </div>
+        <div class="readout" id="mvRead" aria-live="polite"></div>
+        <div class="feedback" id="mvFb" aria-live="polite"></div>
+      </div>
+    </div>
+  </div>
+  <div class="callout idea"><b>The idea</b>
+    <p>If a smooth curve starts at one height and ends at another, then somewhere in between, its instantaneous slope equals its average slope. If you drove 150 miles in 2 hours (averaging 75 mph), at some instant your speedometer read exactly 75.</p>
+  </div>
+</section>
+
+<!-- ================= BUILD IT ================= -->
+<section class="step" id="build" data-title="Rolle, then the MVT">
+  <div class="callout idea"><b>Rolle’s Theorem</b>
+    <p>If f is continuous on \( [a, b] \), differentiable on \( (a, b) \), and \( f(a) = f(b) \), then \( f'(c) = 0 \) for some c in \( (a, b) \). What goes up and comes back down must level off somewhere.</p>
+  </div>
+  <div class="callout idea"><b>Mean Value Theorem</b>
+    <p>If f is continuous on \( [a, b] \) and differentiable on \( (a, b) \), then for some c in \( (a, b) \):</p>
+    <div class="display">\[ f'(c) = \frac{f(b) - f(a)}{b - a}. \]</div>
+    <p>It’s Rolle’s Theorem, tilted.</p>
+  </div>
+  <div class="callout warn"><b>The hypotheses matter</b>
+    <p>\( f(x) = |x| \) on \( [-1, 1] \): the average slope is 0, but \( f' \) is only ever ±1. The MVT fails because of the corner, since f isn’t differentiable at 0. A jump breaks it too. Always check both conditions before using the theorem.</p>
+  </div>
+  <div id="wx1"></div>
+  <h3>Why the MVT matters: equal derivatives</h3>
+  <div class="prose">
+    <ul>
+      <li>If \( f'(x) = 0 \) everywhere on an interval, then f is <b>constant</b> there. (Any two points have an average slope of \( f'(c) = 0 \).)</li>
+      <li>If \( f'(x) = g'(x) \) everywhere, then \( f(x) = g(x) + C \): the functions differ by a constant.</li>
+    </ul>
+    <p>That second fact is why every antiderivative gets a “+ C” (Topic 4.8).</p>
+  </div>
+</section>
+
+<!-- ================= TRY IT ================= -->
+<section class="step" id="try" data-title="Your turn">
+  <div class="practice-list" id="practice"></div>
+</section>
+
+<!-- ================= CHECK ================= -->
+<section class="step" id="check" data-title="Before you move on">
+  <div class="tf" id="tf"></div>
+</section>
+
+</main>
+
+<script src="lesson.js"></script>
+<script>
+Lesson.ready(() => {
+  const { Plot, practiceList, worked, trueFalse, typeset } = Lesson;
+
+  const f = x => x ** 3 - 3 * x + 2, fp = x => 3 * x * x - 3;
+  const mp = Plot(document.getElementById('mvPlot'), { x: [-2.8, 2.8], y: [-5, 9], h: 360 });
+  const cS = document.getElementById('cS'), aS = document.getElementById('aS'), bS = document.getElementById('bS');
+  const found = new Set();
+  function drawMV() {
+    const a = aS.value / 100, b = bS.value / 100, c = a + (b - a) * cS.value / 1000;
+    const m = (f(b) - f(a)) / (b - a), mc = fp(c), ok = Math.abs(mc - m) < 0.08;
+    mp.draw(mp.fn(f, 'ghost') + mp.fn(f, 'c1', { from: a, to: b }) + mp.fn(x => f(a) + m * (x - a), 'c2') +
+      mp.fn(x => f(c) + mc * (x - c), ok ? 'c1' : 'c3', { from: c - 1.3, to: c + 1.3 }) +
+      mp.dot(a, f(a), 'c2 solid', 5) + mp.dot(b, f(b), 'c2 solid', 5) + mp.dot(c, f(c), ok ? 'c1 solid' : 'c3 solid', 7));
+    ['a', 'b'].forEach((id, i) => { document.getElementById(id + 'O').textContent = [a, b][i].toFixed(2); });
+    document.getElementById('cO').textContent = c.toFixed(2);
+    const r = document.getElementById('mvRead');
+    r.innerHTML = `Secant slope \\( \\dfrac{f(b) - f(a)}{b - a} = ${m.toFixed(3)} \\)<br>Tangent slope \\( f'(c) = ${mc.toFixed(3)} \\)`;
+    typeset(r);
+    const fb = document.getElementById('mvFb');
+    if (ok) { found.add(c.toFixed(1)); fb.className = 'feedback good'; fb.innerHTML = `<b class="tag-good">Parallel!</b> \\( c \\approx ${c.toFixed(2)} \\). ${found.size === 1 ? 'Is there another one on this interval?' : 'You’ve found more than one. The MVT promises <i>at least</i> one.'}`; typeset(fb); }
+    else { fb.className = 'feedback'; fb.innerHTML = ''; }
+  }
+  [cS, aS, bS].forEach(s => s.addEventListener('input', () => { if (s !== cS) found.clear(); drawMV(); }));
+  drawMV();
+
+  worked(document.getElementById('wx1'), {
+    problem: 'Verify the MVT for \\( f(x) = x^2 \\) on \\( [1, 3] \\) and find the c it promises.',
+    steps: [
+      { show: 'Hypotheses: a polynomial is continuous and differentiable everywhere. ✓' },
+      { show: 'Average slope: \\( \\dfrac{f(3) - f(1)}{3 - 1} = \\dfrac{9 - 1}{2} = 4 \\).' },
+      { show: 'Solve \\( f\'(c) = 2c = 4 \\): \\( c = 2 \\), which is in \\( (1, 3) \\). ✓', why: 'For a parabola, c is always the midpoint of the interval, a neat fact to check.' }
+    ]
+  });
+
+  practiceList(document.getElementById('practice'), [
+    { id: 'mv-cube', tag: 'Find c', prompt: '<p>Find the value of c guaranteed by the MVT for \\( f(x) = x^3 \\) on \\( [0, 3] \\).</p>', label: 'c =',
+      answer: { type: 'set', values: [Math.sqrt(3)] }, format: 'List every valid c in the interval.',
+      rungs: [['Nudge', 'Compute the average slope first.'], ['Hint', '\\( \\dfrac{27 - 0}{3} = 9 \\). Now solve \\( f\'(c) = 3c^2 = 9 \\).'], ['Strategy', 'Keep only solutions inside \\( (0, 3) \\).']],
+      mistakes: [{ values: [Math.sqrt(3), -Math.sqrt(3)], msg: '\\( -\\sqrt3 \\) isn’t in \\( (0, 3) \\). The MVT only promises c inside the interval.' }] },
+    { id: 'mv-sqrt', tag: 'Find c', prompt: '<p>Find c for \\( f(x) = \\sqrt{x} \\) on \\( [0, 4] \\).</p>', label: 'c =',
+      answer: { type: 'number', value: 1 },
+      rungs: [['Nudge', 'Average slope: \\( \\dfrac{2 - 0}{4} \\).'], ['Hint', 'Solve \\( \\dfrac{1}{2\\sqrt c} = \\dfrac12 \\).'], ['Strategy', '\\( \\sqrt c = 1 \\).']],
+      success: 'f isn’t differentiable at 0, but the MVT only needs differentiability on the <i>open</i> interval.' },
+    { id: 'mv-rolle', tag: 'Rolle', prompt: '<p>\\( f(x) = x^2 - 4x + 1 \\) on \\( [0, 4] \\) satisfies Rolle’s Theorem. Find c.</p>', label: 'c =',
+      answer: { type: 'number', value: 2 },
+      rungs: [['Nudge', 'Check \\( f(0) = f(4) \\), then set \\( f\'(c) = 0 \\).'], ['Hint', '\\( f\'(c) = 2c - 4 \\).'], ['Strategy', 'Solve for c.']] },
+    { id: 'mv-speed', tag: 'Speed', prompt: '<p>A car travels 150 miles in 2 hours. According to the MVT, at some instant its speed was exactly how many mph?</p>', label: 'mph',
+      answer: { type: 'number', value: 75 },
+      rungs: [['Nudge', 'The MVT links average rate and instantaneous rate.'], ['Hint', 'Average speed = distance ÷ time.'], ['Strategy', 'At some instant, the speed equals the average.']],
+      success: 'This is how some toll systems (“average speed cameras”) can prove you sped.' },
+    { id: 'mv-bound', tag: 'Bound', prompt: '<p>Suppose \\( f(1) = 3 \\) and \\( f\'(x) \\le 2 \\) for all x. What is the largest possible value of \\( f(5) \\)?</p>', label: 'f(5) ≤',
+      answer: { type: 'number', value: 11 },
+      rungs: [['Nudge', 'By the MVT, \\( \\dfrac{f(5) - f(1)}{5 - 1} = f\'(c) \\) for some c.'], ['Hint', 'That means \\( f(5) - 3 = 4f\'(c) \\le 4\\cdot2 \\).'], ['Strategy', 'Solve for the largest \\( f(5) \\).']],
+      mistakes: [{ value: 8, msg: 'That’s the largest possible <i>change</i>. Add the starting value f(1) = 3.' }, { value: 13, msg: 'The interval from 1 to 5 has length 4, not 5.' }],
+      success: 'Bounding the derivative bounds how much the function can change. It’s a powerful use of the MVT.' }
+  ]);
+
+  trueFalse(document.getElementById('tf'), [
+    { s: 'The MVT applies to \\( f(x) = |x| \\) on \\( [-2, 3] \\).', ok: false, why: 'f isn’t differentiable at 0, which is inside the interval.' },
+    { s: 'If \\( f\'(x) = 0 \\) for all x in an interval, then f is constant there.', ok: true, why: 'Any two points have an average slope of \\( f\'(c) = 0 \\), so their heights are equal.' },
+    { s: 'The MVT guarantees exactly one c.', ok: false, why: 'At least one. You found two in the explorer.' },
+    { s: 'If \\( f\' = g\' \\) everywhere, then \\( f = g \\).', ok: false, why: 'Only up to a constant: \\( x^2 \\) and \\( x^2 + 5 \\) have the same derivative.' }
+  ]);
+});
+</script>
+</body>
+</html>

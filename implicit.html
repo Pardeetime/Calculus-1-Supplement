@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Implicit Differentiation</title>
+<meta name="description" content="Calculus I Companion, Topic 3.6: finding slopes on curves that aren't functions, differentiating both sides with the Chain Rule, and tangent lines to implicit curves.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;1,6..72,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="lesson.css">
+<script src="site.js"></script>
+<script src="course.js"></script>
+</head>
+<body data-topic="implicit">
+<main class="wrap">
+
+<!-- ================= SEE IT ================= -->
+<section class="step" id="see" data-title="Slopes on curves that aren’t functions">
+  <div class="prose">
+    <p>The circle \( x^2 + y^2 = 25 \) fails the vertical line test, so there’s no single formula \( y = f(x) \) for it. The curve on the right, the <i>folium of Descartes</i>, \( x^3 + y^3 = 6xy \), is even worse. But every point still has a tangent line. Drag the point around each curve. The slope formulas shown come from this lesson’s technique, and they work <b>without</b> ever solving for y.</p>
+  </div>
+  <div class="card widget">
+    <div class="seg" id="cBtns" role="group" aria-label="Choose a curve" style="margin-bottom:12px"><button type="button" data-c="0">Circle</button><button type="button" data-c="1">Folium</button></div>
+    <div class="widget-grid">
+      <svg id="iPlot" role="img" aria-label="Implicit curve with a tangent line at a movable point"></svg>
+      <div>
+        <div class="display" id="cTex" style="font-size:18px"></div>
+        <div class="ctls"><div class="ctl"><label for="tS">Move along</label><input id="tS" type="range" min="0" max="1000" value="150"><output id="tO"></output></div></div>
+        <div class="readout" id="iRead" aria-live="polite"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= BUILD IT ================= -->
+<section class="step" id="build" data-title="Differentiate both sides">
+  <div class="prose">
+    <p>The idea: near any point, the curve <i>is</i> the graph of some function \( y(x) \), even if we can’t write it down. So treat y as a function of x and differentiate <b>both sides</b> of the equation with respect to x.</p>
+  </div>
+  <div class="callout idea"><b>The one new move</b>
+    <p>Whenever you differentiate something containing y, the Chain Rule attaches a factor of \( \frac{dy}{dx} \) (also written \( y' \)):</p>
+    <div class="display">\[ \frac{d}{dx}\,y^2 = 2y\,\frac{dy}{dx}, \qquad \frac{d}{dx}\sin y = \cos y\,\frac{dy}{dx}, \qquad \frac{d}{dx}(xy) = y + x\,\frac{dy}{dx}. \]</div>
+    <p>The last one also needs the product rule, because both x and y are variables.</p>
+  </div>
+  <div class="prose">
+    <p><b>Steps:</b> (1) Differentiate both sides. (2) Move every \( y' \) term to one side and everything else to the other. (3) Factor out \( y' \). (4) Divide.</p>
+  </div>
+  <div id="wx1"></div>
+  <div id="wx2"></div>
+  <div class="callout warn"><b>Common mistakes</b>
+    <p>Forgetting the \( y' \) on y-terms (\( \frac{d}{dx}y^3 \ne 3y^2 \)). Differentiating a constant on the right side as anything but 0. And forgetting the product rule on terms like \( x^2 y \).</p>
+  </div>
+</section>
+
+<!-- ================= TRY IT ================= -->
+<section class="step" id="try" data-title="Your turn">
+  <div class="prose"><p>When the answer is a formula for \( \frac{dy}{dx} \), write it using x and y. Any equivalent form is accepted.</p></div>
+  <div class="practice-list" id="practice"></div>
+</section>
+
+<!-- ================= CHECK ================= -->
+<section class="step" id="check" data-title="Before you move on">
+  <div class="quiz" id="quiz"></div>
+</section>
+
+</main>
+
+<script src="lesson.js"></script>
+<script>
+Lesson.ready(() => {
+  const { Plot, practiceList, worked, quiz, typeset } = Lesson;
+
+  const CURVES = [
+    { tex: 'x^2 + y^2 = 25 \\qquad \\frac{dy}{dx} = -\\frac{x}{y}', range: [[-7, 7], [-6.5, 6.5]],
+      pt: s => { const t = 2 * Math.PI * s; return [5 * Math.cos(t), 5 * Math.sin(t)]; }, slope: (x, y) => -x / y, draw: p => p.param(t => 5 * Math.cos(t), t => 5 * Math.sin(t), 0, 2 * Math.PI, 'c1') },
+    { tex: 'x^3 + y^3 = 6xy \\qquad \\frac{dy}{dx} = \\frac{2y - x^2}{y^2 - 2x}', range: [[-4, 5], [-4, 5]],
+      pt: s => { const t = -0.55 + 7 * s; return [6 * t / (1 + t ** 3), 6 * t * t / (1 + t ** 3)]; }, slope: (x, y) => (2 * y - x * x) / (y * y - 2 * x),
+      draw: p => p.param(t => 6 * t / (1 + t ** 3), t => 6 * t * t / (1 + t ** 3), -0.55, 30, 'c1', 900) }
+  ];
+  const ip = Plot(document.getElementById('iPlot'), { x: [-7, 7], y: [-6.5, 6.5], w: 420, h: 400 });
+  const tS = document.getElementById('tS');
+  let cur = 0;
+  function drawI() {
+    const C = CURVES[cur], [x, y] = C.pt(tS.value / 1000), m = C.slope(x, y);
+    ip.range(C.range[0], C.range[1]);
+    const tan = Math.abs(m) > 60 ? ip.seg(x, y - 3, x, y + 3, 'c3') : ip.seg(x - 2.5, y - 2.5 * m, x + 2.5, y + 2.5 * m, 'c3');
+    ip.draw(C.draw(ip) + tan + ip.dot(x, y, 'c2 solid', 6));
+    document.getElementById('tO').textContent = '';
+    const r = document.getElementById('iRead');
+    r.innerHTML = `Point \\( (${x.toFixed(2)},\\ ${y.toFixed(2)}) \\)<br>Slope from the formula: <b class="mono">${Math.abs(m) > 60 ? 'vertical (denominator ≈ 0)' : m.toFixed(3)}</b>`;
+    typeset(r);
+  }
+  function pick(i) {
+    cur = i;
+    document.querySelectorAll('#cBtns button').forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.c === i)));
+    const t = document.getElementById('cTex'); t.innerHTML = `\\[ ${CURVES[i].tex} \\]`; typeset(t);
+    drawI();
+  }
+  document.getElementById('cBtns').addEventListener('click', e => { const b = e.target.closest('button'); if (b) pick(+b.dataset.c); });
+  tS.addEventListener('input', drawI);
+  pick(0);
+
+  worked(document.getElementById('wx1'), {
+    problem: 'Find \\( \\frac{dy}{dx} \\) for the circle \\( x^2 + y^2 = 25 \\), and the slope at \\( (3, 4) \\).',
+    steps: [
+      { show: 'Differentiate both sides: \\( 2x + 2y\\,y\' = 0 \\).', why: '\\( x^2 \\to 2x \\) as usual. \\( y^2 \\to 2y \\cdot y\' \\) by the Chain Rule. The constant 25 goes to 0.' },
+      { show: 'Solve for \\( y\' \\): \\( 2y\\,y\' = -2x \\), so \\( y\' = -\\dfrac{x}{y} \\).' },
+      { show: 'At \\( (3, 4) \\): \\( y\' = -\\tfrac34 \\).', why: 'Geometry check: the radius to (3, 4) has slope \\( \\tfrac43 \\), and the tangent is perpendicular to it, so its slope is \\( -\\tfrac34 \\). ✓' }
+    ]
+  });
+  worked(document.getElementById('wx2'), {
+    problem: 'Find \\( \\frac{dy}{dx} \\) for \\( x^3 + y^3 = 6xy \\).',
+    steps: [
+      { show: '\\( 3x^2 + 3y^2\\,y\' = 6y + 6x\\,y\' \\).', why: 'The right side \\( 6xy \\) needs the product rule: \\( 6(1\\cdot y + x\\cdot y\') \\).' },
+      { show: 'Collect the \\( y\' \\) terms: \\( 3y^2 y\' - 6x y\' = 6y - 3x^2 \\).' },
+      { show: 'Factor: \\( y\'(3y^2 - 6x) = 6y - 3x^2 \\).' },
+      { show: '\\( y\' = \\dfrac{6y - 3x^2}{3y^2 - 6x} = \\dfrac{2y - x^2}{y^2 - 2x} \\).', why: 'It’s the formula in the explorer above, and it works everywhere, including the loop, without solving for y.' }
+    ]
+  });
+
+  practiceList(document.getElementById('practice'), [
+    { id: 'im-circle', tag: 'Slope at a point', prompt: '<p>For \\( x^2 + y^2 = 25 \\), find \\( \\frac{dy}{dx} \\) at \\( (-4, 3) \\).</p>', label: 'dy/dx',
+      answer: { type: 'number', value: 4 / 3 },
+      rungs: [['Nudge', 'Use the formula from the first worked example.'], ['Hint', '\\( y\' = -x/y \\).'], ['Strategy', 'Substitute \\( x = -4 \\), \\( y = 3 \\). Watch the double negative.']],
+      mistakes: [{ value: -4 / 3, msg: '\\( -x/y \\) with \\( x = -4 \\): the negatives cancel.' }, { value: 3 / 4, msg: 'Upside down. It’s \\( -x/y \\), so x goes on top.' }] },
+    { id: 'im-product', tag: 'Product rule inside', prompt: '<p>Find \\( \\frac{dy}{dx} \\) for \\( x^2 y + y^3 = 10 \\).</p>', label: 'dy/dx',
+      answer: { type: 'expr', vars: ['x', 'y'], fn: (x, y) => -2 * x * y / (x * x + 3 * y * y), domain: [0.5, 2] },
+      format: 'An expression in x and y, e.g. -x/y.',
+      rungs: [['Nudge', 'The term \\( x^2 y \\) is a product of two variables.'], ['Hint', '\\( \\frac{d}{dx}(x^2 y) = 2xy + x^2 y\' \\), and \\( \\frac{d}{dx}y^3 = 3y^2 y\' \\).'], ['Strategy', 'Collect the \\( y\' \\) terms: \\( y\'(x^2 + 3y^2) = -2xy \\).']],
+      mistakes: [{ fn: (x, y) => -2 * x * y / (3 * y * y), msg: 'The product rule on \\( x^2 y \\) gives <i>two</i> terms, one of which has a \\( y\' \\).' }, { fn: (x, y) => 2 * x * y / (x * x + 3 * y * y), msg: 'Check the sign when you move \\( 2xy \\) across.' }] },
+    { id: 'im-exp', tag: 'Exponential', prompt: '<p>Find \\( \\frac{dy}{dx} \\) for \\( e^y = x + y \\).</p>', label: 'dy/dx',
+      answer: { type: 'expr', vars: ['x', 'y'], fn: (x, y) => 1 / (Math.exp(y) - 1), domain: [0.5, 2] },
+      format: 'An expression in x and/or y.',
+      rungs: [['Nudge', 'Differentiate \\( e^y \\) with the Chain Rule.'], ['Hint', '\\( e^y\\,y\' = 1 + y\' \\).'], ['Strategy', 'Collect: \\( y\'(e^y - 1) = 1 \\).']],
+      mistakes: [{ fn: (x, y) => 1 / Math.exp(y), msg: 'The right side \\( x + y \\) also has a y, so it contributes a \\( y\' \\) too.' }] },
+    { id: 'im-tangent', tag: 'Tangent line', prompt: '<p>Find the tangent line to \\( x^2 + xy + y^2 = 7 \\) at the point \\( (1, 2) \\).</p>', label: 'y =',
+      answer: { type: 'expr', vars: ['x'], fn: x => 2 - 0.8 * (x - 1) },
+      rungs: [['Nudge', 'Find \\( y\' \\) implicitly, then evaluate it at (1, 2).'], ['Hint', '\\( 2x + (y + x y\') + 2y y\' = 0 \\), so \\( y\' = -\\dfrac{2x + y}{x + 2y} \\).'], ['Strategy', 'At (1, 2) the slope is \\( -\\tfrac45 \\). Use point-slope.']],
+      mistakes: [{ fn: x => 2 + 0.8 * (x - 1), msg: 'Check the sign of the slope.' }, { fn: x => 2 - 2 * (x - 1), msg: 'The \\( xy \\) term needs the product rule, which changes the slope.' }] },
+    { id: 'im-folium', tag: 'Slope at a point', prompt: '<p>Find the slope of the folium \\( x^3 + y^3 = 6xy \\) at the point \\( (3, 3) \\).</p>', label: 'dy/dx',
+      answer: { type: 'number', value: -1 },
+      rungs: [['Nudge', 'The second worked example has the formula.'], ['Hint', '\\( y\' = \\dfrac{2y - x^2}{y^2 - 2x} \\).'], ['Strategy', 'Substitute x = y = 3.']],
+      success: 'The folium is symmetric across y = x, so at a point on that line, a slope of −1 makes sense.' }
+  ]);
+
+  quiz(document.getElementById('quiz'), [
+    { q: '\\( \\dfrac{d}{dx}\\,y^4 = \\)',
+      choices: [{ t: '\\( 4y^3 \\)', ok: false, why: 'y depends on x, so the Chain Rule adds a \\( y\' \\).' }, { t: '\\( 4y^3\\,y\' \\)', ok: true, why: 'Power rule on the outside, times the derivative of the inside y.' }, { t: '0', ok: false, why: 'y is a function of x, not a constant.' }] },
+    { q: '\\( \\dfrac{d}{dx}(xy) = \\)',
+      choices: [{ t: '\\( y\' \\)', ok: false, why: 'Both factors vary, so use the product rule.' }, { t: '\\( y + x\\,y\' \\)', ok: true, why: '(x)′·y + x·(y)′.' }, { t: '\\( 1 \\cdot y\' \\)', ok: false, why: 'That’s the product of derivatives, which is never the rule.' }] },
+    { q: 'Where does \\( x^2 + y^2 = 25 \\) have a vertical tangent?',
+      choices: [{ t: 'Where \\( x = 0 \\)', ok: false, why: 'There \\( y\' = 0 \\), so the tangent is horizontal (top and bottom).' }, { t: 'Where \\( y = 0 \\)', ok: true, why: '\\( y\' = -x/y \\) has a zero denominator at \\( (\\pm5, 0) \\), the far left and right.' }] }
+  ]);
+});
+</script>
+</body>
+</html>

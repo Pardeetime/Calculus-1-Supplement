@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Areas and Distances</title>
+<meta name="description" content="Calculus I Companion, Topic 5.1: approximating area under a curve with rectangles, left/right/midpoint sums, and distance from velocity.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;1,6..72,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="lesson.css">
+<script src="site.js"></script>
+<script src="course.js"></script>
+</head>
+<body data-topic="area-distance">
+<main class="wrap">
+
+<!-- ================= SEE IT ================= -->
+<section class="step" id="see" data-title="Rectangles under a curve">
+  <div class="prose">
+    <p>What is the area under \( y = x^2 \) from 0 to 2? No formula from geometry covers a curved region. But rectangles are easy. Cover the region with rectangles, add up their areas, and use more and more of them. What number do the sums close in on?</p>
+  </div>
+  <div class="card widget">
+    <div class="widget-grid">
+      <svg id="rsPlot" role="img" aria-label="Rectangles approximating the area under a parabola"></svg>
+      <div>
+        <div class="seg" id="mBtns" role="group" aria-label="Sample point"><button type="button" data-m="L">Left</button><button type="button" data-m="R">Right</button><button type="button" data-m="M">Midpoint</button></div>
+        <div class="ctls"><div class="ctl"><label for="nS">Rectangles n</label><input id="nS" type="range" min="1" max="100" value="4"><output id="nO"></output></div></div>
+        <div class="readout" id="rsRead" aria-live="polite"></div>
+        <div class="table-wrap"><table class="ref" id="rsTable"></table></div>
+      </div>
+    </div>
+  </div>
+  <div class="callout idea"><b>What you see</b>
+    <p>Left sums are too small here and right sums are too big, because the curve rises. Midpoints do much better. As n grows, <b>all three</b> close in on the same number, \( 2.6\overline{6} = \tfrac83 \). That limiting value is the area.</p>
+  </div>
+</section>
+
+<!-- ================= BUILD IT ================= -->
+<section class="step" id="build" data-title="Riemann sums">
+  <div class="prose">
+    <p>Split \( [a, b] \) into n equal pieces of width</p>
+    <div class="display">\[ \Delta x = \frac{b - a}{n}, \qquad x_i = a + i\,\Delta x \quad (i = 0, 1, \ldots, n). \]</div>
+    <p>On each piece, build a rectangle whose height is f at some sample point, then add them up:</p>
+    <div class="display">\[ \text{Area} \approx \sum_{i=1}^{n} f(x_i^*)\,\Delta x \]</div>
+  </div>
+  <div class="table-wrap"><table class="ref">
+    <tr><th>Sum</th><th>Sample point \( x_i^* \) on the i-th piece</th><th>For an increasing f</th></tr>
+    <tr><td>Left \( L_n \)</td><td>Left end, \( x_{i-1} \)</td><td>Underestimate</td></tr>
+    <tr><td>Right \( R_n \)</td><td>Right end, \( x_i \)</td><td>Overestimate</td></tr>
+    <tr><td>Midpoint \( M_n \)</td><td>Middle, \( \tfrac{x_{i-1} + x_i}{2} \)</td><td>Usually the most accurate</td></tr>
+  </table></div>
+  <div class="prose"><p>For a <i>decreasing</i> function the left and right roles swap. The exact area is the limit as \( n \to \infty \), which is the idea behind the definite integral (Topic 5.2).</p></div>
+  <div id="wx1"></div>
+
+  <h3>The distance problem</h3>
+  <div class="prose">
+    <p>If velocity were constant, distance = velocity × time, the area of a rectangle on a velocity-time graph. When velocity changes, split time into short intervals, treat the velocity as roughly constant on each, and add. <b>Distance traveled is the area under the velocity curve.</b> Units check: (ft/s) × (s) = ft.</p>
+  </div>
+  <div id="wx2"></div>
+  <div class="callout calc"><b>The big connection</b>
+    <p>Area under a <i>rate</i> gives a total <i>amount</i>: velocity gives distance, flow rate gives volume, and a birth rate gives a number of births. This one idea is behind every application of integrals.</p>
+  </div>
+</section>
+
+<!-- ================= TRY IT ================= -->
+<section class="step" id="try" data-title="Your turn">
+  <div class="prose"><p>Work these by hand, maybe with a calculator for the arithmetic. Exact answers or decimals are both fine.</p></div>
+  <div class="practice-list" id="practice"></div>
+</section>
+
+<!-- ================= CHECK ================= -->
+<section class="step" id="check" data-title="Before you move on">
+  <div class="quiz" id="quiz"></div>
+</section>
+
+</main>
+
+<script src="lesson.js"></script>
+<script>
+Lesson.ready(() => {
+  const { Plot, practiceList, worked, quiz, typeset } = Lesson;
+
+  const f = x => x * x, a = 0, b = 2, TRUE = 8 / 3;
+  const rp = Plot(document.getElementById('rsPlot'), { x: [-0.2, 2.3], y: [-0.3, 4.5], h: 360 });
+  const nS = document.getElementById('nS');
+  let mode = 'L';
+  const sumOf = (m, n) => { const dx = (b - a) / n; let s = 0; for (let i = 0; i < n; i++) { const x = a + dx * (i + (m === 'L' ? 0 : m === 'R' ? 1 : 0.5)); s += f(x) * dx; } return s; };
+  function drawRS() {
+    const n = +nS.value, dx = (b - a) / n;
+    let s = '';
+    for (let i = 0; i < n; i++) {
+      const x0 = a + i * dx, xs = x0 + dx * (mode === 'L' ? 0 : mode === 'R' ? 1 : 0.5), h = f(xs);
+      s += `<rect x="${rp.sx(x0)}" y="${rp.sy(h)}" width="${rp.sx(x0 + dx) - rp.sx(x0)}" height="${rp.sy(0) - rp.sy(h)}" style="fill:var(--secant);opacity:.35;stroke:var(--secant);stroke-width:${n > 40 ? 0.3 : 1}"/>`;
+      if (n <= 20) s += rp.dot(xs, h, 'c2 solid', 3);
+    }
+    rp.draw(s + rp.fn(f, 'c1', { from: -0.2, to: 2.2 }));
+    document.getElementById('nO').textContent = n;
+    document.querySelectorAll('#mBtns button').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.m === mode)));
+    const v = sumOf(mode, n), r = document.getElementById('rsRead');
+    r.innerHTML = `\\( \\Delta x = ${(dx).toPrecision(4)} \\), &nbsp; \\( ${mode}_{${n}} = ${v.toFixed(6)} \\)`;
+    typeset(r);
+    document.getElementById('rsTable').innerHTML = '<tr><th>n</th><th>L</th><th>R</th><th>M</th></tr>' +
+      [n, 10, 50, 100].filter((x, i, arr) => arr.indexOf(x) === i).sort((p, q) => p - q).map(k => `<tr><td>${k}</td><td class="mono">${sumOf('L', k).toFixed(5)}</td><td class="mono">${sumOf('R', k).toFixed(5)}</td><td class="mono">${sumOf('M', k).toFixed(5)}</td></tr>`).join('');
+  }
+  document.getElementById('mBtns').addEventListener('click', e => { const x = e.target.closest('button'); if (x) { mode = x.dataset.m; drawRS(); } });
+  nS.addEventListener('input', drawRS);
+  drawRS();
+
+  worked(document.getElementById('wx1'), {
+    problem: 'Estimate the area under \\( f(x) = \\dfrac1x \\) on \\( [1, 3] \\) with \\( R_4 \\) (4 rectangles, right endpoints).',
+    steps: [
+      { show: '\\( \\Delta x = \\dfrac{3 - 1}{4} = 0.5 \\). Right endpoints: 1.5, 2, 2.5, 3.' },
+      { show: '\\( R_4 = 0.5\\left[f(1.5) + f(2) + f(2.5) + f(3)\\right] = 0.5\\left[\\tfrac23 + \\tfrac12 + \\tfrac25 + \\tfrac13\\right] \\).', why: 'Factor out Δx and add the heights first. It saves arithmetic.' },
+      { show: '\\( R_4 = 0.5(1.9) = 0.95 \\).', why: '\\( \\tfrac1x \\) is decreasing, so right endpoints give an <i>under</i>estimate. The true area is \\( \\ln 3 \\approx 1.0986 \\) (Topic 5.3).' }
+    ]
+  });
+  worked(document.getElementById('wx2'), {
+    problem: 'A car’s speedometer is read every 2 seconds: \\( v = 0, 12, 20, 26, 30 \\) ft/s at \\( t = 0, 2, 4, 6, 8 \\). Estimate the distance traveled with a left sum.',
+    steps: [
+      { show: 'Four intervals, each \\( \\Delta t = 2 \\) s. Left endpoints use the first four readings.' },
+      { show: 'Distance \\( \\approx 2(0 + 12 + 20 + 26) = 116 \\) ft.', why: 'The car is speeding up, so the left sum underestimates. A right sum gives 2(12 + 20 + 26 + 30) = 176 ft. The truth is somewhere between.' }
+    ]
+  });
+
+  practiceList(document.getElementById('practice'), [
+    { id: 'ar-L4', tag: 'Left sum', prompt: '<p>Compute \\( L_4 \\) for \\( f(x) = x^2 \\) on \\( [0, 2] \\).</p>', label: 'L₄ =',
+      answer: { type: 'number', value: 1.75, acceptDecimal: true },
+      rungs: [['Nudge', '\\( \\Delta x = 0.5 \\). Which four x-values are the left endpoints?'], ['Hint', 'Left endpoints: 0, 0.5, 1, 1.5.'], ['Strategy', '\\( 0.5(0^2 + 0.5^2 + 1^2 + 1.5^2) \\).']],
+      mistakes: [{ value: 3.75, msg: 'That’s the right sum. Left endpoints start at 0.' }, { value: 3.5, msg: 'Multiply the sum of the heights by Δx = 0.5.' }],
+      success: 'Check against the explorer: set Left, n = 4.' },
+    { id: 'ar-R4', tag: 'Right sum', prompt: '<p>Compute \\( R_4 \\) for the same function and interval.</p>', label: 'R₄ =',
+      answer: { type: 'number', value: 3.75, acceptDecimal: true },
+      rungs: [['Nudge', 'Right endpoints: 0.5, 1, 1.5, 2.'], ['Hint', 'Square each one and add them.'], ['Strategy', 'Multiply by 0.5.']],
+      success: 'True area 8/3 ≈ 2.667 is between L₄ and R₄, as it must be for an increasing function.' },
+    { id: 'ar-M2', tag: 'Midpoint', prompt: '<p>Compute \\( M_2 \\) for \\( f(x) = x^3 \\) on \\( [0, 2] \\).</p>', label: 'M₂ =',
+      answer: { type: 'number', value: 3.5, acceptDecimal: true },
+      rungs: [['Nudge', '\\( \\Delta x = 1 \\). The two pieces are [0, 1] and [1, 2].'], ['Hint', 'Midpoints: 0.5 and 1.5.'], ['Strategy', '\\( 1\\cdot(0.5^3 + 1.5^3) \\).']],
+      mistakes: [{ value: 9, msg: 'That’s the right sum (heights at 1 and 2). Use the midpoints.' }, { value: 1, msg: 'That’s the left sum. Use the midpoints.' }],
+      success: 'True area is 4. The midpoint sum is already fairly close with just two rectangles.' },
+    { id: 'ar-dx', tag: 'Δx', prompt: '<p>For a Riemann sum on \\( [2, 7] \\) with \\( n = 10 \\), what is \\( \\Delta x \\)?</p>', label: 'Δx =',
+      answer: { type: 'number', value: 0.5 },
+      rungs: [['Nudge', 'Width of the interval ÷ number of pieces.'], ['Hint', '\\( \\dfrac{7 - 2}{10} \\).'], ['Strategy', 'Compute it.']],
+      mistakes: [{ value: 0.7, msg: 'Use the <i>length</i> of the interval, 7 − 2, not the right endpoint.' }] },
+    { id: 'ar-vel', tag: 'Distance', prompt: '<p>Velocity readings (ft/s): \\( v(0) = 0 \\), \\( v(1) = 10 \\), \\( v(2) = 16 \\), \\( v(3) = 20 \\), \\( v(4) = 22 \\). Estimate the distance traveled from t = 0 to 4 s with a <b>left</b> sum.</p>', label: 'ft',
+      answer: { type: 'number', value: 46 },
+      rungs: [['Nudge', '\\( \\Delta t = 1 \\). Use the first four readings.'], ['Hint', '\\( 1\\cdot(0 + 10 + 16 + 20) \\).'], ['Strategy', 'Add them.']],
+      mistakes: [{ value: 68, msg: 'That’s the right sum. Left uses readings at t = 0, 1, 2, 3.' }, { value: 22, msg: 'That’s a velocity. Distance is the area: add the rectangles.' }] },
+    { id: 'ar-vel-avg', tag: 'Better estimate', prompt: '<p>Average your left sum (46) and the right sum for the same data. What estimate do you get?</p>', label: 'ft',
+      answer: { type: 'number', value: 57 },
+      rungs: [['Nudge', 'First find the right sum.'], ['Hint', 'Right: \\( 10 + 16 + 20 + 22 = 68 \\).'], ['Strategy', 'Average 46 and 68.']],
+      success: 'Averaging left and right sums gives the <i>trapezoidal rule</i>, usually a big improvement.' }
+  ]);
+
+  quiz(document.getElementById('quiz'), [
+    { q: 'For a <b>decreasing</b> function, the left Riemann sum is…',
+      choices: [{ t: 'an underestimate', ok: false, why: 'Left endpoints are the tallest points on each piece of a decreasing function.' }, { t: 'an overestimate', ok: true, why: 'Each rectangle uses the highest value on its piece.' }] },
+    { q: 'Velocity is in m/s and time is in s. The area under the velocity graph is in…',
+      choices: [{ t: 'm/s²', ok: false, why: 'That’s acceleration, a rate of change of velocity.' }, { t: 'm', ok: true, why: '(m/s) × s = m, a distance.' }] },
+    { q: 'What happens to \\( L_n \\), \\( R_n \\), \\( M_n \\) as \\( n \\to \\infty \\) (for a continuous function)?',
+      choices: [{ t: 'They approach the same number, the exact area', ok: true, why: 'The differences between methods shrink to 0.' }, { t: 'They stay different', ok: false, why: 'Try n = 100 in the explorer.' }] }
+  ]);
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Formula Reference</title>
+<meta name="description" content="Calculus I Companion: every rule and theorem in one searchable place, each linked to the lesson that explains why it works, with a flashcard quiz mode.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;1,6..72,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="lesson.css">
+<script src="site.js"></script>
+<script src="course.js"></script>
+<style>
+  .fr-bar { position: sticky; top: 60px; z-index: 5; background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(8px); padding: 12px 0; border-bottom: 1px solid var(--line); margin-top: 16px; }
+  .fr-bar .row { gap: 10px; }
+  .fr-bar input[type="search"] { flex: 1 1 220px; max-width: 360px; }
+  .fr-unit { margin-top: 36px; scroll-margin-top: 130px; }
+  .fr-unit h2 { font-size: 26px; margin-bottom: 12px; }
+  .fr-unit h2 small { font: 500 13px var(--font-mono); color: var(--uc); display: block; letter-spacing: .06em; }
+  .fr-grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+  .fr-card { padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; }
+  .fr-card .nm { font-size: 13px; font-weight: 600; color: var(--ink-2); display: flex; justify-content: space-between; gap: 8px; }
+  .fr-card .nm a { font-weight: 500; font-size: 12px; text-decoration: none; white-space: nowrap; }
+  .fr-card .tx { overflow-x: auto; overflow-y: hidden; font-size: 17px; }
+  .fr-card .note { font-size: 13px; color: var(--ink-3); }
+  .fr-card .hidden-rhs { display: inline-block; border: 1px dashed var(--ink-3); border-radius: 6px; padding: 0 10px; color: var(--ink-3); cursor: pointer; font-size: 14px; vertical-align: middle; }
+  .fr-card.revealed { border-color: var(--good); }
+  .fr-empty { padding: 24px; text-align: center; color: var(--ink-3); }
+</style>
+</head>
+<body data-tool="Formula reference" data-sub="Every rule in one place. Tap “Why?” to see where it comes from, or switch on Quiz me to test yourself.">
+<main class="wrap">
+  <div class="fr-bar">
+    <div class="row">
+      <input type="search" id="q" placeholder="Search, e.g. chain, sin, FTC" aria-label="Search formulas">
+      <button class="btn" type="button" id="quiz" aria-pressed="false">Quiz me: hide answers</button>
+      <span class="chip" id="qScore" hidden></span>
+    </div>
+    <div class="seg" id="uBtns" role="group" aria-label="Jump to unit" style="margin-top:10px"></div>
+  </div>
+  <div id="list"></div>
+</main>
+
+<script src="lesson.js"></script>
+<script>
+Lesson.ready(() => {
+  const { esc, typeset } = Lesson;
+  // [name, left side, operator, right side, lesson href, note?]
+  const F = {
+    u0: [
+      ['Exponent: product', 'b^m\\,b^n', '=', 'b^{m+n}', 'exp-log.html'],
+      ['Exponent: power', '(b^m)^n', '=', 'b^{mn}', 'exp-log.html'],
+      ['Log ↔ exponent', '\\log_b x = y', '\\iff', 'b^y = x', 'exp-log.html'],
+      ['Log of a product', '\\ln(xy)', '=', '\\ln x + \\ln y', 'exp-log.html'],
+      ['Log of a quotient', '\\ln\\tfrac{x}{y}', '=', '\\ln x - \\ln y', 'exp-log.html'],
+      ['Log of a power', '\\ln(x^r)', '=', 'r\\ln x', 'exp-log.html'],
+      ['Change of base', '\\log_b x', '=', '\\dfrac{\\ln x}{\\ln b}', 'exp-log.html'],
+      ['Inverse cancellation', 'f^{-1}(f(x))', '=', 'x', 'inverse.html'],
+      ['Degrees → radians', '\\theta_{\\text{rad}}', '=', '\\theta_{\\text{deg}}\\cdot\\tfrac{\\pi}{180}', 'trig.html'],
+      ['Pythagorean identity', '\\sin^2\\theta + \\cos^2\\theta', '=', '1', 'trig.html'],
+      ['Pythagorean (tan)', '1 + \\tan^2\\theta', '=', '\\sec^2\\theta', 'trig.html'],
+      ['Double angle (sin)', '\\sin 2\\theta', '=', '2\\sin\\theta\\cos\\theta', 'trig.html'],
+      ['Double angle (cos)', '\\cos 2\\theta', '=', '\\cos^2\\theta - \\sin^2\\theta', 'trig.html']
+    ],
+    u1: [
+      ['Two-sided limit', '\\lim_{x\\to a} f = L', '\\iff', '\\lim_{x\\to a^-} f = \\lim_{x\\to a^+} f = L', 'one-sided.html'],
+      ['Famous trig limit', '\\lim_{\\theta\\to0}\\dfrac{\\sin\\theta}{\\theta}', '=', '1', 'squeeze.html', 'Radians only.'],
+      ['Companion trig limit', '\\lim_{\\theta\\to0}\\dfrac{\\cos\\theta - 1}{\\theta}', '=', '0', 'trig-deriv.html'],
+      ['Limits at infinity', '\\lim_{x\\to\\infty}\\dfrac{1}{x^r}', '=', '0 \\ \\ (r \\gt 0)', 'limits-infinity.html'],
+      ['Squeeze Theorem', 'g \\le f \\le h,\\ \\lim g = \\lim h = L', '\\implies', '\\lim f = L', 'squeeze.html'],
+      ['ε–δ definition', '\\lim_{x\\to a} f = L', '\\iff', '\\forall\\varepsilon\\,\\exists\\delta:\\ 0\\lt|x-a|\\lt\\delta \\Rightarrow |f(x)-L|\\lt\\varepsilon', 'epsilon-delta.html'],
+      ['Continuity at a', 'f \\text{ continuous at } a', '\\iff', '\\lim_{x\\to a} f(x) = f(a)', 'continuity.html'],
+      ['Intermediate Value Thm', 'f \\text{ cont. on } [a,b],\\ N \\text{ between } f(a), f(b)', '\\implies', '\\exists c:\\ f(c) = N', 'continuity.html'],
+      ['e as a limit', '\\lim_{x\\to\\infty}\\left(1 + \\tfrac1x\\right)^x', '=', 'e', 'lhopital.html']
+    ],
+    u2: [
+      ['Derivative (h form)', 'f\'(a)', '=', '\\lim_{h\\to0}\\dfrac{f(a+h) - f(a)}{h}', 'derivative-point.html'],
+      ['Derivative (x → a form)', 'f\'(a)', '=', '\\lim_{x\\to a}\\dfrac{f(x) - f(a)}{x - a}', 'derivative-point.html'],
+      ['Tangent line', 'y', '=', 'f(a) + f\'(a)(x - a)', 'derivative-point.html'],
+      ['Differentiable ⟹ continuous', 'f\'(a) \\text{ exists}', '\\implies', 'f \\text{ continuous at } a', 'differentiability.html', 'The converse is false (think |x|).']
+    ],
+    u3: [
+      ['Power rule', '\\tfrac{d}{dx}x^n', '=', 'n x^{n-1}', 'power-rule.html'],
+      ['Product rule', '(fg)\'', '=', 'f\'g + fg\'', 'product-quotient.html'],
+      ['Quotient rule', '\\left(\\tfrac{f}{g}\\right)\'', '=', '\\dfrac{f\'g - fg\'}{g^2}', 'product-quotient.html', 'Low d-high minus high d-low.'],
+      ['Chain rule', '\\tfrac{d}{dx}f(g(x))', '=', 'f\'(g(x))\\,g\'(x)', 'chain-rule.html'],
+      ['Exponential (e)', '\\tfrac{d}{dx}e^x', '=', 'e^x', 'exp-deriv.html'],
+      ['Exponential (b)', '\\tfrac{d}{dx}b^x', '=', 'b^x\\ln b', 'exp-deriv.html'],
+      ['Natural log', '\\tfrac{d}{dx}\\ln|x|', '=', '\\dfrac1x', 'log-deriv.html'],
+      ['Log base b', '\\tfrac{d}{dx}\\log_b x', '=', '\\dfrac{1}{x\\ln b}', 'log-deriv.html'],
+      ['Sine', '\\tfrac{d}{dx}\\sin x', '=', '\\cos x', 'trig-deriv.html'],
+      ['Cosine', '\\tfrac{d}{dx}\\cos x', '=', '-\\sin x', 'trig-deriv.html'],
+      ['Tangent', '\\tfrac{d}{dx}\\tan x', '=', '\\sec^2 x', 'trig-deriv.html'],
+      ['Secant', '\\tfrac{d}{dx}\\sec x', '=', '\\sec x\\tan x', 'trig-deriv.html'],
+      ['Cosecant', '\\tfrac{d}{dx}\\csc x', '=', '-\\csc x\\cot x', 'trig-deriv.html'],
+      ['Cotangent', '\\tfrac{d}{dx}\\cot x', '=', '-\\csc^2 x', 'trig-deriv.html'],
+      ['Arcsine', '\\tfrac{d}{dx}\\arcsin x', '=', '\\dfrac{1}{\\sqrt{1-x^2}}', 'inv-trig.html'],
+      ['Arccosine', '\\tfrac{d}{dx}\\arccos x', '=', '-\\dfrac{1}{\\sqrt{1-x^2}}', 'inv-trig.html'],
+      ['Arctangent', '\\tfrac{d}{dx}\\arctan x', '=', '\\dfrac{1}{1+x^2}', 'inv-trig.html'],
+      ['Inverse function', '(f^{-1})\'(b)', '=', '\\dfrac{1}{f\'(a)} \\text{ where } f(a) = b', 'inv-trig.html'],
+      ['Linearization', 'L(x)', '=', 'f(a) + f\'(a)(x - a)', 'linearization.html'],
+      ['Differential', 'dy', '=', 'f\'(x)\\,dx', 'linearization.html']
+    ],
+    u4: [
+      ['Critical number', 'c \\text{ critical}', '\\iff', 'f\'(c) = 0 \\text{ or } f\'(c) \\text{ DNE}', 'extrema.html'],
+      ['Mean Value Theorem', '\\exists c \\in (a,b):\\ f\'(c)', '=', '\\dfrac{f(b) - f(a)}{b - a}', 'mvt.html', 'Needs continuity on [a,b] and differentiability on (a,b).'],
+      ['First derivative test', 'f\' \\text{ changes } + \\to -', '\\implies', '\\text{local max}', 'shape.html'],
+      ['Second derivative test', 'f\'(c) = 0,\\ f\'\'(c) \\gt 0', '\\implies', '\\text{local min}', 'shape.html', 'If f″(c) = 0 the test is inconclusive.'],
+      ['Concavity', 'f\'\' \\gt 0', '\\implies', '\\text{concave up}', 'shape.html'],
+      ['L’Hôpital’s Rule', '\\lim\\dfrac{f}{g}\\ \\left(\\tfrac00 \\text{ or } \\tfrac{\\infty}{\\infty}\\right)', '=', '\\lim\\dfrac{f\'}{g\'}', 'lhopital.html'],
+      ['Newton’s Method', 'x_{n+1}', '=', 'x_n - \\dfrac{f(x_n)}{f\'(x_n)}', 'newton.html'],
+      ['Antiderivative: power', '\\int x^n\\,dx', '=', '\\dfrac{x^{n+1}}{n+1} + C \\ \\ (n\\ne-1)', 'antiderivatives.html']
+    ],
+    u5: [
+      ['Riemann sum', '\\sum_{i=1}^{n} f(x_i^*)\\,\\Delta x', ',', '\\Delta x = \\dfrac{b-a}{n}', 'area-distance.html'],
+      ['Definite integral', '\\int_a^b f(x)\\,dx', '=', '\\lim_{n\\to\\infty}\\sum f(x_i^*)\\,\\Delta x', 'definite-integral.html'],
+      ['Reversing limits', '\\int_b^a f', '=', '-\\int_a^b f', 'definite-integral.html'],
+      ['Additivity', '\\int_a^c f + \\int_c^b f', '=', '\\int_a^b f', 'definite-integral.html'],
+      ['FTC Part 1', '\\tfrac{d}{dx}\\int_a^x f(t)\\,dt', '=', 'f(x)', 'ftc.html'],
+      ['FTC Part 1 + chain', '\\tfrac{d}{dx}\\int_a^{g(x)} f(t)\\,dt', '=', 'f(g(x))\\,g\'(x)', 'ftc.html'],
+      ['FTC Part 2', '\\int_a^b f(x)\\,dx', '=', 'F(b) - F(a)', 'ftc.html'],
+      ['Net change', '\\int_a^b F\'(x)\\,dx', '=', 'F(b) - F(a)', 'indefinite.html'],
+      ['∫ 1/x', '\\int \\tfrac1x\\,dx', '=', '\\ln|x| + C', 'indefinite.html'],
+      ['∫ eˣ', '\\int e^x\\,dx', '=', 'e^x + C', 'indefinite.html'],
+      ['∫ cos', '\\int \\cos x\\,dx', '=', '\\sin x + C', 'indefinite.html'],
+      ['∫ sin', '\\int \\sin x\\,dx', '=', '-\\cos x + C', 'indefinite.html'],
+      ['∫ sec²', '\\int \\sec^2 x\\,dx', '=', '\\tan x + C', 'indefinite.html'],
+      ['∫ 1/(1+x²)', '\\int \\tfrac{1}{1+x^2}\\,dx', '=', '\\arctan x + C', 'indefinite.html'],
+      ['Substitution', '\\int f(g(x))\\,g\'(x)\\,dx', '=', '\\int f(u)\\,du', 'substitution.html']
+    ],
+    u6: [
+      ['Area between curves', 'A', '=', '\\int_a^b (\\text{top} - \\text{bottom})\\,dx', 'area-between.html'],
+      ['Area (horizontal strips)', 'A', '=', '\\int_c^d (\\text{right} - \\text{left})\\,dy', 'area-between.html'],
+      ['Average value', 'f_{\\text{avg}}', '=', '\\dfrac{1}{b - a}\\int_a^b f(x)\\,dx', 'average-value.html'],
+      ['MVT for integrals', '\\exists c:\\ f(c)', '=', 'f_{\\text{avg}}', 'average-value.html']
+    ]
+  };
+  let quizOn = false, revealed = new Set();
+  const list = document.getElementById('list'), qIn = document.getElementById('q');
+  document.getElementById('uBtns').innerHTML = UNITS.map(u => `<button type="button" data-u="${u.id}">Unit ${u.num}</button>`).join('');
+  function render() {
+    const q = qIn.value.trim().toLowerCase();
+    let html = '', total = 0;
+    UNITS.forEach(u => {
+      const items = (F[u.id] || []).map((it, i) => ({ it, key: u.id + i })).filter(({ it }) => !q || (it[0] + ' ' + it[1] + ' ' + it[3] + ' ' + (it[5] || '')).toLowerCase().includes(q));
+      if (!items.length) return;
+      total += items.length;
+      html += `<section class="fr-unit" id="fr-${u.id}" style="--uc:${u.color}"><h2><small>UNIT ${u.num}</small>${esc(u.title)}</h2><div class="fr-grid">` +
+        items.map(({ it, key }) => {
+          const hide = quizOn && !revealed.has(key);
+          return `<div class="card fr-card${quizOn && revealed.has(key) ? ' revealed' : ''}" data-key="${key}" style="border-top:3px solid var(--uc)">
+            <div class="nm"><span>${esc(it[0])}</span><a href="${it[4]}">Why? →</a></div>
+            <div class="tx">\\( ${it[1]} \\ ${it[2]} \\ ${hide ? '' : it[3]} \\)${hide ? ' <button type="button" class="hidden-rhs" data-key="' + key + '">?</button>' : ''}</div>
+            ${it[5] && !hide ? `<div class="note">${esc(it[5])}</div>` : ''}</div>`;
+        }).join('') + '</div></section>';
+    });
+    list.innerHTML = html || `<div class="card fr-empty">Nothing matches “${esc(q)}”. Try a shorter word.</div>`;
+    typeset(list);
+    const sc = document.getElementById('qScore');
+    sc.hidden = !quizOn; sc.textContent = `${revealed.size} revealed`;
+  }
+  list.addEventListener('click', e => { const b = e.target.closest('.hidden-rhs'); if (b) { revealed.add(b.dataset.key); render(); } });
+  qIn.addEventListener('input', render);
+  document.getElementById('quiz').addEventListener('click', e => {
+    quizOn = !quizOn; revealed = new Set();
+    e.currentTarget.setAttribute('aria-pressed', quizOn);
+    e.currentTarget.textContent = quizOn ? 'Quiz me: on (tap ? to reveal)' : 'Quiz me: hide answers';
+    render();
+  });
+  document.getElementById('uBtns').addEventListener('click', e => { const b = e.target.closest('button'); if (b) document.getElementById('fr-' + b.dataset.u)?.scrollIntoView({ behavior: 'smooth' }); });
+  render();
+});
+</script>
+</body>
+</html>
